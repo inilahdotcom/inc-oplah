@@ -1,0 +1,35 @@
+:root{
+--font-sans:"Inter","SF Pro Display",system-ui,-apple-system,sans-serif;
+--font-sohne-accent:"Sohne Supplied","Inter",sans-serif;/* Bold Italic only — sohne-var upright not supplied */
+--font-mono:"JetBrains Mono",ui-monospace,"SF Mono",Menlo,monospace;
+--weight-light:300;
+--weight-regular:400;
+--feat-default:"ss01";/* @kind other */--feat-tabular:"tnum";/* @kind other */
+--display-xxl-size:56px;
+--display-xxl-lh:1.03;/* @kind other */--display-xxl-ls:-1.4px;/* @kind other */
+--display-xl-size:48px;
+--display-xl-lh:1.15;/* @kind other */--display-xl-ls:-0.96px;/* @kind other */
+--display-lg-size:32px;
+--display-lg-lh:1.1;/* @kind other */--display-lg-ls:-0.64px;/* @kind other */
+--display-md-size:26px;
+--display-md-lh:1.12;/* @kind other */--display-md-ls:-0.26px;/* @kind other */
+--heading-lg-size:22px;
+--heading-lg-lh:1.1;/* @kind other */--heading-lg-ls:-0.22px;/* @kind other */
+--heading-md-size:20px;
+--heading-md-lh:1.4;/* @kind other */--heading-md-ls:-0.2px;/* @kind other */
+--heading-sm-size:18px;
+--heading-sm-lh:1.4;/* @kind other */--heading-sm-ls:0;/* @kind other */
+--body-lg-size:16px;
+--body-md-size:15px;
+--body-lh:1.4;/* @kind other */
+--body-tabular-size:14px;
+--body-tabular-ls:-0.42px;/* @kind other */
+--button-md-size:16px;
+--button-sm-size:14px;
+--button-lh:1;/* @kind other */
+--caption-size:13px;
+--caption-ls:-0.39px;/* @kind other */
+--micro-size:11px;
+--micro-cap-size:10px;
+--micro-cap-lh:1.15;/* @kind other */--micro-cap-ls:0.1px;/* @kind other */
+}

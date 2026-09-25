@@ -1,0 +1,110 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+
+/* Token Stripi (docs/design/tokens) dipetakan ke variabel shadcn + utilitas Tailwind. */
+@theme inline {
+  --font-sans: "Inter", "SF Pro Display", system-ui, -apple-system, sans-serif;
+  --font-heading: var(--font-sans);
+  --font-mono: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, monospace;
+
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+
+  --color-primary-deep: #4434d4;
+  --color-primary-press: #2e2b8c;
+  --color-primary-subdued: #b9b9f9;
+  --color-brand-dark: #1c1e54;
+  --color-ink: #0d253d;
+  --color-ink-secondary: #273951;
+  --color-ink-mute: #64748d;
+  --color-canvas-soft: #f6f9fc;
+  --color-hairline: #e3e8ee;
+  --color-hairline-input: #a8c3de;
+  --color-ruby: #ea2261;
+  --color-success: #15be53;
+  --color-success-bg: #d7f7c2;
+  --color-success-text: #05690d;
+  --color-warning-bg: #fcedb9;
+  --color-warning-text: #a82c00;
+  --color-danger-bg: #ffe7f2;
+  --color-danger-text: #b3093c;
+
+  --radius-xs: 4px;
+  --radius-sm: 6px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+
+  --shadow-l1: rgba(0, 55, 112, 0.08) 0 1px 3px;
+  --shadow-l2: rgba(0, 55, 112, 0.08) 0 8px 24px, rgba(0, 55, 112, 0.04) 0 2px 6px;
+  --shadow-focus: 0 0 0 3px rgba(83, 58, 253, 0.24);
+
+  --ease-standard: cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+:root {
+  --background: #ffffff;
+  --foreground: #0d253d;
+  --card: #ffffff;
+  --card-foreground: #0d253d;
+  --popover: #ffffff;
+  --popover-foreground: #0d253d;
+  --primary: #533afd;
+  --primary-foreground: #ffffff;
+  --secondary: #f6f9fc;
+  --secondary-foreground: #0d253d;
+  --muted: #f6f9fc;
+  --muted-foreground: #64748d;
+  --accent: #f6f9fc;
+  --accent-foreground: #0d253d;
+  --destructive: #ea2261;
+  --border: #e3e8ee;
+  --input: #a8c3de;
+  --ring: #533afd;
+  --radius: 12px;
+
+  /* gradient mesh */
+  --mesh-cream: #f5e9d4;
+  --mesh-orange: #ffb870;
+  --mesh-lavender: #c4b5fd;
+  --mesh-indigo: #533afd;
+  --mesh-ruby: #ea2261;
+  --mesh-magenta: #f96bee;
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  html {
+    font-feature-settings: "ss01";
+  }
+  body {
+    @apply bg-background font-sans text-[15px] leading-[1.4] font-light text-foreground antialiased;
+  }
+  a {
+    @apply text-primary hover:text-primary-deep;
+  }
+}
+
+@utility tnum {
+  font-feature-settings: "ss01", "tnum";
+  letter-spacing: -0.42px;
+}

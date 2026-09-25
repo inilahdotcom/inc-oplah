@@ -1,0 +1,446 @@
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["postgresqlExtensions"]
+}
+
+datasource db {
+  provider   = "postgresql"
+  url        = env("DATABASE_URL")
+  extensions = [pgcrypto, pg_trgm]
+}
+
+// ─────────────── Organisasi & Pengguna ───────────────
+
+model Organization {
+  id              String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name            String
+  address         String
+  logoKey         String?  @map("logo_key")
+  bankName        String   @map("bank_name")
+  bankAccountNo   String   @map("bank_account_no")
+  bankAccountName String   @map("bank_account_name")
+  /// { tax: { ppnRate, dppNum, dppDen }, numbering: { template, seqPad },
+  ///   requiredClientFields: string[], defaultTermsTemplates: string[] }
+  settings        Json     @default("{}")
+  createdAt       DateTime @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt       DateTime @updatedAt @map("updated_at") @db.Timestamptz
+
+  users         User[]
+  sales         Sales[]
+  clients       Client[]
+  signatories   Signatory[]
+  benefitTypes  BenefitType[]
+  formOptions   FormOption[]
+  moSequences   MoSequence[]
+  mediaOrders   MediaOrder[]
+  auditLogs     AuditLog[]
+
+  @@map("organizations")
+}
+
+model User {
+  id             String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  organizationId String    @map("organization_id") @db.Uuid
+  name           String
+  email          String
+  passwordHash   String    @map("password_hash")
+  role           Role
+  isActive       Boolean   @default(true) @map("is_active")
+  salesId        String?   @unique @map("sales_id") @db.Uuid
+  lastLoginAt    DateTime? @map("last_login_at") @db.Timestamptz
+  deletedAt      DateTime? @map("deleted_at") @db.Timestamptz
+  createdAt      DateTime  @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt      DateTime  @updatedAt @map("updated_at") @db.Timestamptz
+
+  organization  Organization   @relation(fields: [organizationId], references: [id])
+  sales         Sales?         @relation(fields: [salesId], references: [id])
+  refreshTokens RefreshToken[]
+  notifications Notification[]
+
+  @@unique([organizationId, email])
+  @@map("users")
+}
+
+model RefreshToken {
+  id         String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId     String    @map("user_id") @db.Uuid
+  tokenHash  String    @unique @map("token_hash")
+  expiresAt  DateTime  @map("expires_at") @db.Timestamptz
+  revokedAt  DateTime? @map("revoked_at") @db.Timestamptz
+  userAgent  String?   @map("user_agent")
+  createdAt  DateTime  @default(now()) @map("created_at") @db.Timestamptz
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("refresh_tokens")
+}
+
+// ─────────────── Master Data ───────────────
+
+model Sales {
+  id             String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  organizationId String   @map("organization_id") @db.Uuid
+  name           String
+  code           String   /// dipakai di nomor MO, mis. "BMO"
+  email          String?
+  title          String   @default("Sales")
+  signatureKey   String?  @map("signature_key")
+  isActive       Boolean  @default(true) @map("is_active")
+  createdAt      DateTime @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt      DateTime @updatedAt @map("updated_at") @db.Timestamptz
+
+  organization Organization @relation(fields: [organizationId], references: [id])
+  user         User?
+  mediaOrders  MediaOrder[]
+
+  @@unique([organizationId, code])
+  @@map("sales")
+}
+
+model Signatory {
+  id             String        @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  organizationId String        @map("organization_id") @db.Uuid
+  name           String
+  title          String
+  docRole        SignatoryRole @map("doc_role")
+  signatureKey   String?       @map("signature_key")
+  stampKey       String?       @map("stamp_key")
+  isDefault      Boolean       @default(false) @map("is_default")
+  isActive       Boolean       @default(true) @map("is_active")
+  createdAt      DateTime      @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt      DateTime      @updatedAt @map("updated_at") @db.Timestamptz
+
+  organization     Organization @relation(fields: [organizationId], references: [id])
+  acknowledgedMos  MediaOrder[] @relation("AcknowledgedBy")
+  approvedMos      MediaOrder[] @relation("ApprovedBy")
+
+  @@index([organizationId, docRole])
+  @@map("signatories")
+}
+
+model BenefitType {
+  id             String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  organizationId String   @map("organization_id") @db.Uuid
+  code           String   /// ARTIKEL_RILIS, INSTAGRAM, ...
+  name           String
+  pdfLabel       String?  @map("pdf_label") /// teks untuk auto-generate Detail Kerjasama
+  sortOrder      Int      @default(0) @map("sort_order")
+  isActive       Boolean  @default(true) @map("is_active")
+  createdAt      DateTime @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt      DateTime @updatedAt @map("updated_at") @db.Timestamptz
+
+  organization Organization @relation(fields: [organizationId], references: [id])
+  moBenefits   MoBenefit[]
+
+  @@unique([organizationId, code])
+  @@map("benefit_types")
+}
+
+model FormOption {
+  id             String          @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  organizationId String          @map("organization_id") @db.Uuid
+  group          FormOptionGroup
+  code           String
+  label          String
+  parentCode     String?         @map("parent_code")
+  sortOrder      Int             @default(0) @map("sort_order")
+  isActive       Boolean         @default(true) @map("is_active")
+
+  organization Organization @relation(fields: [organizationId], references: [id])
+
+  @@unique([organizationId, group, code])
+  @@map("form_options")
+}
+
+// ─────────────── Klien ───────────────
+
+model Client {
+  id             String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  organizationId String    @map("organization_id") @db.Uuid
+  picName        String    @map("pic_name")
+  companyName    String    @map("company_name")
+  nik            String?
+  npwp           String?
+  address        String?
+  city           String?
+  postalCode     String?   @map("postal_code")
+  email          String?
+  phone          String?
+  notes          String?
+  deletedAt      DateTime? @map("deleted_at") @db.Timestamptz
+  createdBy      String    @map("created_by") @db.Uuid
+  createdAt      DateTime  @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt      DateTime  @updatedAt @map("updated_at") @db.Timestamptz
+
+  organization Organization @relation(fields: [organizationId], references: [id])
+  mediaOrders  MediaOrder[]
+
+  @@index([organizationId])
+  @@map("clients")
+}
+
+// ─────────────── Media Order ───────────────
+
+model MoSequence {
+  organizationId String @map("organization_id") @db.Uuid
+  year           Int
+  lastSeq        Int    @default(0) @map("last_seq")
+
+  organization Organization @relation(fields: [organizationId], references: [id])
+
+  @@id([organizationId, year])
+  @@map("mo_sequences")
+}
+
+model MediaOrder {
+  id             String        @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  organizationId String        @map("organization_id") @db.Uuid
+  moNumber       String?       @map("mo_number")
+  moSeq          Int?          @map("mo_seq")
+  moYear         Int?          @map("mo_year")
+  moDate         DateTime      @map("mo_date") @db.Date
+
+  clientId       String        @map("client_id") @db.Uuid
+  clientSnapshot Json?         @map("client_snapshot")
+  salesId        String        @map("sales_id") @db.Uuid
+
+  periodStart    DateTime      @map("period_start") @db.Date
+  periodEnd      DateTime      @map("period_end") @db.Date
+  description    String?       /// "Keterangan"
+  airingDateText String?       @map("airing_date_text")
+  /// { AD_TYPE: string[], COOP_TYPE: string[], PLACEMENT: string[], AD_LOCATION: string[] }
+  selectedOptions Json         @default("{}") @map("selected_options")
+  cooperationDetail String?    @map("cooperation_detail")
+  termsConditions   String?    @map("terms_conditions")
+
+  paymentMethod  PaymentMethod @default(TRANSFER) @map("payment_method")
+  chequeNo       String?       @map("cheque_no")
+  receiptNo      String?       @map("receipt_no")
+  dueDateText    String?       @map("due_date_text")
+  adProduct      String?       @map("ad_product")
+
+  isTaxable      Boolean       @default(true) @map("is_taxable")
+  subtotal       Decimal       @default(0) @db.Decimal(18, 2)
+  dppAmount      Decimal       @default(0) @map("dpp_amount") @db.Decimal(18, 2)
+  ppnAmount      Decimal       @default(0) @map("ppn_amount") @db.Decimal(18, 2)
+  totalAmount    Decimal       @default(0) @map("total_amount") @db.Decimal(18, 2)
+  ppnRate        Decimal       @default(12) @map("ppn_rate") @db.Decimal(5, 2)
+  dppFactorNum   Int           @default(11) @map("dpp_factor_num")
+  dppFactorDen   Int           @default(12) @map("dpp_factor_den")
+
+  acknowledgedById String?     @map("acknowledged_by_id") @db.Uuid
+  approvedById     String?     @map("approved_by_id") @db.Uuid
+  /// { createdBy: {name,title,signatureKey}, acknowledgedBy: {...}, approvedBy: {..., stampKey} }
+  signatorySnapshot Json?      @map("signatory_snapshot")
+
+  status          MoStatus      @default(DRAFT)
+  billingStatus   BillingStatus @default(NOT_READY) @map("billing_status")
+  fulfillmentPct  Decimal       @default(0) @map("fulfillment_pct") @db.Decimal(5, 2)
+  cancelReason    String?       @map("cancel_reason")
+  revisionOfMoId  String?       @unique @map("revision_of_mo_id") @db.Uuid
+  pdfKey          String?       @map("pdf_key")
+  periodEndingNotifiedAt DateTime? @map("period_ending_notified_at") @db.Timestamptz
+
+  submittedAt    DateTime?     @map("submitted_at") @db.Timestamptz
+  submittedBy    String?       @map("submitted_by") @db.Uuid
+  cancelledAt    DateTime?     @map("cancelled_at") @db.Timestamptz
+  createdBy      String        @map("created_by") @db.Uuid
+  createdAt      DateTime      @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt      DateTime      @updatedAt @map("updated_at") @db.Timestamptz
+
+  organization   Organization  @relation(fields: [organizationId], references: [id])
+  client         Client        @relation(fields: [clientId], references: [id])
+  sales          Sales         @relation(fields: [salesId], references: [id])
+  acknowledgedBy Signatory?    @relation("AcknowledgedBy", fields: [acknowledgedById], references: [id])
+  approvedBy     Signatory?    @relation("ApprovedBy", fields: [approvedById], references: [id])
+  revisionOf     MediaOrder?   @relation("Revision", fields: [revisionOfMoId], references: [id])
+  revisedInto    MediaOrder?   @relation("Revision")
+  benefits       MoBenefit[]
+  publications   Publication[]
+  attachments    MoAttachment[]
+  billings       Billing[]
+
+  @@unique([organizationId, moNumber])
+  @@unique([organizationId, moYear, moSeq])
+  @@index([organizationId, moDate])
+  @@index([organizationId, periodStart, periodEnd])
+  @@index([organizationId, status])
+  @@index([organizationId, billingStatus])
+  @@index([clientId])
+  @@index([salesId])
+  @@map("media_orders")
+}
+
+model MoBenefit {
+  id            String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  mediaOrderId  String   @map("media_order_id") @db.Uuid
+  benefitTypeId String   @map("benefit_type_id") @db.Uuid
+  targetQty     Int      @map("target_qty")
+  realizedQty   Int      @default(0) @map("realized_qty") /// non-bonus, di-cap di aplikasi
+  bonusQty      Int      @default(0) @map("bonus_qty")
+  notes         String?
+  sortOrder     Int      @default(0) @map("sort_order")
+
+  mediaOrder   MediaOrder    @relation(fields: [mediaOrderId], references: [id], onDelete: Cascade)
+  benefitType  BenefitType   @relation(fields: [benefitTypeId], references: [id])
+  publications Publication[]
+
+  @@unique([mediaOrderId, benefitTypeId])
+  @@map("mo_benefits")
+}
+
+model Publication {
+  id            String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  mediaOrderId  String   @map("media_order_id") @db.Uuid
+  moBenefitId   String   @map("mo_benefit_id") @db.Uuid
+  publishedDate DateTime @map("published_date") @db.Date
+  title         String?
+  url           String
+  urlNormalized String   @map("url_normalized") /// lowercase host, tanpa query utm_*, tanpa trailing slash
+  screenshotKey String?  @map("screenshot_key")
+  isBonus       Boolean  @default(false) @map("is_bonus")
+  notes         String?
+  createdBy     String   @map("created_by") @db.Uuid
+  createdAt     DateTime @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt     DateTime @updatedAt @map("updated_at") @db.Timestamptz
+
+  mediaOrder MediaOrder @relation(fields: [mediaOrderId], references: [id], onDelete: Cascade)
+  moBenefit  MoBenefit  @relation(fields: [moBenefitId], references: [id], onDelete: Cascade)
+
+  @@unique([mediaOrderId, urlNormalized])
+  @@index([moBenefitId])
+  @@index([publishedDate])
+  @@map("publications")
+}
+
+model MoAttachment {
+  id           String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  mediaOrderId String   @map("media_order_id") @db.Uuid
+  fileKey      String   @map("file_key")
+  fileName     String   @map("file_name")
+  mimeType     String   @map("mime_type")
+  sizeBytes    Int      @map("size_bytes")
+  isSignedMo   Boolean  @default(true) @map("is_signed_mo")
+  uploadedBy   String   @map("uploaded_by") @db.Uuid
+  createdAt    DateTime @default(now()) @map("created_at") @db.Timestamptz
+
+  mediaOrder MediaOrder @relation(fields: [mediaOrderId], references: [id], onDelete: Cascade)
+
+  @@index([mediaOrderId])
+  @@map("mo_attachments")
+}
+
+model Billing {
+  id             String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  mediaOrderId   String    @map("media_order_id") @db.Uuid
+  invoiceNo      String    @map("invoice_no")
+  invoiceDate    DateTime  @map("invoice_date") @db.Date
+  amount         Decimal   @db.Decimal(18, 2)
+  paidDate       DateTime? @map("paid_date") @db.Date
+  paidAmount     Decimal?  @map("paid_amount") @db.Decimal(18, 2)
+  receiptNo      String?   @map("receipt_no")
+  notes          String?
+  overrideReason String?   @map("override_reason") /// wajib jika ditagih saat benefit < 100%
+  createdBy      String    @map("created_by") @db.Uuid
+  createdAt      DateTime  @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt      DateTime  @updatedAt @map("updated_at") @db.Timestamptz
+
+  mediaOrder MediaOrder @relation(fields: [mediaOrderId], references: [id])
+
+  @@index([mediaOrderId])
+  @@map("billings")
+}
+
+// ─────────────── Pendukung ───────────────
+
+model Notification {
+  id        String           @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId    String           @map("user_id") @db.Uuid
+  type      NotificationType
+  payload   Json             /// { moId, moNumber, companyName, ... }
+  readAt    DateTime?        @map("read_at") @db.Timestamptz
+  createdAt DateTime         @default(now()) @map("created_at") @db.Timestamptz
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, readAt])
+  @@map("notifications")
+}
+
+model AuditLog {
+  id             String      @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  organizationId String      @map("organization_id") @db.Uuid
+  userId         String?     @map("user_id") @db.Uuid
+  entity         String      /// "media_order", "publication", "billing", ...
+  entityId       String      @map("entity_id") @db.Uuid
+  action         AuditAction
+  before         Json?
+  after          Json?
+  ip             String?
+  createdAt      DateTime    @default(now()) @map("created_at") @db.Timestamptz
+
+  organization Organization @relation(fields: [organizationId], references: [id])
+
+  @@index([organizationId, entity, entityId])
+  @@index([organizationId, createdAt])
+  @@map("audit_logs")
+}
+
+// ─────────────── Enums ───────────────
+
+enum Role {
+  SUPER_ADMIN
+  ADMIN_SALES
+  FINANCE
+  VIEWER
+}
+
+enum MoStatus {
+  DRAFT
+  SUBMITTED
+  ACTIVE
+  COMPLETED
+  CANCELLED
+}
+
+enum BillingStatus {
+  NOT_READY
+  READY_TO_BILL
+  BILLED
+  PAID
+}
+
+enum PaymentMethod {
+  TRANSFER
+  CHEQUE_BG
+}
+
+enum SignatoryRole {
+  ACKNOWLEDGED_BY
+  APPROVED_BY
+}
+
+enum FormOptionGroup {
+  AD_TYPE
+  COOP_TYPE
+  PLACEMENT
+  AD_LOCATION
+}
+
+enum AuditAction {
+  CREATE
+  UPDATE
+  DELETE
+  SUBMIT
+  CANCEL
+  REVISE
+  STATUS_CHANGE
+  LOGIN
+}
+
+enum NotificationType {
+  MO_READY_TO_BILL
+  MO_PERIOD_ENDING
+  MO_BILLING_OVERRIDE
+}

@@ -1,0 +1,17 @@
+:root{
+--primary:#533afd;--primary-deep:#4434d4;--primary-press:#2e2b8c;--primary-soft:#665efd;--primary-bg-subdued-hover:#b9b9f9;
+--brand-dark-900:#1c1e54;
+--ink:#0d253d;--ink-secondary:#273951;--ink-mute:#64748d;--ink-mute-2:#61718a;--on-primary:#ffffff;
+--canvas:#ffffff;--canvas-soft:#f6f9fc;--canvas-cream:#f5e9d4;
+--hairline:#e3e8ee;--hairline-input:#a8c3de;
+--ruby:#ea2261;--magenta:#f96bee;--lemon:#9b6829;--shadow-blue:#003770;
+/* gradient-mesh stops */
+--mesh-cream:#f5e9d4;--mesh-orange:#ffb870;--mesh-lavender:#c4b5fd;--mesh-indigo:#533afd;--mesh-ruby:#ea2261;--mesh-magenta:#f96bee;
+/* semantic aliases */
+--text-body:var(--ink);--text-secondary:var(--ink-secondary);--text-mute:var(--ink-mute);--text-on-primary:var(--on-primary);--text-link:var(--primary);
+--surface-page:var(--canvas);--surface-band:var(--canvas-soft);--surface-cream:var(--canvas-cream);--surface-card:var(--canvas);--surface-dark:var(--brand-dark-900);--surface-console:var(--ink);
+--border-card:var(--hairline);--border-input:var(--hairline-input);--border-focus:var(--primary);
+--action-primary:var(--primary);--action-primary-hover:var(--primary-deep);--action-primary-press:var(--primary-press);
+/* dashboard-only status (product UI, not marketing) */
+--status-success:#15be53;--status-success-bg:#d7f7c2;--status-success-text:#05690d;--status-danger:var(--ruby);--status-danger-bg:#ffe7f2;--status-warning-bg:#fcedb9;--status-warning-text:#a82c00;
+}

@@ -1,0 +1,1232 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="_ds/stripi-design-system-137d9eef-e69e-4ccb-8fba-b2b20ccc8be4/tokens/fonts.css">
+<link rel="stylesheet" href="_ds/stripi-design-system-137d9eef-e69e-4ccb-8fba-b2b20ccc8be4/tokens/colors.css">
+<link rel="stylesheet" href="_ds/stripi-design-system-137d9eef-e69e-4ccb-8fba-b2b20ccc8be4/tokens/typography.css">
+<link rel="stylesheet" href="_ds/stripi-design-system-137d9eef-e69e-4ccb-8fba-b2b20ccc8be4/tokens/spacing.css">
+<link rel="stylesheet" href="_ds/stripi-design-system-137d9eef-e69e-4ccb-8fba-b2b20ccc8be4/tokens/base.css">
+<link rel="stylesheet" href="_ds/stripi-design-system-137d9eef-e69e-4ccb-8fba-b2b20ccc8be4/styles.css">
+<script src="_ds/stripi-design-system-137d9eef-e69e-4ccb-8fba-b2b20ccc8be4/_ds_bundle.js"></script>
+<script src="oplah-data.js"></script>
+<style>body{margin:0;background:#fff;color:var(--ink);font-family:var(--font-sans);font-weight:300;font-feature-settings:"ss01"}a{color:var(--primary);text-decoration:none}a:hover{color:var(--primary-deep)}input,select,textarea,button{font-family:inherit}</style>
+</helmet>
+<div style="min-height:100vh;font-family:var(--font-sans);color:var(--ink);font-weight:300;font-size:15px;line-height:1.4">
+<sc-if value="{{ is.login }}" hint-placeholder-val="{{ false }}">
+<div style="position:relative;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;box-sizing:border-box;overflow:hidden">
+  <x-import component-from-global-scope="StripiDesignSystem_137d9e.GradientMesh" preset="hero" hint-size="100%,100%"></x-import>
+  <div style="position:relative;width:100%;max-width:420px;background:#fff;border:1px solid var(--hairline);border-radius:12px;box-shadow:var(--shadow-2);padding:32px;box-sizing:border-box;display:flex;flex-direction:column;gap:20px">
+    <div style="display:flex;align-items:center;gap:10px">
+      <span style="width:28px;height:28px;border-radius:6px;background:var(--primary);color:#fff;font-size:13px;font-weight:500;display:flex;align-items:center;justify-content:center">i</span>
+      <div style="display:flex;flex-direction:column"><span style="font-size:14px;font-weight:400">Inilah.com</span><span style="font-size:12px;color:var(--ink-mute)">Client &amp; Media Order Management</span></div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:6px">
+      <h1 style="margin:0;font-size:26px;line-height:1.12;letter-spacing:-0.26px;font-weight:300">Masuk ke akun Anda</h1>
+      <p style="margin:0;font-size:14px;color:var(--ink-mute)">Gunakan email kantor yang terdaftar.</p>
+    </div>
+    <x-import component-from-global-scope="StripiDesignSystem_137d9e.TextInput" label="Email" type="email" value="{{ login.email }}" on-change="{{ login.setEmail }}" hint-size="100%,64px"></x-import>
+    <x-import component-from-global-scope="StripiDesignSystem_137d9e.TextInput" label="Password" type="password" value="{{ login.pw }}" on-change="{{ login.setPw }}" error="{{ login.err }}" hint-size="100%,64px"></x-import>
+    <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap">
+      <a href="#" onClick="{{ login.forgot }}" style="font-size:14px">Lupa password?</a>
+      <x-import component-from-global-scope="StripiDesignSystem_137d9e.Button" arrow="{{ true }}" on-click="{{ login.submit }}" hint-size="90px,36px">Masuk</x-import>
+    </div>
+    <div style="border-top:1px solid var(--hairline);padding-top:16px;display:flex;flex-direction:column;gap:8px">
+      <span style="font-size:12px;color:var(--ink-mute)">Akun demo prototipe</span>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <sc-for list="{{ login.demos }}" as="dm" hint-placeholder-count="2">
+          <button onClick="{{ dm.pick }}" style="border:1px solid var(--hairline);background:var(--canvas-soft);border-radius:8px;padding:8px 12px;cursor:pointer;text-align:left;display:flex;flex-direction:column;gap:2px;font-size:13px;color:var(--ink)"><span style="font-weight:400">{{ dm.role }}</span><span style="color:var(--ink-mute);font-size:12px">{{ dm.email }}</span></button>
+        </sc-for>
+      </div>
+    </div>
+  </div>
+</div>
+</sc-if>
+<sc-if value="{{ is.app }}" hint-placeholder-val="{{ true }}">
+<div style="display:flex;min-height:100vh;background:#fff">
+  <sc-if value="{{ wide }}" hint-placeholder-val="{{ true }}">
+  <aside style="width:232px;flex:none;background:var(--brand-dark-900);padding:18px 12px;display:flex;flex-direction:column;gap:20px;position:sticky;top:0;height:100vh;box-sizing:border-box">
+    <div style="display:flex;align-items:center;gap:10px;padding:4px 10px">
+      <span style="width:24px;height:24px;border-radius:6px;background:var(--primary);color:#fff;font-size:12px;font-weight:500;display:flex;align-items:center;justify-content:center">i</span>
+      <div style="display:flex;flex-direction:column"><span style="color:#fff;font-size:14px;font-weight:400">Inilah.com</span><span style="color:rgba(255,255,255,0.6);font-size:12px">Media Order</span></div>
+    </div>
+    <nav style="display:flex;flex-direction:column;gap:2px">
+      <sc-for list="{{ nav }}" as="n" hint-placeholder-count="4">
+        <button onClick="{{ n.go }}" style="display:flex;align-items:center;justify-content:space-between;width:100%;text-align:left;border:0;cursor:pointer;font-size:14px;font-weight:400;padding:8px 10px;border-radius:6px;background:{{ n.bg }};color:{{ n.color }}"><span>{{ n.label }}</span><span style="font-size:11px;color:var(--primary-bg-subdued-hover)">{{ n.badge }}</span></button>
+      </sc-for>
+    </nav>
+    <div style="margin-top:auto;padding:0 10px;display:flex;flex-direction:column;gap:2px">
+      <span style="color:rgba(255,255,255,0.6);font-size:12px">PT Indonesia News Center</span>
+      <a href="#" onClick="{{ logout }}" style="color:rgba(255,255,255,0.85);font-size:13px">Keluar</a>
+    </div>
+  </aside>
+  </sc-if>
+  <div style="flex:1;min-width:0;display:flex;flex-direction:column">
+    <header style="height:56px;border-bottom:1px solid var(--hairline);display:flex;align-items:center;gap:12px;padding:0 20px;background:#fff;position:sticky;top:0;z-index:10">
+      <span style="font-size:14px;color:var(--ink-mute);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ crumb }}</span>
+      <div style="flex:1"></div>
+      <div style="display:flex;gap:2px;background:var(--canvas-soft);border:1px solid var(--hairline);border-radius:9999px;padding:2px">
+        <sc-for list="{{ roles }}" as="r" hint-placeholder-count="2">
+          <button onClick="{{ r.go }}" style="border:0;cursor:pointer;border-radius:9999px;padding:6px 12px;font-size:13px;font-weight:400;white-space:nowrap;background:{{ r.bg }};color:{{ r.color }}">{{ r.label }}</button>
+        </sc-for>
+      </div>
+      <button onClick="{{ toggleNotif }}" style="display:flex;align-items:center;gap:6px;border:1px solid var(--hairline);background:#fff;border-radius:9999px;padding:6px 12px;cursor:pointer;font-size:13px;color:var(--ink);font-weight:400">Notifikasi<span style="min-width:18px;height:18px;border-radius:9999px;background:{{ notifBadgeBg }};color:#fff;font-size:11px;display:flex;align-items:center;justify-content:center;padding:0 5px;box-sizing:border-box">{{ unread }}</span></button>
+      <sc-if value="{{ wide }}" hint-placeholder-val="{{ true }}">
+      <div style="display:flex;align-items:center;gap:8px">
+        <span style="width:30px;height:30px;border-radius:9999px;background:var(--brand-dark-900);color:#fff;font-size:12px;display:flex;align-items:center;justify-content:center;font-weight:400">{{ user.initials }}</span>
+        <div style="display:flex;flex-direction:column;line-height:1.2"><span style="font-size:13px;font-weight:400">{{ user.name }}</span><span style="font-size:12px;color:var(--ink-mute)">{{ user.role }}</span></div>
+      </div>
+      </sc-if>
+    </header>
+    <sc-if value="{{ narrow }}" hint-placeholder-val="{{ false }}">
+    <div style="display:flex;gap:6px;overflow-x:auto;padding:10px 16px;border-bottom:1px solid var(--hairline);background:var(--canvas-soft)">
+      <sc-for list="{{ nav }}" as="n" hint-placeholder-count="4">
+        <button onClick="{{ n.go }}" style="border:1px solid var(--hairline);cursor:pointer;border-radius:9999px;padding:6px 12px;font-size:13px;font-weight:400;white-space:nowrap;background:{{ n.mbg }};color:{{ n.mcolor }}">{{ n.label }}</button>
+      </sc-for>
+      <button onClick="{{ logout }}" style="border:1px solid var(--hairline);cursor:pointer;border-radius:9999px;padding:6px 12px;font-size:13px;background:#fff;color:var(--ink-secondary);white-space:nowrap">Keluar</button>
+    </div>
+    </sc-if>
+    <main style="padding:{{ mainPad }};box-sizing:border-box;width:100%;max-width:1440px">
+<sc-if value="{{ is.dashboard }}" hint-placeholder-val="{{ false }}">
+<div style="display:flex;flex-direction:column;gap:28px">
+  <div style="display:flex;flex-direction:column;gap:4px">
+    <span style="font-size:14px;color:var(--primary);font-weight:400">Ringkasan penagihan</span>
+    <h1 style="margin:0;font-size:26px;line-height:1.12;letter-spacing:-0.26px;font-weight:300">Dashboard Finance</h1>
+  </div>
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px">
+    <sc-for list="{{ dash.kpis }}" as="k" hint-placeholder-count="4">
+      <button onClick="{{ k.go }}" style="text-align:left;cursor:pointer;background:#fff;border:1px solid var(--hairline);border-radius:12px;padding:20px;display:flex;flex-direction:column;gap:8px;box-shadow:var(--shadow-1)" style-hover="border-color:var(--primary)">
+        <span style="font-size:13px;color:var(--ink-mute);font-weight:400">{{ k.label }}</span>
+        <span style="font-size:26px;letter-spacing:-0.5px;font-feature-settings:'tnum';color:var(--ink);font-weight:300">{{ k.value }}</span>
+        <span style="font-size:13px;color:var(--ink-mute)">{{ k.sub }}</span>
+      </button>
+    </sc-for>
+  </div>
+  <div style="background:#fff;border:1px solid var(--hairline);border-radius:12px;padding:24px;display:flex;flex-direction:column;gap:16px">
+    <div style="display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap">
+      <h2 style="margin:0;font-size:18px;font-weight:300">Nilai MO per bulan, 2026</h2>
+      <span style="font-size:13px;color:var(--ink-mute)">Berdasarkan tanggal MO · setelah PPN</span>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(12,minmax(0,1fr));gap:8px;align-items:end;height:200px">
+      <sc-for list="{{ dash.bars }}" as="b" hint-placeholder-count="12">
+        <div style="display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:6px;height:100%">
+          <span style="font-size:11px;color:var(--ink-secondary);font-feature-settings:'tnum';white-space:nowrap">{{ b.v }}</span>
+          <div style="width:100%;max-width:36px;height:{{ b.h }};background:var(--primary);border-radius:4px 4px 0 0"></div>
+        </div>
+      </sc-for>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(12,minmax(0,1fr));gap:8px;border-top:1px solid var(--hairline);padding-top:8px">
+      <sc-for list="{{ dash.bars }}" as="b" hint-placeholder-count="12">
+        <div style="display:flex;flex-direction:column;align-items:center;gap:2px"><span style="font-size:12px;color:var(--ink-mute)">{{ b.l }}</span><span style="font-size:11px;color:var(--ink-mute);white-space:nowrap">{{ b.n }}</span></div>
+      </sc-for>
+    </div>
+  </div>
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(360px,1fr));gap:16px">
+    <div style="background:#fff;border:1px solid var(--hairline);border-radius:12px;padding:24px;display:flex;flex-direction:column;gap:12px">
+      <h2 style="margin:0;font-size:18px;font-weight:300">Siap ditagih</h2>
+      <sc-if value="{{ dash.hasReady }}" hint-placeholder-val="{{ true }}">
+      <div style="display:flex;flex-direction:column">
+        <sc-for list="{{ dash.ready }}" as="r" hint-placeholder-count="2">
+          <button onClick="{{ r.open }}" style="display:flex;justify-content:space-between;gap:12px;align-items:center;padding:12px 8px;border:0;border-top:1px solid var(--hairline);background:transparent;cursor:pointer;text-align:left;width:100%" style-hover="background:var(--canvas-soft)">
+            <div style="display:flex;flex-direction:column;gap:2px;min-width:0"><span style="font-size:14px;color:var(--ink);font-feature-settings:'tnum';font-weight:400">{{ r.number }}</span><span style="font-size:13px;color:var(--ink-mute)">{{ r.company }}</span></div>
+            <span style="font-size:14px;color:var(--ink);font-feature-settings:'tnum';white-space:nowrap">Rp {{ r.total }}</span>
+          </button>
+        </sc-for>
+      </div>
+      </sc-if>
+    </div>
+    <div style="background:#fff;border:1px solid var(--hairline);border-radius:12px;padding:24px;display:flex;flex-direction:column;gap:12px">
+      <h2 style="margin:0;font-size:18px;font-weight:300">Periode berakhir ≤ 30 hari, belum terpenuhi</h2>
+      <sc-if value="{{ dash.hasEnding }}" hint-placeholder-val="{{ true }}">
+      <div style="display:flex;flex-direction:column">
+        <sc-for list="{{ dash.ending }}" as="r" hint-placeholder-count="2">
+          <button onClick="{{ r.open }}" style="display:flex;justify-content:space-between;gap:12px;align-items:center;padding:12px 8px;border:0;border-top:1px solid var(--hairline);background:transparent;cursor:pointer;text-align:left;width:100%" style-hover="background:var(--canvas-soft)">
+            <div style="display:flex;flex-direction:column;gap:2px;min-width:0"><span style="font-size:14px;color:var(--ink);font-feature-settings:'tnum';font-weight:400">{{ r.number }}</span><span style="font-size:13px;color:var(--ink-mute)">{{ r.company }} · {{ r.period }}</span></div>
+            <span style="font-size:14px;color:var(--status-warning-text);font-feature-settings:'tnum'">{{ r.pct }}</span>
+          </button>
+        </sc-for>
+      </div>
+      </sc-if>
+    </div>
+  </div>
+</div>
+</sc-if>
+
+<sc-if value="{{ is.mos }}" hint-placeholder-val="{{ false }}">
+<div style="display:flex;flex-direction:column;gap:20px">
+  <div style="display:flex;justify-content:space-between;align-items:flex-end;gap:16px;flex-wrap:wrap">
+    <div style="display:flex;flex-direction:column;gap:4px">
+      <h1 style="margin:0;font-size:26px;line-height:1.12;letter-spacing:-0.26px;font-weight:300">Daftar Media Order</h1>
+      <span style="font-size:14px;color:var(--ink-mute)">{{ list.count }} sesuai filter</span>
+    </div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap">
+      <x-import component-from-global-scope="StripiDesignSystem_137d9e.Button" variant="secondary" size="sm" on-click="{{ list.csv }}" hint-size="110px,32px">Ekspor CSV</x-import>
+      <x-import component-from-global-scope="StripiDesignSystem_137d9e.Button" variant="secondary" size="sm" on-click="{{ list.xls }}" hint-size="120px,32px">Ekspor Excel</x-import>
+      <sc-if value="{{ isAS }}" hint-placeholder-val="{{ true }}">
+        <x-import component-from-global-scope="StripiDesignSystem_137d9e.Button" size="sm" arrow="{{ true }}" on-click="{{ list.create }}" hint-size="100px,32px">Buat MO</x-import>
+      </sc-if>
+    </div>
+  </div>
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px">
+    <sc-for list="{{ list.chips }}" as="ch" hint-placeholder-count="5">
+      <button onClick="{{ ch.go }}" style="text-align:left;cursor:pointer;background:#fff;border-radius:8px;padding:10px 14px;display:flex;flex-direction:column;gap:4px;border:{{ ch.border }}">
+        <span style="font-size:13px;font-weight:400;color:{{ ch.color }}">{{ ch.l }}</span>
+        <span style="font-size:18px;color:var(--ink);font-feature-settings:'tnum'">{{ ch.n }}</span>
+      </button>
+    </sc-for>
+  </div>
+  <div style="display:flex;flex-wrap:wrap;gap:10px;align-items:flex-end;padding:16px;background:var(--canvas-soft);border:1px solid var(--hairline);border-radius:12px">
+    <div style="display:flex;flex-direction:column;gap:6px">
+      <span style="font-size:12px;color:var(--ink-mute)">Rentang berdasarkan</span>
+      <div style="display:flex;gap:2px;background:#fff;border:1px solid var(--hairline);border-radius:9999px;padding:2px">
+        <sc-for list="{{ list.dateFields }}" as="df" hint-placeholder-count="2">
+          <button onClick="{{ df.go }}" style="border:0;cursor:pointer;border-radius:9999px;padding:6px 12px;font-size:13px;font-weight:400;background:{{ df.bg }};color:{{ df.color }}">{{ df.l }}</button>
+        </sc-for>
+      </div>
+    </div>
+    <label style="display:flex;flex-direction:column;gap:6px;font-size:12px;color:var(--ink-mute)">Dari<input type="month" value="{{ list.f.from }}" onChange="{{ list.set.from }}" style="height:34px;padding:0 8px;border:1px solid var(--hairline-input);border-radius:6px;font-size:14px;color:var(--ink);background:#fff"></label>
+    <label style="display:flex;flex-direction:column;gap:6px;font-size:12px;color:var(--ink-mute)">Sampai<input type="month" value="{{ list.f.to }}" onChange="{{ list.set.to }}" style="height:34px;padding:0 8px;border:1px solid var(--hairline-input);border-radius:6px;font-size:14px;color:var(--ink);background:#fff"></label>
+    <select value="{{ list.f.client }}" onChange="{{ list.set.client }}" style="height:34px;padding:0 8px;border:1px solid var(--hairline-input);border-radius:6px;font-size:14px;color:var(--ink);background:#fff;max-width:220px"><sc-for list="{{ list.clientOpts }}" as="o"><option value="{{ o.v }}">{{ o.l }}</option></sc-for></select>
+    <select value="{{ list.f.sales }}" onChange="{{ list.set.sales }}" style="height:34px;padding:0 8px;border:1px solid var(--hairline-input);border-radius:6px;font-size:14px;color:var(--ink);background:#fff"><sc-for list="{{ list.salesOpts }}" as="o"><option value="{{ o.v }}">{{ o.l }}</option></sc-for></select>
+    <select value="{{ list.f.status }}" onChange="{{ list.set.status }}" style="height:34px;padding:0 8px;border:1px solid var(--hairline-input);border-radius:6px;font-size:14px;color:var(--ink);background:#fff"><sc-for list="{{ list.statusOpts }}" as="o"><option value="{{ o.v }}">{{ o.l }}</option></sc-for></select>
+    <select value="{{ list.f.billing }}" onChange="{{ list.set.billing }}" style="height:34px;padding:0 8px;border:1px solid var(--hairline-input);border-radius:6px;font-size:14px;color:var(--ink);background:#fff"><sc-for list="{{ list.billOpts }}" as="o"><option value="{{ o.v }}">{{ o.l }}</option></sc-for></select>
+    <select value="{{ list.f.fulfil }}" onChange="{{ list.set.fulfil }}" style="height:34px;padding:0 8px;border:1px solid var(--hairline-input);border-radius:6px;font-size:14px;color:var(--ink);background:#fff"><sc-for list="{{ list.fulOpts }}" as="o"><option value="{{ o.v }}">{{ o.l }}</option></sc-for></select>
+    <input placeholder="Cari nomor / perusahaan" value="{{ list.f.q }}" onChange="{{ list.set.q }}" style="height:34px;padding:0 10px;border:1px solid var(--hairline-input);border-radius:6px;font-size:14px;color:var(--ink);background:#fff;flex:1;min-width:180px">
+    <x-import component-from-global-scope="StripiDesignSystem_137d9e.Button" variant="ghost" size="sm" on-click="{{ list.reset }}" hint-size="60px,34px" style="height:34px">Reset</x-import>
+  </div>
+  <div style="border:1px solid var(--hairline);border-radius:12px;overflow-x:auto;background:#fff">
+    <table style="width:100%;border-collapse:collapse;min-width:1560px">
+      <thead><tr style="background:var(--canvas-soft)">
+        <th style="text-align:left;font-size:12px;font-weight:400;color:var(--ink-mute);padding:10px 12px;border-bottom:1px solid var(--hairline);white-space:nowrap">Nomor MO</th>
+        <th style="text-align:left;font-size:12px;font-weight:400;color:var(--ink-mute);padding:10px 8px;border-bottom:1px solid var(--hairline);white-space:nowrap">Tanggal MO</th>
+        <th style="text-align:left;font-size:12px;font-weight:400;color:var(--ink-mute);padding:10px 8px;border-bottom:1px solid var(--hairline);white-space:nowrap">Periode tayang</th>
+        <th style="text-align:left;font-size:12px;font-weight:400;color:var(--ink-mute);padding:10px 8px;border-bottom:1px solid var(--hairline);white-space:nowrap">Perusahaan / Instansi</th>
+        <th style="text-align:left;font-size:12px;font-weight:400;color:var(--ink-mute);padding:10px 8px;border-bottom:1px solid var(--hairline);white-space:nowrap">Sales</th>
+        <th style="text-align:right;font-size:12px;font-weight:400;color:var(--ink-mute);padding:10px 8px;border-bottom:1px solid var(--hairline);white-space:nowrap">Sebelum PPN</th>
+        <th style="text-align:right;font-size:12px;font-weight:400;color:var(--ink-mute);padding:10px 8px;border-bottom:1px solid var(--hairline);white-space:nowrap">PPN</th>
+        <th style="text-align:right;font-size:12px;font-weight:400;color:var(--ink-mute);padding:10px 8px;border-bottom:1px solid var(--hairline);white-space:nowrap">Setelah PPN</th>
+        <sc-for list="{{ list.cols }}" as="bc" hint-placeholder-count="7"><th style="text-align:center;font-size:12px;font-weight:400;color:var(--ink-mute);padding:10px 6px;border-bottom:1px solid var(--hairline);white-space:nowrap">{{ bc.l }}</th></sc-for>
+        <th style="text-align:right;font-size:12px;font-weight:400;color:var(--ink-mute);padding:10px 8px;border-bottom:1px solid var(--hairline);white-space:nowrap">% Pemenuhan</th>
+        <th style="text-align:left;font-size:12px;font-weight:400;color:var(--ink-mute);padding:10px 8px;border-bottom:1px solid var(--hairline);white-space:nowrap">Status MO</th>
+        <th style="text-align:left;font-size:12px;font-weight:400;color:var(--ink-mute);padding:10px 12px;border-bottom:1px solid var(--hairline);white-space:nowrap">Status penagihan</th>
+      </tr></thead>
+      <tbody>
+        <sc-for list="{{ list.rows }}" as="r" hint-placeholder-count="8">
+          <tr onClick="{{ r.open }}" style="cursor:pointer" style-hover="background:var(--canvas-soft)">
+            <td style="padding:11px 12px;border-bottom:1px solid var(--hairline);font-size:14px;font-feature-settings:'tnum';letter-spacing:-0.42px;white-space:nowrap;color:{{ r.numColor }};font-weight:400">{{ r.number }}</td>
+            <td style="padding:11px 8px;border-bottom:1px solid var(--hairline);font-size:14px;font-feature-settings:'tnum';white-space:nowrap;color:var(--ink-secondary)">{{ r.date }}</td>
+            <td style="padding:11px 8px;border-bottom:1px solid var(--hairline);font-size:14px;white-space:nowrap;color:var(--ink-secondary)">{{ r.period }}</td>
+            <td style="padding:11px 8px;border-bottom:1px solid var(--hairline);font-size:14px;color:var(--ink);max-width:220px">{{ r.company }}</td>
+            <td style="padding:11px 8px;border-bottom:1px solid var(--hairline);font-size:14px;white-space:nowrap;color:var(--ink-secondary)">{{ r.sales }}</td>
+            <td style="padding:11px 8px;border-bottom:1px solid var(--hairline);font-size:14px;font-feature-settings:'tnum';letter-spacing:-0.42px;text-align:right;white-space:nowrap">{{ r.sub }}</td>
+            <td style="padding:11px 8px;border-bottom:1px solid var(--hairline);font-size:14px;font-feature-settings:'tnum';letter-spacing:-0.42px;text-align:right;white-space:nowrap;color:var(--ink-secondary)">{{ r.ppn }}</td>
+            <td style="padding:11px 8px;border-bottom:1px solid var(--hairline);font-size:14px;font-feature-settings:'tnum';letter-spacing:-0.42px;text-align:right;white-space:nowrap;font-weight:400">{{ r.total }}</td>
+            <sc-for list="{{ r.cells }}" as="c" hint-placeholder-count="7"><td style="padding:8px 6px;border-bottom:1px solid var(--hairline);text-align:center"><span style="display:inline-block;min-width:40px;padding:3px 6px;border-radius:4px;font-size:13px;font-feature-settings:'tnum';background:{{ c.bg }};color:{{ c.fg }}">{{ c.t }}</span></td></sc-for>
+            <td style="padding:11px 8px;border-bottom:1px solid var(--hairline);font-size:14px;font-feature-settings:'tnum';text-align:right">{{ r.pct }}</td>
+            <td style="padding:11px 8px;border-bottom:1px solid var(--hairline)"><x-import component-from-global-scope="StripiDesignSystem_137d9e.Tag" tone="{{ r.stT }}" caps="{{ false }}" hint-size="60px,20px">{{ r.stL }}</x-import></td>
+            <td style="padding:11px 12px;border-bottom:1px solid var(--hairline)"><x-import component-from-global-scope="StripiDesignSystem_137d9e.Tag" tone="{{ r.biT }}" caps="{{ false }}" hint-size="80px,20px">{{ r.biL }}</x-import></td>
+          </tr>
+        </sc-for>
+      </tbody>
+      <tfoot><tr style="background:var(--canvas-soft)">
+        <td colspan="5" style="padding:12px;font-size:13px;color:var(--ink-secondary);font-weight:400">Total sesuai filter (tanpa MO dibatalkan)</td>
+        <td style="padding:12px 8px;font-size:14px;font-feature-settings:'tnum';letter-spacing:-0.42px;text-align:right;white-space:nowrap;font-weight:400">{{ list.totSub }}</td>
+        <td style="padding:12px 8px;font-size:14px;font-feature-settings:'tnum';letter-spacing:-0.42px;text-align:right;white-space:nowrap;font-weight:400">{{ list.totPpn }}</td>
+        <td style="padding:12px 8px;font-size:14px;font-feature-settings:'tnum';letter-spacing:-0.42px;text-align:right;white-space:nowrap;font-weight:500">{{ list.totTotal }}</td>
+        <td colspan="10"></td>
+      </tr></tfoot>
+    </table>
+    <sc-if value="{{ list.empty }}" hint-placeholder-val="{{ false }}">
+      <div style="padding:40px;text-align:center;color:var(--ink-mute);font-size:14px">Tidak ada MO yang cocok dengan filter.</div>
+    </sc-if>
+  </div>
+  <div style="display:flex;gap:16px;flex-wrap:wrap;font-size:12px;color:var(--ink-mute)">
+    <span style="display:flex;align-items:center;gap:6px"><span style="width:10px;height:10px;border-radius:2px;background:var(--status-success-bg)"></span>Benefit terpenuhi</span>
+    <span style="display:flex;align-items:center;gap:6px"><span style="width:10px;height:10px;border-radius:2px;background:var(--status-warning-bg)"></span>Sebagian</span>
+    <span style="display:flex;align-items:center;gap:6px"><span style="width:10px;height:10px;border-radius:2px;background:var(--canvas-soft);border:1px solid var(--hairline)"></span>Belum ada realisasi</span>
+    <span>— benefit tidak ada di MO</span>
+  </div>
+</div>
+</sc-if>
+<sc-if value="{{ is.moForm }}" hint-placeholder-val="{{ false }}">
+<div style="display:flex;flex-direction:column;gap:20px">
+  <div style="display:flex;flex-direction:column;gap:4px">
+    <a href="#" onClick="{{ cancelForm }}" style="font-size:14px">← Daftar MO</a>
+    <h1 style="margin:0;font-size:26px;line-height:1.12;letter-spacing:-0.26px;font-weight:300">{{ form.title }}</h1>
+    <span style="font-size:14px;color:var(--ink-mute)">{{ form.subtitle }}</span>
+  </div>
+  <sc-if value="{{ hasErr }}" hint-placeholder-val="{{ false }}">
+    <div style="background:var(--status-danger-bg);color:#b3093c;border-radius:8px;padding:12px 16px;font-size:14px">{{ errList }}</div>
+  </sc-if>
+  <div style="display:grid;grid-template-columns:{{ form.cols }};gap:20px;align-items:start">
+    <div style="display:flex;flex-direction:column;gap:16px;min-width:0">
+
+      <section style="background:#fff;border:1px solid var(--hairline);border-radius:12px;padding:24px;display:flex;flex-direction:column;gap:16px">
+        <div style="display:flex;gap:10px;align-items:baseline"><span style="font-size:12px;color:var(--primary);font-weight:400">A</span><h2 style="margin:0;font-size:18px;font-weight:300">Header</h2></div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px">
+          <div style="display:flex;flex-direction:column;gap:6px"><span style="font-size:13px;color:var(--ink-secondary);font-weight:400">No. Media Order</span><div style="height:36px;display:flex;align-items:center;padding:0 12px;background:var(--canvas-soft);border:1px dashed var(--hairline-input);border-radius:6px;font-size:14px;color:var(--ink-mute)">(otomatis)</div></div>
+          <label style="display:flex;flex-direction:column;gap:6px;font-size:13px;color:var(--ink-secondary);font-weight:400">Tanggal MO *<input type="date" value="{{ form.date }}" onChange="{{ fs.date }}" style="height:36px;padding:0 10px;border:1px solid var(--hairline-input);border-radius:6px;font-size:14px;color:var(--ink);background:#fff;font-weight:300"></label>
+        </div>
+      </section>
+
+      <section style="background:#fff;border:1px solid var(--hairline);border-radius:12px;padding:24px;display:flex;flex-direction:column;gap:16px">
+        <div style="display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;align-items:baseline">
+          <div style="display:flex;gap:10px;align-items:baseline"><span style="font-size:12px;color:var(--primary);font-weight:400">B</span><h2 style="margin:0;font-size:18px;font-weight:300">Data klien</h2></div>
+          <span style="font-size:12px;color:var(--ink-mute)">Disimpan sebagai snapshot saat submit</span>
+        </div>
+        <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center">
+          <select value="{{ form.cid }}" onChange="{{ pickClient }}" style="height:36px;padding:0 10px;border:1px solid var(--hairline-input);border-radius:6px;font-size:14px;color:var(--ink);background:#fff;flex:1;min-width:220px"><sc-for list="{{ formClientOpts }}" as="o"><option value="{{ o.v }}">{{ o.l }}</option></sc-for></select>
+          <x-import component-from-global-scope="StripiDesignSystem_137d9e.Button" variant="secondary" size="sm" on-click="{{ newClient }}" hint-size="150px,32px">Tambah klien baru</x-import>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px">
+          <x-import component-from-global-scope="StripiDesignSystem_137d9e.TextInput" label="Nama (PIC) *" value="{{ form.pic }}" on-change="{{ fs.pic }}" error="{{ err.pic }}" hint-size="100%,64px"></x-import>
+          <x-import component-from-global-scope="StripiDesignSystem_137d9e.TextInput" label="Perusahaan / Biro Iklan *" value="{{ form.company }}" on-change="{{ fs.company }}" error="{{ err.company }}" hint-size="100%,64px"></x-import>
+          <x-import component-from-global-scope="StripiDesignSystem_137d9e.TextInput" label="Nomor NIK" value="{{ form.nik }}" on-change="{{ fs.nik }}" error="{{ err.nik }}" placeholder="16 digit" hint-size="100%,64px"></x-import>
+          <x-import component-from-global-scope="StripiDesignSystem_137d9e.TextInput" label="Alamat" value="{{ form.address }}" on-change="{{ fs.address }}" hint-size="100%,64px"></x-import>
+          <x-import component-from-global-scope="StripiDesignSystem_137d9e.TextInput" label="Kota" value="{{ form.city }}" on-change="{{ fs.city }}" hint-size="100%,64px"></x-import>
+          <x-import component-from-global-scope="StripiDesignSystem_137d9e.TextInput" label="Kode Pos" value="{{ form.postal }}" on-change="{{ fs.postal }}" error="{{ err.postal }}" hint-size="100%,64px"></x-import>
+          <x-import component-from-global-scope="StripiDesignSystem_137d9e.TextInput" label="Email *" type="email" value="{{ form.email }}" on-change="{{ fs.email }}" error="{{ err.email }}" hint-size="100%,64px"></x-import>
+          <x-import component-from-global-scope="StripiDesignSystem_137d9e.TextInput" label="No. Telp *" value="{{ form.phone }}" on-change="{{ fs.phone }}" error="{{ err.phone }}" hint-size="100%,64px"></x-import>
+        </div>
+      </section>
+
+      <section style="background:#fff;border:1px solid var(--hairline);border-radius:12px;padding:24px;display:flex;flex-direction:column;gap:16px">
+        <div style="display:flex;gap:10px;align-items:baseline"><span style="font-size:12px;color:var(--primary);font-weight:400">C</span><h2 style="margin:0;font-size:18px;font-weight:300">Periode</h2></div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;align-items:start">
+          <label style="display:flex;flex-direction:column;gap:6px;font-size:13px;color:var(--ink-secondary);font-weight:400">Masa periode, mulai *<input type="month" value="{{ form.ps }}" onChange="{{ fs.ps }}" style="height:36px;padding:0 10px;border:1px solid var(--hairline-input);border-radius:6px;font-size:14px;color:var(--ink);background:#fff;font-weight:300"></label>
+          <label style="display:flex;flex-direction:column;gap:6px;font-size:13px;color:var(--ink-secondary);font-weight:400">Sampai *<input type="month" value="{{ form.pe }}" onChange="{{ fs.pe }}" style="height:36px;padding:0 10px;border:1px solid var(--hairline-input);border-radius:6px;font-size:14px;color:var(--ink);background:#fff;font-weight:300"><span style="font-size:12px;color:var(--ruby);font-weight:300">{{ err.period }}</span></label>
+          <x-import component-from-global-scope="StripiDesignSystem_137d9e.TextInput" label="Keterangan *" value="{{ form.desc }}" on-change="{{ fs.desc }}" error="{{ err.desc }}" placeholder="Publikasi Rilis Artikel" hint-size="100%,64px"></x-import>
+        </div>
+      </section>
+
+      <section style="background:#fff;border:1px solid var(--hairline);border-radius:12px;padding:24px;display:flex;flex-direction:column;gap:20px">
+        <div style="display:flex;gap:10px;align-items:baseline"><span style="font-size:12px;color:var(--primary);font-weight:400">D</span><h2 style="margin:0;font-size:18px;font-weight:300">Detail iklan</h2></div>
+        <x-import component-from-global-scope="StripiDesignSystem_137d9e.TextInput" label="Tanggal tayang" value="{{ form.airing }}" on-change="{{ fs.airing }}" placeholder="Sesuai jadwal" hint-size="100%,64px"></x-import>
+        <div style="display:flex;flex-direction:column;gap:10px"><span style="font-size:13px;color:var(--ink-secondary);font-weight:400">Jenis iklan</span>
+          <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:8px">
+            <sc-for list="{{ adTypeOpts }}" as="o" hint-placeholder-count="7"><label style="display:flex;align-items:center;gap:8px;font-size:14px;color:var(--ink);cursor:pointer"><input type="checkbox" checked="{{ o.on }}" onChange="{{ o.toggle }}" style="accent-color:var(--primary);width:16px;height:16px;margin:0">{{ o.label }}</label></sc-for>
+          </div></div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:20px">
+          <div style="display:flex;flex-direction:column;gap:10px"><span style="font-size:13px;color:var(--ink-secondary);font-weight:400">Bentuk kerjasama <span style="color:var(--ink-mute);font-weight:300">(pilih satu, boleh kosong)</span></span>
+            <sc-for list="{{ coopOpts }}" as="o" hint-placeholder-count="2"><label style="display:flex;align-items:center;gap:8px;font-size:14px;color:var(--ink);cursor:pointer"><input type="checkbox" checked="{{ o.on }}" onChange="{{ o.toggle }}" style="accent-color:var(--primary);width:16px;height:16px;margin:0">{{ o.label }}</label></sc-for></div>
+          <div style="display:flex;flex-direction:column;gap:10px"><span style="font-size:13px;color:var(--ink-secondary);font-weight:400">Penempatan iklan</span>
+            <sc-for list="{{ placeOpts }}" as="o" hint-placeholder-count="3"><label style="display:flex;align-items:center;gap:8px;font-size:14px;color:var(--ink);cursor:pointer"><input type="checkbox" checked="{{ o.on }}" onChange="{{ o.toggle }}" style="accent-color:var(--primary);width:16px;height:16px;margin:0">{{ o.label }}</label></sc-for></div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:10px;padding:16px;background:var(--canvas-soft);border-radius:8px">
+          <span style="font-size:13px;color:var(--ink-secondary);font-weight:400">Lokasi iklan</span>
+          <label style="display:flex;align-items:center;gap:8px;font-size:14px;color:var(--ink);cursor:pointer;font-weight:400"><input type="checkbox" checked="{{ form.spotWeb }}" onChange="{{ fs.spotWeb }}" style="accent-color:var(--primary);width:16px;height:16px;margin:0">Spot Ads Website</label>
+          <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:8px;padding-left:24px">
+            <sc-for list="{{ spotOpts }}" as="o" hint-placeholder-count="9"><label style="display:flex;align-items:center;gap:8px;font-size:14px;color:var(--ink);cursor:pointer"><input type="checkbox" checked="{{ o.on }}" disabled="{{ o.off }}" onChange="{{ o.toggle }}" style="accent-color:var(--primary);width:16px;height:16px;margin:0">{{ o.label }}</label></sc-for>
+          </div>
+          <label style="display:flex;align-items:center;gap:8px;font-size:14px;color:var(--ink);cursor:pointer;font-weight:400"><input type="checkbox" checked="{{ form.spotMobile }}" onChange="{{ fs.spotMobile }}" style="accent-color:var(--primary);width:16px;height:16px;margin:0">Spot Ads Mobile</label>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:10px">
+          <div style="display:flex;justify-content:space-between;align-items:baseline;gap:8px"><span style="font-size:13px;color:var(--ink-secondary);font-weight:400">Benefit * <span style="color:var(--ink-mute);font-weight:300">(min. 1)</span></span><span style="font-size:12px;color:var(--ruby)">{{ err.benefits }}</span></div>
+          <sc-for list="{{ benRows }}" as="b" hint-placeholder-count="1">
+            <div style="display:grid;grid-template-columns:minmax(160px,2fr) 90px minmax(140px,2fr) auto;gap:8px;align-items:center">
+              <select value="{{ b.code }}" onChange="{{ b.setCode }}" aria-label="Jenis benefit" style="height:36px;padding:0 8px;border:1px solid var(--hairline-input);border-radius:6px;font-size:14px;color:var(--ink);background:#fff;min-width:0"><sc-for list="{{ btOpts }}" as="o"><option value="{{ o.v }}">{{ o.l }}</option></sc-for></select>
+              <input value="{{ b.qty }}" onChange="{{ b.setQty }}" inputMode="numeric" aria-label="Kuantitas" style="height:36px;padding:0 10px;border:1px solid var(--hairline-input);border-radius:6px;font-size:14px;color:var(--ink);font-feature-settings:'tnum';min-width:0;box-sizing:border-box;width:100%">
+              <input value="{{ b.notes }}" onChange="{{ b.setNotes }}" placeholder="Catatan (opsional)" aria-label="Catatan" style="height:36px;padding:0 10px;border:1px solid var(--hairline-input);border-radius:6px;font-size:14px;color:var(--ink);min-width:0;box-sizing:border-box;width:100%">
+              <button onClick="{{ b.remove }}" disabled="{{ b.canRemoveNot }}" style="border:0;background:transparent;color:var(--ink-mute);cursor:pointer;font-size:13px;padding:6px" style-hover="color:var(--ruby)">Hapus</button>
+            </div>
+          </sc-for>
+          <div><x-import component-from-global-scope="StripiDesignSystem_137d9e.Button" variant="ghost" size="sm" on-click="{{ addBen }}" hint-size="120px,20px">+ Tambah benefit</x-import></div>
+        </div>
+        <label style="display:flex;flex-direction:column;gap:6px;font-size:13px;color:var(--ink-secondary);font-weight:400">
+          <span style="display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap"><span>Detail kerjasama * <span style="color:var(--ink-mute);font-weight:300">(maks. 4 baris) · {{ form.detailHint }}</span></span><a href="#" onClick="{{ resetDetail }}" style="font-weight:300">Isi ulang dari benefit</a></span>
+          <textarea rows="4" value="{{ form.detail }}" onChange="{{ fs.detail }}" style="padding:10px;border:1px solid var(--hairline-input);border-radius:6px;font-size:14px;color:var(--ink);resize:vertical;font-weight:300;line-height:1.5"></textarea>
+          <span style="font-size:12px;color:var(--ruby);font-weight:300">{{ err.detail }}</span>
+        </label>
+        <div style="display:flex;flex-direction:column;gap:6px">
+          <div style="display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;align-items:center"><span style="font-size:13px;color:var(--ink-secondary);font-weight:400">Term and conditions <span style="color:var(--ink-mute);font-weight:300">{{ form.termLines }}</span></span>
+            <div style="display:flex;gap:8px;align-items:center"><select value="{{ tncPick }}" onChange="{{ setTnc }}" style="height:32px;padding:0 8px;border:1px solid var(--hairline-input);border-radius:6px;font-size:13px;color:var(--ink);background:#fff"><sc-for list="{{ tncOpts }}" as="o"><option value="{{ o.v }}">{{ o.l }}</option></sc-for></select><x-import component-from-global-scope="StripiDesignSystem_137d9e.Button" variant="ghost" size="sm" on-click="{{ applyTnc }}" hint-size="100px,20px">Pakai template</x-import></div></div>
+          <textarea rows="6" value="{{ form.terms }}" onChange="{{ fs.terms }}" style="padding:10px;border:1px solid var(--hairline-input);border-radius:6px;font-size:14px;color:var(--ink);resize:vertical;font-weight:300;line-height:1.5"></textarea>
+          <span style="font-size:12px;color:var(--ruby)">{{ err.terms }}</span>
+        </div>
+      </section>
+
+      <section style="background:#fff;border:1px solid var(--hairline);border-radius:12px;padding:24px;display:flex;flex-direction:column;gap:16px">
+        <div style="display:flex;gap:10px;align-items:baseline"><span style="font-size:12px;color:var(--primary);font-weight:400">E</span><h2 style="margin:0;font-size:18px;font-weight:300">Pembayaran</h2></div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px;align-items:start">
+          <label style="display:flex;flex-direction:column;gap:6px;font-size:13px;color:var(--ink-secondary);font-weight:400">Cara pembayaran *<select value="{{ form.payMethod }}" onChange="{{ fs.payMethod }}" style="height:36px;padding:0 10px;border:1px solid var(--hairline-input);border-radius:6px;font-size:14px;color:var(--ink);background:#fff"><option value="Transfer">Transfer</option><option value="Cek/BG">Cek/BG</option></select></label>
+          <sc-if value="{{ form.isCek }}" hint-placeholder-val="{{ false }}"><x-import component-from-global-scope="StripiDesignSystem_137d9e.TextInput" label="Cek/BG No *" value="{{ form.chequeNo }}" on-change="{{ fs.chequeNo }}" error="{{ err.chequeNo }}" hint-size="100%,64px"></x-import></sc-if>
+          <x-import component-from-global-scope="StripiDesignSystem_137d9e.TextInput" label="Kwitansi No" value="{{ form.receiptNo }}" on-change="{{ fs.receiptNo }}" hint-size="100%,64px"></x-import>
+          <x-import component-from-global-scope="StripiDesignSystem_137d9e.TextInput" label="Jatuh tempo pembayaran" value="{{ form.due }}" on-change="{{ fs.due }}" placeholder="September 2026" hint-size="100%,64px"></x-import>
+          <x-import component-from-global-scope="StripiDesignSystem_137d9e.TextInput" label="Produk iklan" value="{{ form.product }}" on-change="{{ fs.product }}" hint-size="100%,64px"></x-import>
+          <x-import component-from-global-scope="StripiDesignSystem_137d9e.TextInput" label="Subtotal *" prefix="Rp" value="{{ form.subtotalText }}" on-change="{{ fs.subtotal }}" error="{{ err.subtotal }}" placeholder="20.000.000" hint-size="100%,64px"></x-import>
+        </div>
+        <label style="display:flex;align-items:center;gap:10px;font-size:14px;color:var(--ink);cursor:pointer;font-weight:400"><input type="checkbox" checked="{{ form.taxable }}" onChange="{{ fs.taxable }}" style="accent-color:var(--primary);width:16px;height:16px;margin:0">Kena PPN <span style="font-weight:300;color:var(--ink-mute)">Jika nonaktif, PPN = 0 dan baris DPP &amp; PPN tidak dicetak di PDF</span></label>
+      </section>
+
+      <section style="background:#fff;border:1px solid var(--hairline);border-radius:12px;padding:24px;display:flex;flex-direction:column;gap:16px">
+        <div style="display:flex;gap:10px;align-items:baseline"><span style="font-size:12px;color:var(--primary);font-weight:400">F</span><h2 style="margin:0;font-size:18px;font-weight:300">Penandatangan</h2></div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px">
+          <label style="display:flex;flex-direction:column;gap:6px;font-size:13px;color:var(--ink-secondary);font-weight:400">Dibuat oleh<select value="{{ form.sid }}" onChange="{{ fs.sid }}" style="height:36px;padding:0 10px;border:1px solid var(--hairline-input);border-radius:6px;font-size:14px;color:var(--ink);background:#fff"><sc-for list="{{ salesOpts2 }}" as="o"><option value="{{ o.v }}">{{ o.l }}</option></sc-for></select></label>
+          <label style="display:flex;flex-direction:column;gap:6px;font-size:13px;color:var(--ink-secondary);font-weight:400">Diketahui oleh<select value="{{ form.ack }}" onChange="{{ fs.ack }}" style="height:36px;padding:0 10px;border:1px solid var(--hairline-input);border-radius:6px;font-size:14px;color:var(--ink);background:#fff"><option value="Fitriyanti K">Fitriyanti K · SPV Marketing &amp; Sales</option></select></label>
+          <label style="display:flex;flex-direction:column;gap:6px;font-size:13px;color:var(--ink-secondary);font-weight:400">Disetujui oleh<select value="{{ form.app }}" onChange="{{ fs.app }}" style="height:36px;padding:0 10px;border:1px solid var(--hairline-input);border-radius:6px;font-size:14px;color:var(--ink);background:#fff"><option value="Alvin Alverdian">Alvin Alverdian · Chief Business Officer</option></select></label>
+        </div>
+      </section>
+    </div>
+
+    <aside style="position:{{ form.asideSticky }};top:76px;display:flex;flex-direction:column;gap:12px">
+      <div style="background:#fff;border:1px solid var(--hairline);border-radius:12px;box-shadow:var(--shadow-2);padding:24px;display:flex;flex-direction:column;gap:14px">
+        <span style="font-size:13px;color:var(--ink-mute);font-weight:400">Biaya pemasangan</span>
+        <div style="display:flex;justify-content:space-between;font-size:14px"><span style="color:var(--ink-secondary)">Subtotal</span><span style="font-feature-settings:'tnum';letter-spacing:-0.42px">Rp {{ form.sub }}</span></div>
+        <sc-if value="{{ form.taxable }}" hint-placeholder-val="{{ true }}">
+          <div style="display:flex;flex-direction:column;gap:14px">
+            <div style="display:flex;justify-content:space-between;font-size:14px"><span style="color:var(--ink-secondary)">DPP 11/12</span><span style="font-feature-settings:'tnum';letter-spacing:-0.42px">Rp {{ form.dpp }}</span></div>
+            <div style="display:flex;justify-content:space-between;font-size:14px"><span style="color:var(--ink-secondary)">PPN 12% (+)</span><span style="font-feature-settings:'tnum';letter-spacing:-0.42px">Rp {{ form.ppn }}</span></div>
+          </div>
+        </sc-if>
+        <div style="display:flex;justify-content:space-between;align-items:baseline;border-top:1px solid var(--hairline);padding-top:14px;gap:8px"><span style="font-size:14px;font-weight:400">Total payment</span><span style="font-size:22px;letter-spacing:-0.4px;font-feature-settings:'tnum'">Rp {{ form.total }}</span></div>
+        <span style="font-size:12px;color:var(--ink-mute)">Pratinjau. Nilai final dihitung ulang di server saat simpan.</span>
+      </div>
+      <div style="background:var(--canvas-soft);border:1px solid var(--hairline);border-radius:12px;padding:16px 20px;display:flex;flex-direction:column;gap:4px">
+        <span style="font-size:12px;color:var(--ink-mute)">Nomor MO bila disubmit sekarang</span>
+        <span style="font-size:15px;font-feature-settings:'tnum';font-weight:400">{{ form.nextNo }}</span>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:8px">
+        <x-import component-from-global-scope="StripiDesignSystem_137d9e.Button" size="lg" arrow="{{ true }}" on-click="{{ doSubmit }}" hint-size="100%,44px" style="width:100%">Submit MO</x-import>
+        <x-import component-from-global-scope="StripiDesignSystem_137d9e.Button" variant="secondary" on-click="{{ doDraft }}" hint-size="100%,36px" style="width:100%">Simpan draft</x-import>
+        <x-import component-from-global-scope="StripiDesignSystem_137d9e.Button" variant="ghost" on-click="{{ doPreview }}" hint-size="100%,24px" style="width:100%;padding:8px 0">Pratinjau PDF (draft)</x-import>
+      </div>
+    </aside>
+  </div>
+</div>
+</sc-if>
+<sc-if value="{{ is.moDetail }}" hint-placeholder-val="{{ false }}">
+<div style="display:flex;flex-direction:column;gap:20px">
+  <div style="display:flex;flex-direction:column;gap:8px">
+    <a href="#" onClick="{{ d.back }}" style="font-size:14px">← Daftar MO</a>
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:16px;flex-wrap:wrap">
+      <div style="display:flex;flex-direction:column;gap:6px;min-width:0">
+        <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+          <h1 style="margin:0;font-size:26px;line-height:1.12;letter-spacing:-0.26px;font-weight:300;font-feature-settings:'tnum'">{{ d.number }}</h1>
+          <x-import component-from-global-scope="StripiDesignSystem_137d9e.Tag" tone="{{ d.stT }}" caps="{{ false }}" hint-size="60px,20px">{{ d.stL }}</x-import>
+          <x-import component-from-global-scope="StripiDesignSystem_137d9e.Tag" tone="{{ d.biT }}" caps="{{ false }}" hint-size="80px,20px">{{ d.biL }}</x-import>
+        </div>
+        <span style="font-size:15px;color:var(--ink-secondary)">{{ d.company }}</span>
+        <span style="font-size:13px;color:var(--ink-mute)">{{ d.numberSub }}{{ d.revNote }}</span>
+      </div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <x-import component-from-global-scope="StripiDesignSystem_137d9e.Button" variant="secondary" size="sm" on-click="{{ d.pdf }}" hint-size="110px,32px">Unduh PDF</x-import>
+        <sc-if value="{{ d.canEditDraft }}" hint-placeholder-val="{{ false }}"><div style="display:flex;gap:8px"><x-import component-from-global-scope="StripiDesignSystem_137d9e.Button" variant="secondary" size="sm" on-click="{{ d.del }}" hint-size="100px,32px">Hapus draft</x-import><x-import component-from-global-scope="StripiDesignSystem_137d9e.Button" size="sm" arrow="{{ true }}" on-click="{{ d.edit }}" hint-size="120px,32px">Lanjutkan edit</x-import></div></sc-if>
+        <sc-if value="{{ d.canDup }}" hint-placeholder-val="{{ false }}"><x-import component-from-global-scope="StripiDesignSystem_137d9e.Button" variant="secondary" size="sm" on-click="{{ d.dup }}" hint-size="90px,32px">Duplikat</x-import></sc-if>
+        <sc-if value="{{ d.canRevise }}" hint-placeholder-val="{{ false }}"><x-import component-from-global-scope="StripiDesignSystem_137d9e.Button" variant="secondary" size="sm" on-click="{{ d.rev }}" hint-size="80px,32px">Revisi</x-import></sc-if>
+        <sc-if value="{{ d.canCancel }}" hint-placeholder-val="{{ false }}"><x-import component-from-global-scope="StripiDesignSystem_137d9e.Button" variant="ghost" size="sm" on-click="{{ d.cancel }}" hint-size="80px,32px" style="color:var(--ruby);padding:0 8px">Batalkan MO</x-import></sc-if>
+        <sc-if value="{{ d.canBill }}" hint-placeholder-val="{{ false }}"><x-import component-from-global-scope="StripiDesignSystem_137d9e.Button" size="sm" on-click="{{ d.addBill }}" hint-size="160px,32px">Tandai sudah ditagih</x-import></sc-if>
+      </div>
+    </div>
+  </div>
+  <sc-if value="{{ d.isCancelled }}" hint-placeholder-val="{{ false }}"><div style="background:var(--status-danger-bg);color:#b3093c;border-radius:8px;padding:12px 16px;font-size:14px">MO dibatalkan. Alasan: {{ d.cancelReason }}. Nomor tidak dipakai ulang.</div></sc-if>
+  <div style="display:grid;grid-template-columns:{{ d.stripCols }};gap:1px;background:var(--hairline);border:1px solid var(--hairline);border-radius:12px;overflow:hidden">
+    <div style="background:#fff;padding:16px 20px;display:flex;flex-direction:column;gap:4px"><span style="font-size:12px;color:var(--ink-mute)">Total payment</span><span style="font-size:18px;font-feature-settings:'tnum';letter-spacing:-0.3px">{{ d.total }}</span></div>
+    <div style="background:#fff;padding:16px 20px;display:flex;flex-direction:column;gap:4px"><span style="font-size:12px;color:var(--ink-mute)">Masa periode</span><span style="font-size:15px">{{ d.period }}</span></div>
+    <div style="background:#fff;padding:16px 20px;display:flex;flex-direction:column;gap:4px"><span style="font-size:12px;color:var(--ink-mute)">Sales</span><span style="font-size:15px">{{ d.sales }}</span></div>
+    <div style="background:#fff;padding:16px 20px;display:flex;flex-direction:column;gap:6px"><span style="font-size:12px;color:var(--ink-mute)">Pemenuhan benefit · {{ d.tf }}</span>
+      <div style="display:flex;align-items:center;gap:10px"><div style="flex:1;height:6px;background:var(--canvas-soft);border-radius:9999px;overflow:hidden"><div style="height:100%;width:{{ d.pctW }};background:var(--primary);border-radius:9999px"></div></div><span style="font-size:15px;font-feature-settings:'tnum'">{{ d.pct }}</span></div></div>
+  </div>
+  <div style="display:flex;gap:20px;border-bottom:1px solid var(--hairline);overflow-x:auto;overflow-y:hidden">
+    <sc-for list="{{ d.tabs }}" as="t" hint-placeholder-count="4">
+      <button onClick="{{ t.go }}" style="border:0;background:transparent;cursor:pointer;padding:10px 0;font-size:14px;font-weight:400;white-space:nowrap;margin-bottom:-1px;color:{{ t.color }};border-bottom:{{ t.border }}">{{ t.l }}</button>
+    </sc-for>
+  </div>
+
+  <sc-if value="{{ d.isPub }}" hint-placeholder-val="{{ true }}">
+  <div style="display:flex;flex-direction:column;gap:16px">
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:12px">
+      <sc-for list="{{ d.ben }}" as="b" hint-placeholder-count="2">
+        <div style="background:#fff;border:1px solid var(--hairline);border-radius:12px;padding:16px 20px;display:flex;flex-direction:column;gap:10px">
+          <div style="display:flex;justify-content:space-between;gap:8px;align-items:baseline"><span style="font-size:14px;font-weight:400">{{ b.name }}</span><span style="font-size:18px;font-feature-settings:'tnum'">{{ b.text }}</span></div>
+          <div style="height:6px;background:var(--canvas-soft);border-radius:9999px;overflow:hidden"><div style="height:100%;width:{{ b.w }};background:{{ b.bar }};border-radius:9999px"></div></div>
+          <div style="display:flex;justify-content:space-between;font-size:12px;color:var(--ink-mute);gap:8px"><span>{{ b.notes }}</span><span>{{ b.bonus }}</span></div>
+        </div>
+      </sc-for>
+    </div>
+    <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap">
+      <h2 style="margin:0;font-size:18px;font-weight:300">Realisasi publikasi <span style="font-size:14px;color:var(--ink-mute)">{{ d.pubCount }}</span></h2>
+      <sc-if value="{{ d.canPub }}" hint-placeholder-val="{{ false }}">
+        <div style="display:flex;gap:8px;flex-wrap:wrap"><x-import component-from-global-scope="StripiDesignSystem_137d9e.Button" variant="secondary" size="sm" on-click="{{ d.addBulk }}" hint-size="120px,32px">Input massal</x-import><x-import component-from-global-scope="StripiDesignSystem_137d9e.Button" size="sm" on-click="{{ d.addPub }}" hint-size="140px,32px">Tambah realisasi</x-import></div>
+      </sc-if>
+    </div>
+    <sc-if value="{{ d.pubLocked }}" hint-placeholder-val="{{ false }}"><div style="font-size:13px;color:var(--ink-mute);background:var(--canvas-soft);border-radius:8px;padding:10px 14px">MO sudah ditagih, realisasi tidak dapat diubah lagi.</div></sc-if>
+    <sc-if value="{{ d.pubNoRole }}" hint-placeholder-val="{{ false }}"><div style="font-size:13px;color:var(--ink-mute);background:var(--canvas-soft);border-radius:8px;padding:10px 14px">Finance melihat realisasi untuk verifikasi. Input dilakukan oleh Admin Sales.</div></sc-if>
+    <sc-if value="{{ d.noPubs }}" hint-placeholder-val="{{ false }}"><div style="padding:32px;text-align:center;color:var(--ink-mute);font-size:14px;border:1px dashed var(--hairline-input);border-radius:12px">Belum ada realisasi publikasi.</div></sc-if>
+    <sc-if value="{{ d.hasPubs }}" hint-placeholder-val="{{ true }}">
+    <div style="display:flex;flex-direction:column;border:1px solid var(--hairline);border-radius:12px;overflow:hidden;background:#fff">
+      <sc-for list="{{ d.pubs }}" as="p" hint-placeholder-count="4">
+        <div style="display:flex;gap:12px 16px;align-items:center;padding:12px 16px;border-bottom:1px solid var(--hairline);flex-wrap:wrap" style-hover="background:var(--canvas-soft)">
+          <span style="font-size:13px;color:var(--ink-mute);font-feature-settings:'tnum';width:130px;flex:none">{{ p.date }}</span>
+          <span style="font-size:13px;color:var(--ink-secondary);width:130px;flex:none">{{ p.name }}</span>
+          <div style="flex:1;min-width:200px;display:flex;flex-direction:column;gap:2px">
+            <span style="font-size:14px">{{ p.title }}</span>
+            <a href="{{ p.url }}" target="_blank" rel="noopener" style="font-size:13px;word-break:break-all">{{ p.url }}</a>
+          </div>
+          <div style="display:flex;gap:6px;align-items:center">
+            <sc-if value="{{ p.bonus }}" hint-placeholder-val="{{ false }}"><x-import component-from-global-scope="StripiDesignSystem_137d9e.Tag" tone="soft" hint-size="50px,18px">Bonus</x-import></sc-if>
+            <sc-if value="{{ p.warn }}" hint-placeholder-val="{{ false }}"><x-import component-from-global-scope="StripiDesignSystem_137d9e.Tag" tone="warning" caps="{{ false }}" hint-size="90px,20px">Di luar periode</x-import></sc-if>
+            <sc-if value="{{ d.canPub }}" hint-placeholder-val="{{ false }}"><button onClick="{{ p.del }}" style="border:0;background:transparent;color:var(--ink-mute);cursor:pointer;font-size:13px;padding:4px" style-hover="color:var(--ruby)">Hapus</button></sc-if>
+          </div>
+        </div>
+      </sc-for>
+    </div>
+    </sc-if>
+  </div>
+  </sc-if>
+
+  <sc-if value="{{ d.isSum }}" hint-placeholder-val="{{ false }}">
+  <div style="display:grid;grid-template-columns:{{ d.sumCols }};gap:16px;align-items:start">
+    <sc-for list="{{ d.groups }}" as="g" hint-placeholder-count="6">
+      <div style="background:#fff;border:1px solid var(--hairline);border-radius:12px;padding:20px 24px;display:flex;flex-direction:column">
+        <h3 style="margin:0 0 8px;font-size:16px;font-weight:400">{{ g.t }}</h3>
+        <sc-for list="{{ g.rows }}" as="r" hint-placeholder-count="3">
+          <div style="display:grid;grid-template-columns:150px minmax(0,1fr);gap:12px;padding:9px 0;border-top:1px solid var(--hairline);font-size:14px"><span style="color:var(--ink-mute)">{{ r.k }}</span><span style="white-space:pre-line;font-feature-settings:'tnum'">{{ r.v }}</span></div>
+        </sc-for>
+      </div>
+    </sc-for>
+  </div>
+  </sc-if>
+
+  <sc-if value="{{ d.isBill }}" hint-placeholder-val="{{ false }}">
+  <div style="display:flex;flex-direction:column;gap:16px">
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px">
+      <div style="background:#fff;border:1px solid var(--hairline);border-radius:12px;padding:16px 20px;display:flex;flex-direction:column;gap:4px"><span style="font-size:12px;color:var(--ink-mute)">Total MO</span><span style="font-size:18px;font-feature-settings:'tnum'">{{ d.billTotal }}</span></div>
+      <div style="background:#fff;border:1px solid var(--hairline);border-radius:12px;padding:16px 20px;display:flex;flex-direction:column;gap:4px"><span style="font-size:12px;color:var(--ink-mute)">Sudah ditagih</span><span style="font-size:18px;font-feature-settings:'tnum'">{{ d.billed }}</span></div>
+      <div style="background:#fff;border:1px solid var(--hairline);border-radius:12px;padding:16px 20px;display:flex;flex-direction:column;gap:4px"><span style="font-size:12px;color:var(--ink-mute)">Diterima</span><span style="font-size:18px;font-feature-settings:'tnum'">{{ d.paid }}</span></div>
+      <div style="background:#fff;border:1px solid var(--hairline);border-radius:12px;padding:16px 20px;display:flex;flex-direction:column;gap:4px"><span style="font-size:12px;color:var(--ink-mute)">Sisa</span><span style="font-size:18px;font-feature-settings:'tnum'">{{ d.remain }}</span></div>
+    </div>
+    <div style="font-size:14px;color:var(--ink-secondary);background:var(--canvas-soft);border-radius:8px;padding:12px 16px">{{ d.billNote }}</div>
+    <sc-if value="{{ d.noBills }}" hint-placeholder-val="{{ false }}"><div style="padding:32px;text-align:center;color:var(--ink-mute);font-size:14px;border:1px dashed var(--hairline-input);border-radius:12px">Belum ada record tagihan.</div></sc-if>
+    <sc-if value="{{ d.hasBills }}" hint-placeholder-val="{{ false }}">
+    <div style="border:1px solid var(--hairline);border-radius:12px;overflow-x:auto;background:#fff">
+      <table style="width:100%;border-collapse:collapse;min-width:760px">
+        <thead><tr style="background:var(--canvas-soft)">
+          <th style="text-align:left;font-size:12px;font-weight:400;color:var(--ink-mute);padding:10px 16px;border-bottom:1px solid var(--hairline)">No. invoice</th>
+          <th style="text-align:left;font-size:12px;font-weight:400;color:var(--ink-mute);padding:10px 8px;border-bottom:1px solid var(--hairline)">Tgl invoice</th>
+          <th style="text-align:right;font-size:12px;font-weight:400;color:var(--ink-mute);padding:10px 8px;border-bottom:1px solid var(--hairline)">Nominal ditagih</th>
+          <th style="text-align:left;font-size:12px;font-weight:400;color:var(--ink-mute);padding:10px 8px;border-bottom:1px solid var(--hairline)">Tgl bayar</th>
+          <th style="text-align:right;font-size:12px;font-weight:400;color:var(--ink-mute);padding:10px 8px;border-bottom:1px solid var(--hairline)">Diterima</th>
+          <th style="text-align:left;font-size:12px;font-weight:400;color:var(--ink-mute);padding:10px 8px;border-bottom:1px solid var(--hairline)">Kwitansi</th>
+          <th style="padding:10px 16px;border-bottom:1px solid var(--hairline)"></th>
+        </tr></thead>
+        <tbody>
+          <sc-for list="{{ d.bills }}" as="b" hint-placeholder-count="1">
+            <tr>
+              <td style="padding:12px 16px;border-bottom:1px solid var(--hairline);font-size:14px;font-feature-settings:'tnum'"><div style="display:flex;flex-direction:column;gap:2px"><span>{{ b.inv }}</span><sc-if value="{{ b.hasOverride }}" hint-placeholder-val="{{ false }}"><span style="font-size:12px;color:var(--status-warning-text)">Ditagih sebelum 100%: {{ b.override }}</span></sc-if></div></td>
+              <td style="padding:12px 8px;border-bottom:1px solid var(--hairline);font-size:14px;color:var(--ink-secondary)">{{ b.invDate }}</td>
+              <td style="padding:12px 8px;border-bottom:1px solid var(--hairline);font-size:14px;text-align:right;font-feature-settings:'tnum';white-space:nowrap">{{ b.amount }}</td>
+              <td style="padding:12px 8px;border-bottom:1px solid var(--hairline);font-size:14px;color:var(--ink-secondary)">{{ b.paidDate }}</td>
+              <td style="padding:12px 8px;border-bottom:1px solid var(--hairline);font-size:14px;text-align:right;font-feature-settings:'tnum';white-space:nowrap">{{ b.paidAmount }}</td>
+              <td style="padding:12px 8px;border-bottom:1px solid var(--hairline);font-size:14px;color:var(--ink-secondary)">{{ b.receipt }}</td>
+              <td style="padding:12px 16px;border-bottom:1px solid var(--hairline);text-align:right"><sc-if value="{{ b.canPay }}" hint-placeholder-val="{{ false }}"><x-import component-from-global-scope="StripiDesignSystem_137d9e.Button" variant="secondary" size="sm" on-click="{{ b.pay }}" hint-size="140px,32px">Catat pembayaran</x-import></sc-if></td>
+            </tr>
+          </sc-for>
+        </tbody>
+      </table>
+    </div>
+    </sc-if>
+  </div>
+  </sc-if>
+
+  <sc-if value="{{ d.isAtt }}" hint-placeholder-val="{{ false }}">
+  <div style="display:grid;grid-template-columns:{{ d.sumCols }};gap:16px;align-items:start">
+    <div style="background:#fff;border:1px solid var(--hairline);border-radius:12px;padding:20px 24px;display:flex;flex-direction:column;gap:12px">
+      <h3 style="margin:0;font-size:16px;font-weight:400">Dokumen MO bertanda tangan klien</h3>
+      <sc-if value="{{ d.noAtts }}" hint-placeholder-val="{{ false }}"><span style="font-size:14px;color:var(--ink-mute)">Belum ada dokumen.</span></sc-if>
+      <sc-for list="{{ d.atts }}" as="a" hint-placeholder-count="1">
+        <div style="display:flex;justify-content:space-between;gap:12px;padding:10px 0;border-top:1px solid var(--hairline);font-size:14px"><span style="word-break:break-all">{{ a.name }}</span><span style="color:var(--ink-mute);white-space:nowrap">{{ a.size }} · {{ a.date }}</span></div>
+      </sc-for>
+      <sc-if value="{{ d.canUpload }}" hint-placeholder-val="{{ false }}">
+        <label style="display:flex;flex-direction:column;gap:4px;align-items:center;justify-content:center;padding:20px;border:1px dashed var(--hairline-input);border-radius:8px;cursor:pointer;font-size:14px;color:var(--primary);text-align:center">Pilih file untuk diupload<span style="font-size:12px;color:var(--ink-mute)">PDF, JPG, PNG · maks. 10 MB · bisa lebih dari satu</span><input type="file" multiple="{{ true }}" accept=".pdf,.jpg,.jpeg,.png" onChange="{{ d.onFile }}" style="display:none"></label>
+      </sc-if>
+    </div>
+    <div style="background:#fff;border:1px solid var(--hairline);border-radius:12px;padding:20px 24px;display:flex;flex-direction:column">
+      <h3 style="margin:0 0 8px;font-size:16px;font-weight:400">Audit log</h3>
+      <sc-for list="{{ d.log }}" as="l" hint-placeholder-count="2">
+        <div style="display:flex;flex-direction:column;gap:2px;padding:10px 0;border-top:1px solid var(--hairline)"><span style="font-size:14px">{{ l.what }}</span><span style="font-size:12px;color:var(--ink-mute)">{{ l.who }} · {{ l.t }}</span></div>
+      </sc-for>
+    </div>
+  </div>
+  </sc-if>
+</div>
+</sc-if>
+<sc-if value="{{ is.clients }}" hint-placeholder-val="{{ false }}">
+<div style="display:flex;flex-direction:column;gap:20px">
+  <div style="display:flex;justify-content:space-between;align-items:flex-end;gap:16px;flex-wrap:wrap">
+    <h1 style="margin:0;font-size:26px;line-height:1.12;letter-spacing:-0.26px;font-weight:300">Klien</h1>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+      <input placeholder="Cari perusahaan atau PIC" value="{{ cl.q }}" onChange="{{ cl.setQ }}" style="height:34px;padding:0 12px;border:1px solid var(--hairline-input);border-radius:6px;font-size:14px;color:var(--ink);background:#fff;width:260px;max-width:100%">
+      <sc-if value="{{ cl.canCrud }}" hint-placeholder-val="{{ true }}"><x-import component-from-global-scope="StripiDesignSystem_137d9e.Button" size="sm" on-click="{{ cl.add }}" hint-size="120px,32px">Tambah klien</x-import></sc-if>
+    </div>
+  </div>
+  <div style="border:1px solid var(--hairline);border-radius:12px;overflow-x:auto;background:#fff">
+    <table style="width:100%;border-collapse:collapse;min-width:760px">
+      <thead><tr style="background:var(--canvas-soft)">
+        <th style="text-align:left;font-size:12px;font-weight:400;color:var(--ink-mute);padding:10px 16px;border-bottom:1px solid var(--hairline)">Perusahaan / Biro Iklan</th>
+        <th style="text-align:left;font-size:12px;font-weight:400;color:var(--ink-mute);padding:10px 8px;border-bottom:1px solid var(--hairline)">PIC</th>
+        <th style="text-align:left;font-size:12px;font-weight:400;color:var(--ink-mute);padding:10px 8px;border-bottom:1px solid var(--hairline)">Email</th>
+        <th style="text-align:left;font-size:12px;font-weight:400;color:var(--ink-mute);padding:10px 8px;border-bottom:1px solid var(--hairline)">No. Telp</th>
+        <th style="text-align:left;font-size:12px;font-weight:400;color:var(--ink-mute);padding:10px 8px;border-bottom:1px solid var(--hairline)">Kota</th>
+        <th style="text-align:right;font-size:12px;font-weight:400;color:var(--ink-mute);padding:10px 16px;border-bottom:1px solid var(--hairline)">Jumlah MO</th>
+      </tr></thead>
+      <tbody>
+        <sc-for list="{{ cl.rows }}" as="c" hint-placeholder-count="8">
+          <tr onClick="{{ c.open }}" style="cursor:pointer" style-hover="background:var(--canvas-soft)">
+            <td style="padding:12px 16px;border-bottom:1px solid var(--hairline);font-size:14px;font-weight:400">{{ c.company }}</td>
+            <td style="padding:12px 8px;border-bottom:1px solid var(--hairline);font-size:14px;color:var(--ink-secondary)">{{ c.pic }}</td>
+            <td style="padding:12px 8px;border-bottom:1px solid var(--hairline);font-size:14px;color:var(--ink-secondary)">{{ c.email }}</td>
+            <td style="padding:12px 8px;border-bottom:1px solid var(--hairline);font-size:14px;color:var(--ink-secondary);font-feature-settings:'tnum';white-space:nowrap">{{ c.phone }}</td>
+            <td style="padding:12px 8px;border-bottom:1px solid var(--hairline);font-size:14px;color:var(--ink-secondary)">{{ c.city }}</td>
+            <td style="padding:12px 16px;border-bottom:1px solid var(--hairline);font-size:14px;text-align:right;font-feature-settings:'tnum'">{{ c.n }}</td>
+          </tr>
+        </sc-for>
+      </tbody>
+    </table>
+    <sc-if value="{{ cl.empty }}" hint-placeholder-val="{{ false }}"><div style="padding:32px;text-align:center;color:var(--ink-mute);font-size:14px">Klien tidak ditemukan.</div></sc-if>
+  </div>
+</div>
+</sc-if>
+
+<sc-if value="{{ is.clientDetail }}" hint-placeholder-val="{{ false }}">
+<div style="display:flex;flex-direction:column;gap:20px">
+  <div style="display:flex;flex-direction:column;gap:8px">
+    <a href="#" onClick="{{ cd.back }}" style="font-size:14px">← Klien</a>
+    <div style="display:flex;justify-content:space-between;align-items:flex-end;gap:16px;flex-wrap:wrap">
+      <h1 style="margin:0;font-size:26px;line-height:1.12;letter-spacing:-0.26px;font-weight:300">{{ cd.company }}</h1>
+      <sc-if value="{{ isAS }}" hint-placeholder-val="{{ true }}"><div style="display:flex;gap:8px"><x-import component-from-global-scope="StripiDesignSystem_137d9e.Button" variant="secondary" size="sm" on-click="{{ cd.edit }}" hint-size="100px,32px">Edit klien</x-import><x-import component-from-global-scope="StripiDesignSystem_137d9e.Button" size="sm" arrow="{{ true }}" on-click="{{ cd.newMo }}" hint-size="160px,32px">Buat MO untuk klien</x-import></div></sc-if>
+    </div>
+  </div>
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:16px;align-items:start">
+    <div style="background:#fff;border:1px solid var(--hairline);border-radius:12px;padding:20px 24px;display:flex;flex-direction:column">
+      <h3 style="margin:0 0 8px;font-size:16px;font-weight:400">Data klien</h3>
+      <sc-for list="{{ cd.rows }}" as="r" hint-placeholder-count="6">
+        <div style="display:grid;grid-template-columns:110px minmax(0,1fr);gap:12px;padding:9px 0;border-top:1px solid var(--hairline);font-size:14px"><span style="color:var(--ink-mute)">{{ r.k }}</span><span style="word-break:break-word">{{ r.v }}</span></div>
+      </sc-for>
+    </div>
+    <div style="background:#fff;border:1px solid var(--hairline);border-radius:12px;padding:20px 24px;display:flex;flex-direction:column;gap:8px;grid-column:span 2;min-width:0">
+      <h3 style="margin:0;font-size:16px;font-weight:400">Histori MO <span style="color:var(--ink-mute);font-weight:300;font-size:14px">{{ cd.count }}</span></h3>
+      <sc-if value="{{ cd.noMos }}" hint-placeholder-val="{{ false }}"><span style="font-size:14px;color:var(--ink-mute)">Belum ada MO untuk klien ini.</span></sc-if>
+      <sc-for list="{{ cd.mos }}" as="r" hint-placeholder-count="2">
+        <button onClick="{{ r.open }}" style="display:flex;justify-content:space-between;gap:12px;align-items:center;flex-wrap:wrap;padding:12px 8px;border:0;border-top:1px solid var(--hairline);background:transparent;cursor:pointer;text-align:left;width:100%" style-hover="background:var(--canvas-soft)">
+          <div style="display:flex;flex-direction:column;gap:2px"><span style="font-size:14px;font-weight:400;font-feature-settings:'tnum';color:var(--ink)">{{ r.number }}</span><span style="font-size:13px;color:var(--ink-mute)">{{ r.date }} · {{ r.period }}</span></div>
+          <div style="display:flex;gap:8px;align-items:center"><span style="font-size:14px;font-feature-settings:'tnum';color:var(--ink)">Rp {{ r.total }}</span><x-import component-from-global-scope="StripiDesignSystem_137d9e.Tag" tone="{{ r.stT }}" caps="{{ false }}" hint-size="60px,20px">{{ r.stL }}</x-import><x-import component-from-global-scope="StripiDesignSystem_137d9e.Tag" tone="{{ r.biT }}" caps="{{ false }}" hint-size="80px,20px">{{ r.biL }}</x-import></div>
+        </button>
+      </sc-for>
+    </div>
+  </div>
+</div>
+</sc-if>
+
+<sc-if value="{{ is.master }}" hint-placeholder-val="{{ false }}">
+<div style="display:flex;flex-direction:column;gap:20px">
+  <div style="display:flex;flex-direction:column;gap:4px">
+    <span style="font-size:14px;color:var(--primary);font-weight:400">Pratinjau Super Admin</span>
+    <h1 style="margin:0;font-size:26px;line-height:1.12;letter-spacing:-0.26px;font-weight:300">Master data</h1>
+    <span style="font-size:14px;color:var(--ink-mute)">Pada produk, halaman ini hanya bisa diakses Super Admin. Ditampilkan di sini untuk keperluan review desain.</span>
+  </div>
+  <div style="display:flex;gap:20px;border-bottom:1px solid var(--hairline);overflow-x:auto;overflow-y:hidden">
+    <sc-for list="{{ ms.tabs }}" as="t" hint-placeholder-count="5"><button onClick="{{ t.go }}" style="border:0;background:transparent;cursor:pointer;padding:10px 0;font-size:14px;font-weight:400;white-space:nowrap;margin-bottom:-1px;color:{{ t.color }};border-bottom:{{ t.border }}">{{ t.l }}</button></sc-for>
+  </div>
+  <sc-if value="{{ ms.isBenefit }}" hint-placeholder-val="{{ true }}">
+  <div style="display:flex;flex-direction:column;gap:12px;max-width:760px">
+    <div style="border:1px solid var(--hairline);border-radius:12px;overflow:hidden;background:#fff">
+      <sc-for list="{{ ms.bts }}" as="b" hint-placeholder-count="7">
+        <div style="display:grid;grid-template-columns:40px minmax(0,1fr) minmax(0,1fr) auto;gap:12px;align-items:center;padding:12px 16px;border-bottom:1px solid var(--hairline);font-size:14px">
+          <span style="color:var(--ink-mute);font-feature-settings:'tnum'">{{ b.order }}</span><span>{{ b.name }}</span><span style="font-family:var(--font-mono);font-size:12px;color:var(--ink-secondary)">{{ b.code }}</span>
+          <x-import component-from-global-scope="StripiDesignSystem_137d9e.Tag" tone="success" caps="{{ false }}" hint-size="50px,20px">Aktif</x-import>
+        </div>
+      </sc-for>
+    </div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap">
+      <input placeholder="Nama jenis benefit baru, mis. YouTube Shorts" value="{{ ms.newBt }}" onChange="{{ ms.setNewBt }}" style="height:36px;padding:0 12px;border:1px solid var(--hairline-input);border-radius:6px;font-size:14px;color:var(--ink);flex:1;min-width:220px">
+      <x-import component-from-global-scope="StripiDesignSystem_137d9e.Button" size="sm" on-click="{{ ms.addBt }}" hint-size="130px,36px">Tambah benefit</x-import>
+    </div>
+    <span style="font-size:13px;color:var(--ink-mute)">Jenis benefit baru otomatis menjadi kolom di Daftar MO Finance.</span>
+  </div>
+  </sc-if>
+  <sc-if value="{{ ms.isSign }}" hint-placeholder-val="{{ false }}">
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:12px">
+    <sc-for list="{{ ms.signers }}" as="g" hint-placeholder-count="3">
+      <div style="background:#fff;border:1px solid var(--hairline);border-radius:12px;padding:20px;display:flex;flex-direction:column;gap:12px">
+        <span style="font-size:12px;color:var(--ink-mute)">{{ g.role }}</span>
+        <div style="height:72px;border:1px dashed var(--hairline-input);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:12px;color:var(--ink-mute)">Tanda tangan (PNG transparan)</div>
+        <div style="display:flex;flex-direction:column"><span style="font-size:15px;font-weight:400">{{ g.name }}</span><span style="font-size:13px;color:var(--ink-mute)">{{ g.title }}</span></div>
+        <sc-if value="{{ g.stamp }}" hint-placeholder-val="{{ false }}"><span style="font-size:12px;color:var(--ink-secondary)">+ Stempel perusahaan</span></sc-if>
+      </div>
+    </sc-for>
+  </div>
+  </sc-if>
+  <sc-if value="{{ ms.isSales }}" hint-placeholder-val="{{ false }}">
+  <div style="border:1px solid var(--hairline);border-radius:12px;overflow:hidden;background:#fff;max-width:760px">
+    <sc-for list="{{ ms.sales }}" as="x" hint-placeholder-count="3">
+      <div style="display:grid;grid-template-columns:minmax(0,1fr) 70px minmax(0,1fr) 70px;gap:12px;align-items:center;padding:12px 16px;border-bottom:1px solid var(--hairline);font-size:14px">
+        <span style="font-weight:400">{{ x.name }}</span><span style="font-family:var(--font-mono);font-size:12px">{{ x.code }}</span><span style="color:var(--ink-secondary)">{{ x.email }}</span><span style="text-align:right;color:var(--ink-mute);font-feature-settings:'tnum'">{{ x.n }} MO</span>
+      </div>
+    </sc-for>
+  </div>
+  </sc-if>
+  <sc-if value="{{ ms.isTax }}" hint-placeholder-val="{{ false }}">
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:16px;max-width:900px">
+    <div style="background:#fff;border:1px solid var(--hairline);border-radius:12px;padding:20px 24px;display:flex;flex-direction:column">
+      <h3 style="margin:0 0 8px;font-size:16px;font-weight:400">Pajak</h3>
+      <div style="display:flex;justify-content:space-between;padding:9px 0;border-top:1px solid var(--hairline);font-size:14px"><span style="color:var(--ink-mute)">Tarif PPN</span><span>12%</span></div>
+      <div style="display:flex;justify-content:space-between;padding:9px 0;border-top:1px solid var(--hairline);font-size:14px"><span style="color:var(--ink-mute)">Faktor DPP</span><span>11/12</span></div>
+      <div style="display:flex;justify-content:space-between;padding:9px 0;border-top:1px solid var(--hairline);font-size:14px"><span style="color:var(--ink-mute)">Pembulatan</span><span>ROUND_HALF_UP</span></div>
+      <div style="margin-top:8px;padding:12px;background:var(--canvas-soft);border-radius:8px;font-family:var(--font-mono);font-size:12px;line-height:1.7;color:var(--ink-secondary)">DPP = ROUND(Subtotal × 11/12)<br>PPN = ROUND(DPP × 12%)<br>Total = Subtotal + PPN<br>20.000.000 → 18.333.333 / 2.200.000 / 22.200.000</div>
+      <span style="font-size:12px;color:var(--ink-mute);margin-top:8px">Perubahan tarif hanya berlaku untuk MO baru.</span>
+    </div>
+    <div style="background:#fff;border:1px solid var(--hairline);border-radius:12px;padding:20px 24px;display:flex;flex-direction:column">
+      <h3 style="margin:0 0 8px;font-size:16px;font-weight:400">Penomoran MO</h3>
+      <div style="display:flex;flex-direction:column;gap:4px;padding:9px 0;border-top:1px solid var(--hairline);font-size:14px"><span style="color:var(--ink-mute)">Template</span><span style="font-family:var(--font-mono);font-size:12px">{SEQ:3}/MO-{SALES_CODE}/INC/{MONTH_ROMAN}/{YEAR}</span></div>
+      <div style="display:flex;justify-content:space-between;padding:9px 0;border-top:1px solid var(--hairline);font-size:14px"><span style="color:var(--ink-mute)">Reset urutan</span><span>Setiap 1 Januari</span></div>
+      <div style="display:flex;justify-content:space-between;gap:12px;padding:9px 0;border-top:1px solid var(--hairline);font-size:14px"><span style="color:var(--ink-mute)">Nomor berikutnya</span><span style="font-feature-settings:'tnum'">{{ ms.nextNo }}</span></div>
+    </div>
+  </div>
+  </sc-if>
+  <sc-if value="{{ ms.isCompany }}" hint-placeholder-val="{{ false }}">
+  <div style="background:#fff;border:1px solid var(--hairline);border-radius:12px;padding:20px 24px;display:flex;flex-direction:column;max-width:560px">
+    <div style="display:grid;grid-template-columns:150px minmax(0,1fr);gap:12px;padding:9px 0;font-size:14px"><span style="color:var(--ink-mute)">Nama</span><span>PT Indonesia News Center</span></div>
+    <div style="display:grid;grid-template-columns:150px minmax(0,1fr);gap:12px;padding:9px 0;border-top:1px solid var(--hairline);font-size:14px"><span style="color:var(--ink-mute)">Merek</span><span>Inilah.com</span></div>
+    <div style="display:grid;grid-template-columns:150px minmax(0,1fr);gap:12px;padding:9px 0;border-top:1px solid var(--hairline);font-size:14px"><span style="color:var(--ink-mute)">Bank</span><span>Bank Mandiri</span></div>
+    <div style="display:grid;grid-template-columns:150px minmax(0,1fr);gap:12px;padding:9px 0;border-top:1px solid var(--hairline);font-size:14px"><span style="color:var(--ink-mute)">No. rekening</span><span style="font-feature-settings:'tnum'">173.00.2228855.0</span></div>
+    <div style="display:grid;grid-template-columns:150px minmax(0,1fr);gap:12px;padding:9px 0;border-top:1px solid var(--hairline);font-size:14px"><span style="color:var(--ink-mute)">Atas nama</span><span>PT. Indonesia News Center</span></div>
+  </div>
+  </sc-if>
+</div>
+</sc-if>
+<sc-if value="{{ is.pdf }}" hint-placeholder-val="{{ false }}">
+<div style="display:flex;flex-direction:column;gap:16px">
+  <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap">
+    <div style="display:flex;flex-direction:column;gap:4px;min-width:0"><a href="#" onClick="{{ p.back }}" style="font-size:14px">← Detail MO</a><span style="font-size:13px;color:var(--ink-mute);word-break:break-all">{{ p.fn }}</span></div>
+    <x-import component-from-global-scope="StripiDesignSystem_137d9e.Button" size="sm" on-click="{{ p.download }}" hint-size="110px,32px">Unduh PDF</x-import>
+  </div>
+  <div style="background:var(--canvas-soft);border:1px solid var(--hairline);border-radius:16px;padding:24px;overflow-x:auto">
+  <div style="position:relative;width:794px;min-height:1123px;margin:0 auto;background:#fff;box-shadow:var(--shadow-2);font-size:11px;line-height:1.35;color:var(--ink);overflow:hidden;display:flex;flex-direction:column">
+    <div style="background:var(--brand-dark-900);color:#fff;padding:22px 32px;display:flex;justify-content:space-between;align-items:center;gap:24px">
+      <div style="display:flex;flex-direction:column;gap:4px">
+        <span style="font-size:22px;font-weight:500;letter-spacing:-0.4px">inilah.com</span>
+        <span style="font-size:11px;font-weight:400">PT Indonesia News Center</span>
+        <span style="font-size:10px;color:rgba(255,255,255,0.7)">Jakarta, Indonesia</span>
+      </div>
+      <span style="font-size:34px;font-weight:300;letter-spacing:-0.8px">Media Order</span>
+    </div>
+    <div style="height:4px;background:var(--primary)"></div>
+    <div style="padding:16px 32px 20px;display:flex;flex-direction:column;gap:10px;flex:1">
+      <div style="display:grid;grid-template-columns:1fr 1fr;border:1px solid var(--hairline);border-radius:6px">
+        <div style="padding:8px 12px;display:flex;gap:8px"><span style="color:var(--ink-mute);width:110px">No. Media Order</span><span style="font-weight:500;font-feature-settings:'tnum'">{{ p.number }}</span></div>
+        <div style="padding:8px 12px;display:flex;gap:8px;border-left:1px solid var(--hairline)"><span style="color:var(--ink-mute);width:60px">Tanggal</span><span>{{ p.date }}</span></div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;border:1px solid var(--hairline);border-radius:6px">
+        <div style="padding:8px 12px;display:flex;flex-direction:column;gap:4px">
+          <div style="display:flex;gap:8px"><span style="color:var(--ink-mute);width:120px;flex:none">Nama</span><span>{{ p.pic }}</span></div>
+          <div style="display:flex;gap:8px"><span style="color:var(--ink-mute);width:120px;flex:none">Perusahaan/Biro Iklan</span><span style="font-weight:500">{{ p.company }}</span></div>
+          <div style="display:flex;gap:8px"><span style="color:var(--ink-mute);width:120px;flex:none">Nomor NIK</span><span>{{ p.nik }}</span></div>
+          <div style="display:flex;gap:8px"><span style="color:var(--ink-mute);width:120px;flex:none">Alamat</span><span>{{ p.address }}</span></div>
+        </div>
+        <div style="padding:8px 12px;display:flex;flex-direction:column;gap:4px;border-left:1px solid var(--hairline)">
+          <div style="display:flex;gap:8px"><span style="color:var(--ink-mute);width:70px;flex:none">Kota</span><span>{{ p.city }}</span></div>
+          <div style="display:flex;gap:8px"><span style="color:var(--ink-mute);width:70px;flex:none">Kode Pos</span><span>{{ p.postal }}</span></div>
+          <div style="display:flex;gap:8px"><span style="color:var(--ink-mute);width:70px;flex:none">Email</span><span>{{ p.email }}</span></div>
+          <div style="display:flex;gap:8px"><span style="color:var(--ink-mute);width:70px;flex:none">No. Telp</span><span>{{ p.phone }}</span></div>
+        </div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;border:1px solid var(--hairline);border-radius:6px">
+        <div style="padding:8px 12px;display:flex;gap:8px"><span style="color:var(--ink-mute);width:90px">Masa Periode</span><span>{{ p.period }}</span></div>
+        <div style="padding:8px 12px;display:flex;gap:8px;border-left:1px solid var(--hairline)"><span style="color:var(--ink-mute);width:70px">Keterangan</span><span>{{ p.desc }}</span></div>
+      </div>
+      <div style="border:1px solid var(--hairline);border-radius:6px;padding:8px 12px;display:flex;flex-direction:column;gap:6px">
+        <div style="display:flex;gap:8px"><span style="color:var(--ink-mute);width:110px;flex:none">Tanggal Tayang</span><span>{{ p.airing }}</span></div>
+        <div style="display:flex;gap:8px"><span style="color:var(--ink-mute);width:110px;flex:none">Jenis Iklan</span><div style="display:flex;flex-wrap:wrap;gap:4px 14px"><sc-for list="{{ p.ad }}" as="o"><span>{{ o.mark }} {{ o.l }}</span></sc-for></div></div>
+        <div style="display:flex;gap:8px"><span style="color:var(--ink-mute);width:110px;flex:none">Bentuk Kerjasama</span><div style="display:flex;flex-wrap:wrap;gap:4px 14px"><sc-for list="{{ p.coop }}" as="o"><span>{{ o.mark }} {{ o.l }}</span></sc-for></div></div>
+        <div style="display:flex;gap:8px"><span style="color:var(--ink-mute);width:110px;flex:none">Penempatan Iklan</span><div style="display:flex;flex-wrap:wrap;gap:4px 14px"><sc-for list="{{ p.place }}" as="o"><span>{{ o.mark }} {{ o.l }}</span></sc-for></div></div>
+        <div style="display:flex;gap:8px"><span style="color:var(--ink-mute);width:110px;flex:none">Lokasi Iklan</span>
+          <div style="display:flex;flex-direction:column;gap:4px;flex:1"><span>{{ p.spotWeb }} Spot Ads Website</span><div style="display:grid;grid-template-columns:repeat(3,1fr);gap:3px 12px;padding-left:14px"><sc-for list="{{ p.spot }}" as="o"><span>{{ o.mark }} {{ o.l }}</span></sc-for></div><span>{{ p.spotMobile }} Spot Ads Mobile</span></div></div>
+        <div style="display:flex;gap:8px"><span style="color:var(--ink-mute);width:110px;flex:none">Detail Kerjasama</span><div style="flex:1;display:flex;flex-direction:column"><sc-for list="{{ p.detail }}" as="l"><div style="border-bottom:1px solid var(--hairline);min-height:17px;padding:1px 0">{{ l.t }}</div></sc-for></div></div>
+        <div style="display:flex;gap:8px"><span style="color:var(--ink-mute);width:110px;flex:none">Term and Conditions</span><div style="flex:1;display:flex;flex-direction:column"><sc-for list="{{ p.terms }}" as="l"><div style="border-bottom:1px solid var(--hairline);min-height:17px;padding:1px 0">{{ l.t }}</div></sc-for></div></div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;border:1px solid var(--hairline);border-radius:6px">
+        <div style="padding:8px 12px;display:flex;flex-direction:column;gap:4px">
+          <div style="display:flex;gap:8px"><span style="color:var(--ink-mute);width:110px;flex:none">Cara Pembayaran</span><span>{{ p.cek }} Cek/BG No: {{ p.chequeNo }}</span></div>
+          <div style="display:flex;gap:8px"><span style="width:110px;flex:none"></span><span>{{ p.tf }} Transfer</span></div>
+          <div style="display:flex;gap:8px"><span style="color:var(--ink-mute);width:110px;flex:none">Kwitansi No</span><span>{{ p.receiptNo }}</span></div>
+          <div style="display:flex;gap:8px"><span style="color:var(--ink-mute);width:110px;flex:none">Jatuh Tempo</span><span>{{ p.due }}</span></div>
+          <div style="margin-top:6px;border:1px dashed var(--hairline-input);border-radius:6px;min-height:70px;padding:6px 8px;display:flex;flex-direction:column;justify-content:space-between"><span style="color:var(--ink-mute)">Menyetujui,</span><span style="color:var(--ink-mute);font-size:10px">Tanda Tangan / Stampel Pengiklan</span></div>
+        </div>
+        <div style="padding:8px 12px;display:flex;flex-direction:column;gap:4px;border-left:1px solid var(--hairline)">
+          <span style="font-weight:500">Biaya Pemasangan</span>
+          <div style="display:flex;justify-content:space-between"><span style="color:var(--ink-mute)">Produk Iklan</span><span>{{ p.product }}</span></div>
+          <div style="display:flex;justify-content:space-between"><span style="color:var(--ink-mute)">Subtotal</span><span style="font-feature-settings:'tnum'">Rp {{ p.sub }}</span></div>
+          <sc-if value="{{ p.taxable }}" hint-placeholder-val="{{ true }}"><div style="display:flex;flex-direction:column;gap:4px">
+            <div style="display:flex;justify-content:space-between"><span style="color:var(--ink-mute)">DPP 11/12</span><span style="font-feature-settings:'tnum'">Rp {{ p.dpp }}</span></div>
+            <div style="display:flex;justify-content:space-between"><span style="color:var(--ink-mute)">PPN 12%</span><span style="font-feature-settings:'tnum'">Rp {{ p.ppn }} (+)</span></div>
+          </div></sc-if>
+          <div style="display:flex;justify-content:space-between;border-top:1px solid var(--ink);padding-top:4px;margin-top:2px"><span style="font-weight:500">Total Payment</span><span style="font-weight:600;font-feature-settings:'tnum'">Rp {{ p.total }}</span></div>
+          <div style="margin-top:auto;padding:8px;background:var(--canvas-soft);border-radius:6px;font-size:10px;line-height:1.5">Transfer ke: Bank Mandiri<br>No. Rek 173.00.2228855.0<br>a/n PT. Indonesia News Center</div>
+        </div>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:6px">
+        <div style="display:flex;flex-direction:column;align-items:center;gap:4px;text-align:center"><span style="color:var(--ink-mute)">Dibuat oleh</span><div style="height:62px;width:100%;display:flex;align-items:center;justify-content:center"><sc-if value="{{ p.signed }}" hint-placeholder-val="{{ true }}"><span style="font-family:var(--font-sohne-accent);font-style:italic;font-size:20px;color:var(--brand-dark-900)">{{ p.sales }}</span></sc-if></div><span style="font-weight:600">{{ p.sales }}</span><span>Sales</span></div>
+        <div style="display:flex;flex-direction:column;align-items:center;gap:4px;text-align:center"><span style="color:var(--ink-mute)">Diketahui oleh</span><div style="height:62px;width:100%;display:flex;align-items:center;justify-content:center"><sc-if value="{{ p.signed }}" hint-placeholder-val="{{ true }}"><span style="font-family:var(--font-sohne-accent);font-style:italic;font-size:20px;color:var(--brand-dark-900)">Fitriyanti</span></sc-if></div><span style="font-weight:600">{{ p.ack }}</span><span>SPV Marketing &amp; Sales</span></div>
+        <div style="display:flex;flex-direction:column;align-items:center;gap:4px;text-align:center"><span style="color:var(--ink-mute)">Disetujui oleh</span><div style="height:62px;width:100%;display:flex;align-items:center;justify-content:center;position:relative"><sc-if value="{{ p.signed }}" hint-placeholder-val="{{ true }}"><div style="position:relative;display:flex;align-items:center;justify-content:center"><span style="position:absolute;width:58px;height:58px;border:2px solid rgba(83,58,253,0.45);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:8px;color:rgba(83,58,253,0.7);transform:rotate(-12deg);left:-10px">STEMPEL</span><span style="font-family:var(--font-sohne-accent);font-style:italic;font-size:20px;color:var(--brand-dark-900);position:relative">Alvin A.</span></div></sc-if></div><span style="font-weight:600">{{ p.app }}</span><span style="font-style:italic">Chief Business Officer</span></div>
+      </div>
+    </div>
+    <sc-if value="{{ p.draft }}" hint-placeholder-val="{{ false }}">
+      <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:none"><span style="font-size:180px;font-weight:500;letter-spacing:12px;color:rgba(13,37,61,0.07);transform:rotate(-30deg)">DRAFT</span></div>
+    </sc-if>
+    <sc-if value="{{ p.cancelled }}" hint-placeholder-val="{{ false }}">
+      <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:none"><span style="font-size:120px;font-weight:500;letter-spacing:8px;color:rgba(234,34,97,0.1);transform:rotate(-30deg)">DIBATALKAN</span></div>
+    </sc-if>
+  </div>
+  </div>
+</div>
+</sc-if>
+    </main>
+  </div>
+</div>
+</sc-if>
+<sc-if value="{{ notifOpen }}" hint-placeholder-val="{{ false }}">
+<div onClick="{{ toggleNotif }}" style="position:fixed;inset:0;z-index:30"></div>
+<div style="position:fixed;top:60px;right:16px;width:380px;max-width:calc(100% - 32px);background:#fff;border:1px solid var(--hairline);border-radius:12px;box-shadow:var(--shadow-2);z-index:31;display:flex;flex-direction:column;max-height:70vh;overflow:auto">
+  <div style="display:flex;justify-content:space-between;align-items:center;padding:14px 16px;border-bottom:1px solid var(--hairline)"><span style="font-size:15px;font-weight:400">Notifikasi</span><a href="#" onClick="{{ readAll }}" style="font-size:13px">Tandai semua dibaca</a></div>
+  <sc-if value="{{ noNotif }}" hint-placeholder-val="{{ false }}"><div style="padding:24px 16px;font-size:14px;color:var(--ink-mute)">Tidak ada notifikasi.</div></sc-if>
+  <sc-for list="{{ notifs }}" as="n" hint-placeholder-count="2">
+    <button onClick="{{ n.open }}" style="display:flex;gap:10px;text-align:left;padding:12px 16px;border:0;border-bottom:1px solid var(--hairline);background:transparent;cursor:pointer;width:100%" style-hover="background:var(--canvas-soft)">
+      <span style="width:8px;height:8px;border-radius:50%;margin-top:6px;flex:none;background:{{ n.dot }}"></span>
+      <span style="display:flex;flex-direction:column;gap:2px"><span style="font-size:14px;color:var(--ink);font-weight:400;font-feature-settings:'tnum'">{{ n.text }}</span><span style="font-size:13px;color:var(--ink-mute)">{{ n.sub }}</span><span style="font-size:12px;color:var(--ink-mute)">{{ n.time }}</span></span>
+    </button>
+  </sc-for>
+</div>
+</sc-if>
+
+<sc-if value="{{ md.open }}" hint-placeholder-val="{{ false }}">
+<div style="position:fixed;inset:0;background:rgba(13,37,61,0.28);z-index:40;display:flex;align-items:flex-start;justify-content:center;padding:48px 16px;overflow:auto;box-sizing:border-box">
+  <div style="width:100%;max-width:540px;background:#fff;border-radius:12px;box-shadow:var(--shadow-2);display:flex;flex-direction:column">
+    <div style="display:flex;justify-content:space-between;align-items:center;padding:18px 24px;border-bottom:1px solid var(--hairline)"><h2 style="margin:0;font-size:18px;font-weight:300">{{ md.title }}</h2><button onClick="{{ md.close }}" style="border:0;background:transparent;cursor:pointer;color:var(--ink-mute);font-size:14px">Tutup</button></div>
+    <div style="padding:20px 24px;display:flex;flex-direction:column;gap:14px">
+
+      <sc-if value="{{ md.isPub }}" hint-placeholder-val="{{ false }}"><div style="display:flex;flex-direction:column;gap:14px">
+        <label style="display:flex;flex-direction:column;gap:6px;font-size:13px;color:var(--ink-secondary);font-weight:400">Jenis benefit<select value="{{ md.m.code }}" onChange="{{ md.set.code }}" style="height:36px;padding:0 10px;border:1px solid var(--hairline-input);border-radius:6px;font-size:14px;color:var(--ink);background:#fff"><sc-for list="{{ md.benOpts }}" as="o"><option value="{{ o.v }}">{{ o.l }}</option></sc-for></select></label>
+        <label style="display:flex;flex-direction:column;gap:6px;font-size:13px;color:var(--ink-secondary);font-weight:400">Tanggal tayang<input type="date" value="{{ md.m.date }}" onChange="{{ md.set.date }}" style="height:36px;padding:0 10px;border:1px solid var(--hairline-input);border-radius:6px;font-size:14px;color:var(--ink)"><span style="font-size:12px;color:var(--ink-mute);font-weight:300">{{ md.periodNote }}</span></label>
+        <sc-if value="{{ md.outside }}" hint-placeholder-val="{{ false }}"><div style="background:var(--status-warning-bg);color:var(--status-warning-text);border-radius:8px;padding:10px 12px;font-size:13px">Tanggal tayang di luar masa periode MO. Tetap bisa disimpan.</div></sc-if>
+        <x-import component-from-global-scope="StripiDesignSystem_137d9e.TextInput" label="Judul konten" value="{{ md.m.title }}" on-change="{{ md.set.title }}" hint-size="100%,64px"></x-import>
+        <x-import component-from-global-scope="StripiDesignSystem_137d9e.TextInput" label="URL publikasi *" value="{{ md.m.url }}" on-change="{{ md.set.url }}" placeholder="https://www.inilah.com/..." hint-size="100%,64px"></x-import>
+        <label style="display:flex;flex-direction:column;gap:6px;font-size:13px;color:var(--ink-secondary);font-weight:400">Bukti screenshot <span style="font-weight:300;color:var(--ink-mute)">(opsional, gambar maks. 5 MB)</span><input type="file" accept="image/*" style="font-size:13px"></label>
+        <x-import component-from-global-scope="StripiDesignSystem_137d9e.TextInput" label="Catatan" value="{{ md.m.notes }}" on-change="{{ md.set.notes }}" hint-size="100%,64px"></x-import>
+        <label style="display:flex;align-items:center;gap:8px;font-size:14px;cursor:pointer"><input type="checkbox" checked="{{ md.m.bonus }}" onChange="{{ md.set.bonus }}" style="accent-color:var(--primary);width:16px;height:16px;margin:0">Bonus / melebihi kontrak <span style="color:var(--ink-mute)">(tidak dihitung melebihi 100%)</span></label>
+      </div></sc-if>
+
+      <sc-if value="{{ md.isBulk }}" hint-placeholder-val="{{ false }}"><div style="display:flex;flex-direction:column;gap:14px">
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px">
+          <label style="display:flex;flex-direction:column;gap:6px;font-size:13px;color:var(--ink-secondary);font-weight:400">Jenis benefit<select value="{{ md.m.code }}" onChange="{{ md.set.code }}" style="height:36px;padding:0 10px;border:1px solid var(--hairline-input);border-radius:6px;font-size:14px;color:var(--ink);background:#fff"><sc-for list="{{ md.benOpts }}" as="o"><option value="{{ o.v }}">{{ o.l }}</option></sc-for></select></label>
+          <label style="display:flex;flex-direction:column;gap:6px;font-size:13px;color:var(--ink-secondary);font-weight:400">Tanggal tayang<input type="date" value="{{ md.m.date }}" onChange="{{ md.set.date }}" style="height:36px;padding:0 10px;border:1px solid var(--hairline-input);border-radius:6px;font-size:14px;color:var(--ink)"></label>
+        </div>
+        <sc-if value="{{ md.outside }}" hint-placeholder-val="{{ false }}"><div style="background:var(--status-warning-bg);color:var(--status-warning-text);border-radius:8px;padding:10px 12px;font-size:13px">Tanggal tayang di luar masa periode MO. Tetap bisa disimpan.</div></sc-if>
+        <label style="display:flex;flex-direction:column;gap:6px;font-size:13px;color:var(--ink-secondary);font-weight:400">Tempel URL, satu per baris<textarea rows="6" value="{{ md.m.text }}" onChange="{{ md.set.text }}" placeholder="https://www.inilah.com/artikel-1&#10;https://www.inilah.com/artikel-2" style="padding:10px;border:1px solid var(--hairline-input);border-radius:6px;font-size:13px;color:var(--ink);font-family:var(--font-mono);resize:vertical"></textarea></label>
+        <label style="display:flex;align-items:center;gap:8px;font-size:14px;cursor:pointer"><input type="checkbox" checked="{{ md.m.bonus }}" onChange="{{ md.set.bonus }}" style="accent-color:var(--primary);width:16px;height:16px;margin:0">Bonus / melebihi kontrak</label>
+        <sc-if value="{{ md.hasBulk }}" hint-placeholder-val="{{ false }}">
+          <div style="border:1px solid var(--hairline);border-radius:8px;display:flex;flex-direction:column;max-height:220px;overflow:auto">
+            <div style="padding:8px 12px;font-size:13px;background:var(--canvas-soft);font-weight:400">{{ md.bulkSum }}</div>
+            <sc-for list="{{ md.bulkRes }}" as="r"><div style="display:flex;flex-direction:column;gap:2px;padding:8px 12px;border-top:1px solid var(--hairline)"><span style="font-size:12px;font-family:var(--font-mono);word-break:break-all">{{ r.url }}</span><span style="font-size:12px;color:{{ r.color }}">{{ r.msg }}</span></div></sc-for>
+          </div>
+        </sc-if>
+      </div></sc-if>
+
+      <sc-if value="{{ md.isBill }}" hint-placeholder-val="{{ false }}"><div style="display:flex;flex-direction:column;gap:14px">
+        <sc-if value="{{ md.notReady }}" hint-placeholder-val="{{ false }}"><div style="background:var(--status-warning-bg);color:var(--status-warning-text);border-radius:8px;padding:10px 12px;font-size:13px">Benefit MO ini belum terpenuhi 100%. Anda tetap bisa menandai sudah ditagih (mis. termin pembayaran), dengan alasan yang tercatat di audit log.</div></sc-if>
+        <x-import component-from-global-scope="StripiDesignSystem_137d9e.TextInput" label="Nomor invoice *" value="{{ md.m.inv }}" on-change="{{ md.set.inv }}" placeholder="INV/INC/2026/0061" hint-size="100%,64px"></x-import>
+        <label style="display:flex;flex-direction:column;gap:6px;font-size:13px;color:var(--ink-secondary);font-weight:400">Tanggal invoice *<input type="date" value="{{ md.m.invDate }}" onChange="{{ md.set.invDate }}" style="height:36px;padding:0 10px;border:1px solid var(--hairline-input);border-radius:6px;font-size:14px;color:var(--ink)"></label>
+        <x-import component-from-global-scope="StripiDesignSystem_137d9e.TextInput" label="Nominal ditagih *" prefix="Rp" value="{{ md.amountText }}" on-change="{{ md.set.amount }}" hint-size="100%,64px"></x-import>
+        <sc-if value="{{ md.notReady }}" hint-placeholder-val="{{ false }}"><x-import component-from-global-scope="StripiDesignSystem_137d9e.TextInput" label="Alasan menagih sebelum 100% *" value="{{ md.m.reason }}" on-change="{{ md.set.reason }}" placeholder="Termin 1 sesuai PKS" hint-size="100%,64px"></x-import></sc-if>
+      </div></sc-if>
+
+      <sc-if value="{{ md.isPay }}" hint-placeholder-val="{{ false }}"><div style="display:flex;flex-direction:column;gap:14px">
+        <label style="display:flex;flex-direction:column;gap:6px;font-size:13px;color:var(--ink-secondary);font-weight:400">Tanggal bayar *<input type="date" value="{{ md.m.date }}" onChange="{{ md.set.date }}" style="height:36px;padding:0 10px;border:1px solid var(--hairline-input);border-radius:6px;font-size:14px;color:var(--ink)"></label>
+        <x-import component-from-global-scope="StripiDesignSystem_137d9e.TextInput" label="Nominal diterima *" prefix="Rp" value="{{ md.amountText }}" on-change="{{ md.set.amount }}" hint-size="100%,64px"></x-import>
+        <x-import component-from-global-scope="StripiDesignSystem_137d9e.TextInput" label="No. Kwitansi" value="{{ md.m.receipt }}" on-change="{{ md.set.receipt }}" hint-size="100%,64px"></x-import>
+      </div></sc-if>
+
+      <sc-if value="{{ md.isCancel }}" hint-placeholder-val="{{ false }}"><div style="display:flex;flex-direction:column;gap:14px">
+        <span style="font-size:14px;color:var(--ink-secondary)">MO yang dibatalkan tidak dapat diaktifkan kembali dan nomornya tidak dipakai ulang.</span>
+        <x-import component-from-global-scope="StripiDesignSystem_137d9e.TextInput" label="Alasan pembatalan *" value="{{ md.m.reason }}" on-change="{{ md.set.reason }}" hint-size="100%,64px"></x-import>
+      </div></sc-if>
+
+      <sc-if value="{{ md.isClient }}" hint-placeholder-val="{{ false }}"><div style="display:flex;flex-direction:column;gap:14px">
+        <x-import component-from-global-scope="StripiDesignSystem_137d9e.TextInput" label="Perusahaan / Biro Iklan *" value="{{ md.m.company }}" on-change="{{ md.set.company }}" hint-size="100%,64px"></x-import>
+        <sc-if value="{{ md.hasDupe }}" hint-placeholder-val="{{ false }}"><div style="background:var(--status-warning-bg);color:var(--status-warning-text);border-radius:8px;padding:10px 12px;font-size:13px">{{ md.dupe }}</div></sc-if>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px">
+          <x-import component-from-global-scope="StripiDesignSystem_137d9e.TextInput" label="Nama PIC *" value="{{ md.m.pic }}" on-change="{{ md.set.pic }}" hint-size="100%,64px"></x-import>
+          <x-import component-from-global-scope="StripiDesignSystem_137d9e.TextInput" label="Email *" value="{{ md.m.email }}" on-change="{{ md.set.email }}" hint-size="100%,64px"></x-import>
+          <x-import component-from-global-scope="StripiDesignSystem_137d9e.TextInput" label="No. Telp *" value="{{ md.m.phone }}" on-change="{{ md.set.phone }}" hint-size="100%,64px"></x-import>
+          <x-import component-from-global-scope="StripiDesignSystem_137d9e.TextInput" label="Nomor NIK" value="{{ md.m.nik }}" on-change="{{ md.set.nik }}" hint-size="100%,64px"></x-import>
+          <x-import component-from-global-scope="StripiDesignSystem_137d9e.TextInput" label="Kota" value="{{ md.m.city }}" on-change="{{ md.set.city }}" hint-size="100%,64px"></x-import>
+          <x-import component-from-global-scope="StripiDesignSystem_137d9e.TextInput" label="Kode Pos" value="{{ md.m.postal }}" on-change="{{ md.set.postal }}" hint-size="100%,64px"></x-import>
+        </div>
+        <x-import component-from-global-scope="StripiDesignSystem_137d9e.TextInput" label="Alamat" value="{{ md.m.address }}" on-change="{{ md.set.address }}" hint-size="100%,64px"></x-import>
+        <x-import component-from-global-scope="StripiDesignSystem_137d9e.TextInput" label="NPWP" value="{{ md.m.npwp }}" on-change="{{ md.set.npwp }}" helper="Opsional, untuk kebutuhan penagihan" hint-size="100%,64px"></x-import>
+      </div></sc-if>
+
+      <sc-if value="{{ md.hasErr }}" hint-placeholder-val="{{ false }}"><div style="background:var(--status-danger-bg);color:#b3093c;border-radius:8px;padding:10px 12px;font-size:13px">{{ md.err }}</div></sc-if>
+    </div>
+    <div style="display:flex;justify-content:flex-end;gap:8px;padding:16px 24px;border-top:1px solid var(--hairline)">
+      <x-import component-from-global-scope="StripiDesignSystem_137d9e.Button" variant="secondary" size="sm" on-click="{{ md.close }}" hint-size="70px,32px">Batal</x-import>
+      <x-import component-from-global-scope="StripiDesignSystem_137d9e.Button" size="sm" on-click="{{ md.save }}" hint-size="130px,32px">{{ md.saveLabel }}</x-import>
+    </div>
+  </div>
+</div>
+</sc-if>
+
+<sc-if value="{{ hasToast }}" hint-placeholder-val="{{ false }}">
+<div style="position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:var(--ink);color:#fff;padding:12px 18px;border-radius:8px;font-size:14px;box-shadow:var(--shadow-2);z-index:50;max-width:calc(100% - 32px);font-weight:400">{{ toast }}</div>
+</sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+const O=window.OPLAH;
+const val=x=>x&&x.target?(x.target.type==='checkbox'?x.target.checked:x.target.value):x;
+const num=x=>parseInt(String(x||'').replace(/\D/g,''))||0;
+const nowStr=()=>{const d=new Date();return O.fdate(O.TODAY)+' '+String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0');};
+const STATUS={DRAFT:['Draft','neutral'],SUBMITTED:['Terbit','soft'],ACTIVE:['Aktif','soft'],COMPLETED:['Selesai','success'],CANCELLED:['Dibatalkan','danger']};
+const BILL={NOT_READY:['Belum siap','neutral'],READY_TO_BILL:['Siap ditagih','warning'],BILLED:['Sudah ditagih','soft'],PAID:['Lunas','success']};
+const FUL={none:'Belum',partial:'Sebagian',full:'Terpenuhi'};
+const shortRp=n=>n>=1e9?(n/1e9).toFixed(1).replace('.',',')+' M':Math.round(n/1e6)+' jt';
+const norm=s=>(s||'').toLowerCase().replace(/\(.*?\)/g,'').replace(/\b(pt|cv|tbk|persero)\b/g,'').replace(/[^a-z0-9]/g,'');
+function blankForm(){return {id:null,date:O.TODAY,cid:'',pic:'',company:'',nik:'',address:'',city:'',postal:'',email:'',phone:'',ps:'',pe:'',desc:'',airing:'',adTypes:[],coop:'',placements:[],spotWeb:false,spotWebItems:[],spotMobile:false,benefits:[{k:O.uid(),code:'ARTIKEL_RILIS',qty:1,notes:''}],detail:'Artikel Rilis 1x',detailManual:false,terms:'',payMethod:'Transfer',chequeNo:'',receiptNo:'',due:'',product:'',subtotal:'',taxable:true,sid:'s1',ack:'Fitriyanti K',app:'Alvin Alverdian',revOf:null};}
+
+class Component extends DCLogic {
+  state={screen:'login',role:'AS',w:1280,login:{email:'bimo@inilah.com',pw:'password',err:''},
+    mos:O.MOS,clients:O.CLIENTS,bts:O.BTS,seq:{2026:9},
+    filters:{dateField:'mo',from:'2026-01',to:'2026-12',client:'',sales:'',status:'',billing:'',fulfil:'',q:''},
+    form:blankForm(),formErr:{},selId:null,tab:'pub',clientId:null,clientQ:'',masterTab:'benefit',newBt:'',
+    notifOpen:false,modal:null,m:{},toast:null,tncPick:'Standar',
+    notifs:[
+      {id:'n1',role:'FIN',text:'002/MO-DDI/INC/II/2026 siap ditagih',sub:'PT Sinar Energi Terbarukan · semua benefit terpenuhi',moId:'m3',read:false,time:'31 Juli 2026'},
+      {id:'n2',role:'FIN',text:'006/MO-BMO/INC/V/2026 siap ditagih',sub:'Universitas Cakrawala · semua benefit terpenuhi',moId:'m7',read:false,time:'28 Juli 2026'},
+      {id:'n3',role:'AS',text:'005/MO-DDI/INC/IV/2026 berakhir 30 September 2026',sub:'PT Arunika Properti · pemenuhan 50%',moId:'m6',read:false,time:'31 Agustus 2026'}]};
+  componentDidMount(){this._r=()=>this.setState({w:window.innerWidth});window.addEventListener('resize',this._r);this._r();}
+  componentWillUnmount(){window.removeEventListener('resize',this._r);clearTimeout(this._t);}
+  toast(msg){clearTimeout(this._t);this.setState({toast:msg});this._t=setTimeout(()=>this.setState({toast:null}),3600);}
+  go(screen,extra){this.setState({screen,notifOpen:false,...(extra||{})});window.scrollTo(0,0);}
+  mo(id){return this.state.mos.find(m=>m.id===id);}
+  who(){return this.state.role==='AS'?'Bimo':'Maya Putri';}
+  log(m,what){return [...(m.log||[]),{t:nowStr(),who:this.who(),what}];}
+  btName(code){const b=this.state.bts.find(x=>x.code===code);return b?b.name:code;}
+  sales(id){return O.SALES.find(s=>s.id===id)||O.SALES[0];}
+  calc(m){
+    const t=O.tax(m.subtotal,m.taxable);
+    const ben=m.benefits.map(b=>{const q=+b.qty||0;const real=m.pubs.filter(p=>p.code===b.code&&!p.bonus).length;const bonus=m.pubs.filter(p=>p.code===b.code&&p.bonus).length;const f=Math.min(real,q);return {...b,qty:q,real,bonus,f,pct:q?f/q:0};});
+    const tq=ben.reduce((a,b)=>a+b.qty,0),tf=ben.reduce((a,b)=>a+b.f,0);
+    const full=ben.length>0&&ben.every(b=>b.f>=b.qty);
+    const status=m.base==='DRAFT'?'DRAFT':m.base==='CANCELLED'?'CANCELLED':full?'COMPLETED':(m.pubs.length||m.attachments.length)?'ACTIVE':'SUBMITTED';
+    const billed=m.bills.reduce((a,b)=>a+b.amount,0),paid=m.bills.reduce((a,b)=>a+(b.paidAmount||0),0);
+    const billing=m.bills.length?(paid>=t.total?'PAID':'BILLED'):full?'READY_TO_BILL':'NOT_READY';
+    return {...t,ben,tq,tf,pct:tq?tf/tq:0,full,status,billing,billed,paid,fulfil:tf===0?'none':full?'full':'partial'};
+  }
+  pushNotif(role,text,sub,moId){this.setState(s=>({notifs:[{id:O.uid(),role,text,sub,moId,read:false,time:O.fdate(O.TODAY)},...s.notifs]}));}
+  openMo(id,tab){this.go('moDetail',{selId:id,tab:tab||'pub'});}
+  // ---------- form
+  newMo(){this.go('moForm',{form:blankForm(),formErr:{}});}
+  setF(k,v){this.setState(s=>{const f={...s.form,[k]:v};if(k==='benefits'&&!f.detailManual)f.detail=O.autoDetail(v);if(k==='detail')f.detailManual=true;const e={...s.formErr};delete e[k];return {form:f,formErr:e};});}
+  toggleArr(k,l){this.setState(s=>{const a=s.form[k];return {form:{...s.form,[k]:a.includes(l)?a.filter(x=>x!==l):[...a,l]}};});}
+  setBen(i,k,v){const b=this.state.form.benefits.map((x,j)=>j===i?{...x,[k]:k==='qty'?String(v).replace(/\D/g,''):v}:x);this.setF('benefits',b);}
+  pickClient(id){const c=this.state.clients.find(x=>x.id===id);if(!c){this.setF('cid','');return;}this.setState(s=>({form:{...s.form,cid:c.id,pic:c.pic,company:c.company,nik:c.nik,address:c.address,city:c.city,postal:c.postal,email:c.email,phone:c.phone},formErr:{}}));}
+  validate(f){const e={};
+    if(!f.company)e.company='Wajib diisi';if(!f.pic)e.pic='Wajib diisi';
+    if(!f.email)e.email='Wajib diisi';else if(!/^\S+@\S+\.\S+$/.test(f.email))e.email='Format email tidak valid';
+    if(!f.phone)e.phone='Wajib diisi';if(f.nik&&!/^\d{16}$/.test(f.nik))e.nik='NIK harus 16 digit';if(f.postal&&!/^\d{5}$/.test(f.postal))e.postal='Kode pos 5 digit';
+    if(!f.date)e.date='Wajib diisi';if(!f.ps||!f.pe)e.period='Masa periode wajib diisi';else if(f.pe<f.ps)e.period='Akhir periode sebelum awal periode';
+    if(!f.desc)e.desc='Wajib diisi';
+    const codes=f.benefits.map(b=>b.code);
+    if(!f.benefits.length||f.benefits.some(b=>!(+b.qty>=1)||!b.code))e.benefits='Minimal 1 benefit dengan kuantitas ≥ 1';else if(new Set(codes).size!==codes.length)e.benefits='Jenis benefit tidak boleh ganda';
+    if(!f.detail.trim())e.detail='Wajib diisi';else if(f.detail.split('\n').length>4)e.detail='Maksimal 4 baris';
+    if(f.terms.split('\n').length>10)e.terms='Maksimal 10 baris';
+    if(f.payMethod==='Cek/BG'&&!f.chequeNo)e.chequeNo='Wajib untuk Cek/BG';
+    if(!(O.tax(f.subtotal).sub>0))e.subtotal='Subtotal harus lebih dari 0';
+    return e;}
+  upsertDraft(silent){const f=this.state.form;const id=f.id||('m'+O.uid());const ex=this.mo(id);
+    const mo={...(ex||{pubs:[],bills:[],attachments:[],cancelReason:'',number:null,seq:null,log:[]}),...f,id,base:'DRAFT'};
+    mo.log=ex?this.log(ex,'Draft diperbarui'):[{t:nowStr(),who:this.who(),what:'Draft dibuat'}];
+    this.setState(s=>({mos:ex?s.mos.map(m=>m.id===id?mo:m):[mo,...s.mos],form:{...s.form,id}}));
+    if(!silent)this.toast('Draft tersimpan');return id;}
+  saveDraft(){const id=this.upsertDraft();this.openMo(id,'sum');}
+  submit(){const f=this.state.form;const e=this.validate(f);
+    if(Object.keys(e).length){this.setState({formErr:e});this.toast('Periksa '+Object.keys(e).length+' isian yang belum valid');window.scrollTo(0,0);return;}
+    const id=f.id||('m'+O.uid());const [y,mm]=f.date.split('-').map(Number);const seq=(this.state.seq[y]||0)+1;
+    const number=O.pad(seq)+'/MO-'+this.sales(f.sid).code+'/INC/'+O.ROMAN[mm-1]+'/'+y;
+    const ex=this.mo(id);
+    const mo={...(ex||{pubs:[],bills:[],attachments:[],cancelReason:'',log:[]}),...f,id,base:'SUBMITTED',seq,number};
+    mo.log=[...(mo.log||[]),{t:nowStr(),who:this.who(),what:'MO disubmit, nomor '+number+' dikunci'}];
+    this.setState(s=>({seq:{...s.seq,[y]:seq},mos:ex?s.mos.map(m=>m.id===id?mo:m):[mo,...s.mos],formErr:{}}));
+    this.toast('MO '+number+' berhasil disubmit');this.openMo(id,'sum');}
+  editDraft(id){const m=this.mo(id);const f=blankForm();Object.keys(f).forEach(k=>{if(m[k]!==undefined)f[k]=m[k];});f.id=m.id;this.go('moForm',{form:f,formErr:{}});}
+  duplicate(id){const m=this.mo(id);const f=blankForm();Object.keys(f).forEach(k=>{if(m[k]!==undefined)f[k]=JSON.parse(JSON.stringify(m[k]));});f.id=null;f.date=O.TODAY;f.revOf=null;this.go('moForm',{form:f,formErr:{}});this.toast('Draft baru dibuat dari '+(m.number||'draft'));}
+  revise(id){const m=this.mo(id);const nid='m'+O.uid();
+    const nm={...JSON.parse(JSON.stringify(m)),id:nid,base:'DRAFT',number:null,seq:null,date:O.TODAY,revOf:m.id,bills:[],log:[{t:nowStr(),who:this.who(),what:'Draft revisi dari '+m.number+' ('+m.pubs.length+' realisasi dipindahkan)'}]};
+    this.setState(s=>({mos:[nm,...s.mos.map(x=>x.id===id?{...x,base:'CANCELLED',cancelReason:'Direvisi',pubs:[],log:this.log(x,'Dibatalkan: Direvisi')}:x)]}));
+    const f=blankForm();Object.keys(f).forEach(k=>{if(nm[k]!==undefined)f[k]=nm[k];});f.id=nid;
+    this.go('moForm',{form:f,formErr:{}});this.toast(m.number+' dibatalkan (Direvisi). Lanjutkan edit draft revisi.');}
+  // ---------- modals
+  openModal(modal,m){this.setState({modal,m:{err:'',...m},notifOpen:false});}
+  closeModal(){this.setState({modal:null,m:{}});}
+  setM(k,v){this.setState(s=>({m:{...s.m,[k]:v,err:''}}));}
+  checkPub(m,p,extra){extra=extra||[];
+    if(!p.code)return 'Pilih jenis benefit';if(!p.date)return 'Tanggal tayang wajib diisi';
+    if(!/^https?:\/\/[^\s/]+\.[^\s]+$/i.test((p.url||'').trim()))return 'Format URL tidak valid';
+    const all=[...m.pubs,...extra];const u=p.url.trim().toLowerCase();
+    if(all.some(x=>x.url.trim().toLowerCase()===u))return 'URL sudah pernah diinput di MO ini';
+    if(!p.bonus){const b=m.benefits.find(b=>b.code===p.code);const used=all.filter(x=>x.code===p.code&&!x.bonus).length;if(used>=+b.qty)return 'Kuota '+this.btName(p.code)+' sudah penuh ('+b.qty+'). Centang "Bonus / melebihi kontrak" untuk tetap mencatat.';}
+    return '';}
+  outside(m,date){if(!date)return false;const ym=date.slice(0,7);return ym<m.ps||ym>m.pe;}
+  addPubs(id,items){const m=this.mo(id);const before=this.calc(m);
+    const nm={...m,pubs:[...m.pubs,...items.map(i=>({id:O.uid(),...i}))]};nm.log=this.log(m,items.length+' realisasi publikasi ditambahkan');
+    const after=this.calc(nm);this.setState(s=>({mos:s.mos.map(x=>x.id===id?nm:x),modal:null,m:{}}));
+    if(!before.full&&after.full&&before.billing==='NOT_READY'){this.pushNotif('FIN',m.number+' siap ditagih',m.company+' · semua benefit terpenuhi',id);this.toast('Semua benefit terpenuhi. Status MO Selesai, penagihan Siap ditagih, dan Finance sudah dinotifikasi.');}
+    else this.toast(items.length+' realisasi tersimpan');}
+  delPub(id,pid){const m=this.mo(id);const nm={...m,pubs:m.pubs.filter(p=>p.id!==pid),log:this.log(m,'Realisasi dihapus')};this.setState(s=>({mos:s.mos.map(x=>x.id===id?nm:x)}));this.toast('Realisasi dihapus');}
+  savePub(){const {m:p,selId}=this.state;const m=this.mo(selId);const e=this.checkPub(m,p);if(e)return this.setState(s=>({m:{...s.m,err:e}}));
+    this.addPubs(selId,[{code:p.code,date:p.date,title:p.title||this.btName(p.code),url:p.url.trim(),bonus:!!p.bonus,notes:p.notes||''}]);}
+  bulkPreview(m,b){const lines=(b.text||'').split('\n').map(x=>x.trim()).filter(Boolean);const acc=[];
+    const res=lines.map(url=>{const p={code:b.code,date:b.date,url,bonus:!!b.bonus};const e=this.checkPub(m,p,acc);if(!e)acc.push({...p,title:this.btName(b.code)+' · '+O.fdate(b.date),notes:''});return {url,ok:!e,msg:e||'Siap disimpan'};});
+    return {res,acc};}
+  saveBulk(){const {m:b,selId}=this.state;const m=this.mo(selId);if(!b.code||!b.date)return this.setState(s=>({m:{...s.m,err:'Jenis benefit dan tanggal tayang wajib diisi'}}));
+    const {acc}=this.bulkPreview(m,b);if(!acc.length)return this.setState(s=>({m:{...s.m,err:'Tidak ada URL valid untuk disimpan'}}));this.addPubs(selId,acc);}
+  saveBill(){const {m:b,selId}=this.state;const mo=this.mo(selId);const c=this.calc(mo);
+    if(!b.inv||!b.invDate||!(num(b.amount)>0))return this.setState(s=>({m:{...s.m,err:'Nomor invoice, tanggal invoice, dan nominal wajib diisi'}}));
+    if(c.billing==='NOT_READY'&&!(b.reason||'').trim())return this.setState(s=>({m:{...s.m,err:'Alasan wajib diisi karena benefit belum terpenuhi 100%'}}));
+    const bill={id:O.uid(),inv:b.inv,invDate:b.invDate,amount:num(b.amount),paidDate:'',paidAmount:0,receipt:'',override:c.billing==='NOT_READY'?b.reason:''};
+    this.setState(s=>({mos:s.mos.map(x=>x.id===selId?{...x,bills:[...x.bills,bill],log:this.log(x,'Tagihan '+b.inv+' dicatat (Rp '+O.rp(bill.amount)+')')}:x),modal:null,m:{}}));this.toast('Status penagihan: Sudah ditagih');}
+  savePay(){const {m:p,selId}=this.state;if(!p.date||!(num(p.amount)>0))return this.setState(s=>({m:{...s.m,err:'Tanggal bayar dan nominal diterima wajib diisi'}}));
+    const mo=this.mo(selId);const nm={...mo,bills:mo.bills.map(b=>b.id===p.billId?{...b,paidDate:p.date,paidAmount:num(p.amount),receipt:p.receipt||''}:b)};nm.log=this.log(mo,'Pembayaran dicatat (Rp '+O.rp(num(p.amount))+')');
+    const c=this.calc(nm);this.setState(s=>({mos:s.mos.map(x=>x.id===selId?nm:x),modal:null,m:{}}));this.toast(c.billing==='PAID'?'Pembayaran tercatat. MO lunas.':'Pembayaran tercatat. Sisa Rp '+O.rp(c.total-c.paid));}
+  saveCancel(){const {m:p,selId}=this.state;if(!(p.reason||'').trim())return this.setState(s=>({m:{...s.m,err:'Alasan pembatalan wajib diisi'}}));
+    this.setState(s=>({mos:s.mos.map(x=>x.id===selId?{...x,base:'CANCELLED',cancelReason:p.reason,log:this.log(x,'MO dibatalkan: '+p.reason)}:x),modal:null,m:{}}));this.toast('MO dibatalkan. Nomor tidak akan dipakai ulang.');}
+  delDraft(id){this.setState(s=>({mos:s.mos.filter(x=>x.id!==id)}));this.go('mos');this.toast('Draft dihapus');}
+  addAttachment(e){const files=[...(e.target.files||[])];if(!files.length)return;const bad=files.find(f=>f.size>10*1024*1024);if(bad){this.toast(bad.name+' melebihi 10 MB');return;}
+    const id=this.state.selId;this.setState(s=>({mos:s.mos.map(x=>x.id===id?{...x,attachments:[...x.attachments,...files.map(f=>({name:f.name,size:Math.round(f.size/1024)+' KB',date:O.fdate(O.TODAY)}))],log:this.log(x,files.length+' dokumen bertanda tangan diupload')}:x)}));this.toast('Dokumen terupload');e.target.value='';}
+  saveClient(){const c=this.state.m;const e=[];if(!c.company)e.push('perusahaan');if(!c.pic)e.push('nama PIC');if(!c.email)e.push('email');if(!c.phone)e.push('no. telp');
+    if(e.length)return this.setState(s=>({m:{...s.m,err:'Wajib diisi: '+e.join(', ')}}));
+    const id=c.id||('c'+O.uid());const rec={id,company:c.company,pic:c.pic,nik:c.nik||'',address:c.address||'',city:c.city||'',postal:c.postal||'',email:c.email,phone:c.phone,npwp:c.npwp||''};
+    this.setState(s=>({clients:c.id?s.clients.map(x=>x.id===id?rec:x):[rec,...s.clients],modal:null,m:{}}));
+    if(c.fromForm)setTimeout(()=>this.pickClient(id),0);this.toast(c.id?'Data klien diperbarui':'Klien baru ditambahkan');}
+  addBt(){const n=this.state.newBt.trim();if(!n)return;const code=n.toUpperCase().replace(/[^A-Z0-9]+/g,'_').replace(/^_|_$/g,'');if(this.state.bts.some(b=>b.code===code))return this.toast('Kode '+code+' sudah ada');
+    this.setState(s=>({bts:[...s.bts,{code,name:n,short:n}],newBt:''}));this.toast('Jenis benefit '+n+' ditambahkan. Kolomnya otomatis muncul di Daftar MO.');}
+  // ---------- export
+  exportRows(){const rows=this.listRows();const bts=this.state.bts;
+    const head=['Nomor MO','Tanggal MO','Periode Tayang','Perusahaan / Instansi','Nama Sales','Nominal sebelum PPN','PPN','Nominal setelah PPN',...bts.map(b=>'Benefit: '+b.name),'% Pemenuhan','Status MO','Status Penagihan'];
+    const body=rows.map(({m,c})=>[m.number||'DRAFT',m.date,O.fmon(m.ps,true)+' – '+O.fmon(m.pe,true),m.company,this.sales(m.sid).name,c.sub,c.ppn,c.total,...bts.map(b=>{const x=c.ben.find(y=>y.code===b.code);return x?x.f+'/'+x.qty:'—';}),Math.round(c.pct*100),STATUS[c.status][0],BILL[c.billing][0]]);
+    return {head,body};}
+  download(name,content,type){const blob=new Blob([content],{type});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove();},500);}
+  exportCsv(){const {head,body}=this.exportRows();const esc=v=>typeof v==='number'?v:'"'+String(v).replace(/"/g,'""')+'"';
+    this.download('Daftar_MO_'+O.TODAY+'.csv','\ufeff'+[head,...body].map(r=>r.map(esc).join(',')).join('\n'),'text/csv');this.toast('CSV diekspor ('+body.length+' MO)');}
+  exportXls(){const {head,body}=this.exportRows();const x=s=>String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;');
+    const cell=v=>typeof v==='number'?'<Cell><Data ss:Type="Number">'+v+'</Data></Cell>':'<Cell><Data ss:Type="String">'+x(v)+'</Data></Cell>';
+    const xml='<?xml version="1.0"?><Workbook xmlns="urn:schemas-microsoft-com:office:spreadsheet" xmlns:ss="urn:schemas-microsoft-com:office:spreadsheet"><Worksheet ss:Name="Daftar MO"><Table>'+[head,...body].map(r=>'<Row>'+r.map(cell).join('')+'</Row>').join('')+'</Table></Worksheet></Workbook>';
+    this.download('Daftar_MO_'+O.TODAY+'.xls',xml,'application/vnd.ms-excel');this.toast('Excel diekspor ('+body.length+' MO, angka bertipe numerik)');}
+  listRows(){const {mos,filters:f}=this.state;
+    return mos.map(m=>({m,c:this.calc(m)})).filter(({m,c})=>{
+      if(f.q&&!((m.number||'')+' '+m.company).toLowerCase().includes(f.q.toLowerCase()))return false;
+      if(f.dateField==='mo'){const ym=m.date.slice(0,7);if(f.from&&ym<f.from)return false;if(f.to&&ym>f.to)return false;}
+      else{if(f.from&&m.pe<f.from)return false;if(f.to&&m.ps>f.to)return false;}
+      if(f.client&&m.cid!==f.client)return false;if(f.sales&&m.sid!==f.sales)return false;
+      if(f.status&&c.status!==f.status)return false;if(f.billing&&c.billing!==f.billing)return false;if(f.fulfil&&c.fulfil!==f.fulfil)return false;return true;
+    }).sort((a,b)=>b.m.date.localeCompare(a.m.date));}
+  setFilter(k,v){this.setState(s=>({filters:{...s.filters,[k]:v}}));}
+
+  renderVals(){
+    const s=this.state;const wide=s.w>=900;const isAS=s.role==='AS',isFIN=s.role==='FIN';const scr=s.screen;
+    const is={login:scr==='login',app:scr!=='login'};['dashboard','mos','moForm','moDetail','clients','clientDetail','master','pdf'].forEach(k=>is[k]=scr===k);
+    const allC=s.mos.map(m=>({m,c:this.calc(m)}));const readyN=allC.filter(x=>x.c.billing==='READY_TO_BILL').length;
+    const navDefs=isAS?[['mos','Daftar MO'],['moForm','Buat MO'],['clients','Klien'],['master','Master data']]:[['dashboard','Dashboard'],['mos','Daftar MO',readyN?readyN+' siap':''],['clients','Klien'],['master','Master data']];
+    const ak=scr==='moDetail'||scr==='pdf'?'mos':scr==='clientDetail'?'clients':scr;
+    const nav=navDefs.map(([k,l,badge])=>{const on=ak===k;return {label:l,badge:badge||'',go:()=>k==='moForm'?this.newMo():this.go(k),bg:on?'rgba(255,255,255,0.1)':'transparent',color:on?'#fff':'rgba(255,255,255,0.72)',mbg:on?'var(--ink)':'#fff',mcolor:on?'#fff':'var(--ink-secondary)'};});
+    const setRole=r=>{this.setState({role:r,notifOpen:false});const sc=this.state.screen;if(r==='FIN'&&sc==='moForm')this.go('mos');if(r==='AS'&&sc==='dashboard')this.go('mos');};
+    const roles=[['AS','Admin Sales'],['FIN','Finance']].map(([k,l])=>({label:l,go:()=>setRole(k),bg:s.role===k?'var(--primary)':'transparent',color:s.role===k?'#fff':'var(--ink-secondary)'}));
+    const myN=s.notifs.filter(n=>n.role===s.role);const unread=myN.filter(n=>!n.read).length;
+    const crumbs={dashboard:'Dashboard Finance',mos:'Daftar Media Order',moForm:'Media Order / Form',moDetail:'Media Order / Detail',clients:'Klien',clientDetail:'Klien / Detail',master:'Master data',pdf:'Media Order / Pratinjau PDF'};
+    const login={...s.login,
+      setEmail:v=>this.setState(x=>({login:{...x.login,email:val(v),err:''}})),setPw:v=>this.setState(x=>({login:{...x.login,pw:val(v),err:''}})),
+      forgot:e=>{e&&e.preventDefault&&e.preventDefault();this.setState(x=>({login:{...x.login,err:''}}));this.toast(s.login.email?'Tautan reset password dikirim ke '+s.login.email:'Isi email terlebih dahulu');},
+      submit:()=>{const l=this.state.login;if(!l.email||!l.pw)return this.setState(x=>({login:{...x.login,err:'Email dan password wajib diisi'}}));const r=/finance/i.test(l.email)?'FIN':'AS';this.setState({role:r});this.go(r==='FIN'?'dashboard':'mos');},
+      demos:[['Admin Sales','bimo@inilah.com'],['Finance','finance@inilah.com']].map(([role,email])=>({role,email,pick:()=>this.setState(x=>({login:{...x.login,email,pw:'password',err:''}}))}))};
+    const v={is,wide,narrow:!wide,isAS,isFIN,nav,roles,login,crumb:crumbs[scr]||'',mainPad:wide?'28px 32px 64px':'20px 16px 56px',
+      user:isAS?{name:'Bimo',role:'Admin Sales',initials:'BM'}:{name:'Maya Putri',role:'Finance',initials:'MP'},
+      unread:String(unread),notifBadgeBg:unread?'var(--ruby)':'var(--ink-mute)',
+      logout:e=>{e&&e.preventDefault&&e.preventDefault();this.go('login');},
+      toggleNotif:()=>this.setState(x=>({notifOpen:!x.notifOpen})),
+      notifOpen:s.notifOpen,
+      notifs:myN.map(n=>({...n,dot:n.read?'transparent':'var(--primary)',open:()=>{this.setState(x=>({notifs:x.notifs.map(y=>y.id===n.id?{...y,read:true}:y)}));this.openMo(n.moId,isFIN?'bill':'pub');}})),
+      noNotif:myN.length===0,
+      readAll:()=>this.setState(x=>({notifs:x.notifs.map(y=>y.role===s.role?{...y,read:true}:y)})),
+      toast:s.toast,hasToast:!!s.toast,closeModal:()=>this.closeModal()};
+    return Object.assign(v,this.screenVals(s,allC,isAS,isFIN,wide));
+  }
+  screenVals(s,allC,isAS,isFIN,wide){
+    const out={};const live=allC.filter(x=>x.c.status!=='CANCELLED'&&x.c.status!=='DRAFT');
+    const row=({m,c})=>({id:m.id,number:m.number||'Draft',date:O.fdate(m.date),period:O.fmon(m.ps,true)+' – '+O.fmon(m.pe,true),company:m.company,sales:this.sales(m.sid).name,
+      sub:O.rp(c.sub),ppn:O.rp(c.ppn),total:O.rp(c.total),pct:Math.round(c.pct*100)+'%',pctW:Math.round(c.pct*100)+'%',
+      stL:STATUS[c.status][0],stT:STATUS[c.status][1],biL:BILL[c.billing][0],biT:BILL[c.billing][1],numColor:m.number?'var(--ink)':'var(--ink-mute)',
+      cells:s.bts.map(b=>{const x=c.ben.find(y=>y.code===b.code);if(!x)return {t:'—',bg:'transparent',fg:'var(--ink-mute)'};const done=x.f>=x.qty;return {t:x.f+'/'+x.qty,bg:done?'var(--status-success-bg)':x.f>0?'var(--status-warning-bg)':'var(--canvas-soft)',fg:done?'var(--status-success-text)':x.f>0?'var(--status-warning-text)':'var(--ink-mute)'};}),
+      open:()=>this.openMo(m.id,isFIN?'bill':'pub')});
+    // dashboard
+    const y26=live.filter(x=>x.m.date.startsWith('2026'));const ready=live.filter(x=>x.c.billing==='READY_TO_BILL');
+    const recv=live.filter(x=>x.c.billing==='BILLED').reduce((a,x)=>a+x.c.billed-x.c.paid,0);
+    const months=O.MS.map((l,i)=>{const mm=y26.filter(x=>+x.m.date.slice(5,7)===i+1);return {l,n:mm.length,amt:mm.reduce((a,x)=>a+x.c.total,0)};});const mx=Math.max(1,...months.map(x=>x.amt));
+    out.dash={kpis:[
+      {label:'MO terbit 2026',value:String(y26.length),sub:'Tidak termasuk draft & batal',go:()=>{this.setState(x=>({filters:{...x.filters,billing:'',status:''}}));this.go('mos');}},
+      {label:'Nilai kontrak 2026',value:'Rp '+O.rp(y26.reduce((a,x)=>a+x.c.total,0)),sub:'Setelah PPN',go:()=>this.go('mos')},
+      {label:'Siap ditagih',value:String(ready.length),sub:'Rp '+O.rp(ready.reduce((a,x)=>a+x.c.total,0)),go:()=>{this.setFilter('billing','READY_TO_BILL');this.go('mos');}},
+      {label:'Piutang',value:'Rp '+O.rp(recv),sub:'Sudah ditagih, belum lunas',go:()=>{this.setFilter('billing','BILLED');this.go('mos');}}],
+      bars:months.map(x=>({l:x.l,h:Math.max(x.amt?4:0,Math.round(x.amt/mx*100))+'%',v:x.amt?shortRp(x.amt):'',n:x.n?x.n+' MO':''})),
+      ready:ready.map(row),hasReady:ready.length>0,
+      ending:live.filter(x=>x.c.pct<1&&x.m.pe>='2026-09'&&x.m.pe<='2026-10').map(row),hasEnding:false};
+    out.dash.hasEnding=out.dash.ending.length>0;
+    // list
+    const f=s.filters;const rows=this.listRows();const tot=rows.filter(x=>x.c.status!=='CANCELLED').reduce((a,x)=>({sub:a.sub+x.c.sub,ppn:a.ppn+x.c.ppn,total:a.total+x.c.total}),{sub:0,ppn:0,total:0});
+    const sf=k=>v=>this.setFilter(k,val(v));
+    const chipBase=allC.filter(x=>x.c.status!=='CANCELLED'&&x.c.status!=='DRAFT');
+    out.list={rows:rows.map(row),count:rows.length+' MO',empty:rows.length===0,has:rows.length>0,totSub:O.rp(tot.sub),totPpn:O.rp(tot.ppn),totTotal:O.rp(tot.total),
+      cols:s.bts.map(b=>({l:b.short||b.name})),f,
+      set:{from:sf('from'),to:sf('to'),client:sf('client'),sales:sf('sales'),status:sf('status'),billing:sf('billing'),fulfil:sf('fulfil'),q:sf('q')},
+      dateFields:[['mo','Tanggal MO'],['period','Periode tayang']].map(([k,l])=>({l,go:()=>this.setFilter('dateField',k),bg:f.dateField===k?'var(--ink)':'transparent',color:f.dateField===k?'#fff':'var(--ink-secondary)'})),
+      chips:[['','Semua'],['NOT_READY','Belum siap'],['READY_TO_BILL','Siap ditagih'],['BILLED','Sudah ditagih'],['PAID','Lunas']].map(([k,l])=>{const on=f.billing===k;return {l,n:String(k?chipBase.filter(x=>x.c.billing===k).length:chipBase.length),go:()=>this.setFilter('billing',k),border:on?'1.5px solid var(--primary)':'1px solid var(--hairline)',color:on?'var(--primary)':'var(--ink-mute)'};}),
+      clientOpts:[{v:'',l:'Semua perusahaan'},...s.clients.map(c=>({v:c.id,l:c.company}))],
+      salesOpts:[{v:'',l:'Semua sales'},...O.SALES.map(x=>({v:x.id,l:x.name}))],
+      statusOpts:[{v:'',l:'Semua status MO'},...Object.keys(STATUS).map(k=>({v:k,l:STATUS[k][0]}))],
+      billOpts:[{v:'',l:'Semua status penagihan'},...Object.keys(BILL).map(k=>({v:k,l:BILL[k][0]}))],
+      fulOpts:[{v:'',l:'Semua pemenuhan'},...Object.keys(FUL).map(k=>({v:k,l:FUL[k]}))],
+      reset:()=>this.setState({filters:{dateField:'mo',from:'2026-01',to:'2026-12',client:'',sales:'',status:'',billing:'',fulfil:'',q:''}}),
+      csv:()=>this.exportCsv(),xls:()=>this.exportXls(),create:()=>this.newMo()};
+    Object.assign(out,this.formVals(s,wide),this.detailVals(s,isAS,isFIN,wide),this.otherVals(s,isAS,row));
+    return out;}
+  formVals(s,wide){
+    if(s.screen!=='moForm')return {form:{},fs:{},err:{}};
+    const f=s.form;const t=O.tax(f.subtotal,f.taxable);const fs={};
+    ['date','pic','company','nik','address','city','postal','email','phone','ps','pe','desc','airing','detail','terms','payMethod','chequeNo','receiptNo','due','product','sid','ack','app','taxable','spotWeb','spotMobile'].forEach(k=>fs[k]=x=>this.setF(k,val(x)));
+    fs.subtotal=x=>this.setF('subtotal',String(val(x)).replace(/\D/g,''));
+    const grp=(arr,k,off)=>arr.map(l=>({label:l,on:f[k].includes(l),off:!!off,toggle:()=>this.toggleArr(k,l)}));
+    const [y,mm]=(f.date||O.TODAY).split('-').map(Number);const exMo=f.id?this.mo(f.id):null;const rev=f.revOf?this.mo(f.revOf):null;
+    const errs=s.formErr;
+    return {form:{...f,subtotalText:f.subtotal?O.rp(f.subtotal):'',isCek:f.payMethod==='Cek/BG',
+        title:rev?'Revisi Media Order':exMo?'Edit draft Media Order':'Buat Media Order',
+        subtitle:rev?'Revisi dari '+rev.number+'. MO lama sudah dibatalkan dengan alasan "Direvisi".':'Nomor MO digenerate saat submit. Validasi wajib hanya dijalankan saat Submit.',
+        nextNo:O.pad((s.seq[y]||0)+1)+'/MO-'+this.sales(f.sid).code+'/INC/'+O.ROMAN[mm-1]+'/'+y,
+        sub:O.rp(t.sub),dpp:O.rp(t.dpp),ppn:O.rp(t.ppn),total:O.rp(t.total),
+        detailHint:f.detailManual?'Diedit manual':'Terisi otomatis dari benefit',termLines:(f.terms?f.terms.split('\n').length:0)+'/10 baris',
+        cols:s.w>=1200?'minmax(0,1fr) 320px':'minmax(0,1fr)',asideSticky:s.w>=1200?'sticky':'static'},
+      fs,err:errs,hasErr:Object.keys(errs).length>0,errList:Object.values(errs).length+' isian perlu diperbaiki: '+Object.keys(errs).map(k=>({company:'Perusahaan',pic:'Nama PIC',email:'Email',phone:'No. Telp',nik:'NIK',postal:'Kode pos',date:'Tanggal',period:'Masa periode',desc:'Keterangan',benefits:'Benefit',detail:'Detail kerjasama',terms:'Term and conditions',chequeNo:'Cek/BG No',subtotal:'Subtotal'})[k]||k).join(', '),
+      adTypeOpts:grp(O.AD_TYPES,'adTypes'),placeOpts:grp(O.PLACEMENTS,'placements'),spotOpts:grp(O.SPOT_WEB,'spotWebItems',!f.spotWeb),
+      coopOpts:O.COOP.map(l=>({label:l,on:f.coop===l,off:false,toggle:()=>this.setF('coop',f.coop===l?'':l)})),
+      benRows:f.benefits.map((b,i)=>({code:b.code,qty:String(b.qty),notes:b.notes,setCode:x=>this.setBen(i,'code',val(x)),setQty:x=>this.setBen(i,'qty',val(x)),setNotes:x=>this.setBen(i,'notes',val(x)),remove:()=>this.setF('benefits',this.state.form.benefits.filter((_,j)=>j!==i)),canRemoveNot:f.benefits.length<2})),
+      addBen:()=>{const used=this.state.form.benefits.map(b=>b.code);const nx=this.state.bts.find(b=>!used.includes(b.code));this.setF('benefits',[...this.state.form.benefits,{k:O.uid(),code:nx?nx.code:'',qty:1,notes:''}]);},
+      btOpts:s.bts.map(b=>({v:b.code,l:b.name})),
+      formClientOpts:[{v:'',l:'Pilih klien tersimpan…'},...s.clients.map(c=>({v:c.id,l:c.company}))],
+      pickClient:x=>this.pickClient(val(x)),
+      newClient:()=>this.openModal('client',{fromForm:true,company:'',pic:'',email:'',phone:'',nik:'',address:'',city:'',postal:'',npwp:''}),
+      salesOpts2:O.SALES.map(x=>({v:x.id,l:x.name+' (Sales)'})),
+      tncOpts:Object.keys(O.TNC).map(k=>({v:k,l:'Template: '+k})),tncPick:s.tncPick,setTnc:x=>this.setState({tncPick:val(x)}),
+      applyTnc:()=>this.setF('terms',O.TNC[this.state.tncPick]),
+      resetDetail:()=>this.setState(x=>({form:{...x.form,detail:O.autoDetail(x.form.benefits),detailManual:false}})),
+      doSubmit:()=>this.submit(),doDraft:()=>this.saveDraft(),
+      doPreview:()=>{const id=this.upsertDraft(true);this.go('pdf',{selId:id});},
+      cancelForm:()=>this.go('mos')};
+  }
+  detailVals(s,isAS,isFIN,wide){
+    const m=(s.screen==='moDetail'||s.screen==='pdf'||s.modal)&&s.selId?this.mo(s.selId):null;
+    if(!m)return {d:{},p:{}};
+    const c=this.calc(m);const st=c.status,bi=c.billing;const sales=this.sales(m.sid);
+    const locked=bi==='BILLED'||bi==='PAID';
+    const pubOk=isAS&&['SUBMITTED','ACTIVE','COMPLETED'].includes(st)&&!locked;
+    const tabs=[['pub','Realisasi publikasi'],['sum','Ringkasan MO'],['bill','Penagihan'],['att','Lampiran & riwayat']].map(([k,l])=>({l,go:()=>this.setState({tab:k}),color:s.tab===k?'var(--primary)':'var(--ink-mute)',border:s.tab===k?'2px solid var(--primary)':'2px solid transparent'}));
+    const chk=(arr,sel)=>arr.map(l=>({l,mark:(sel||[]).includes(l)?'☑':'☐'}));
+    const kv=(k,v)=>({k,v:v||'—'});
+    const d={id:m.id,number:m.number||'Draft',numberSub:m.number?'':'Nomor MO digenerate saat submit',company:m.company,stL:STATUS[st][0],stT:STATUS[st][1],biL:BILL[bi][0],biT:BILL[bi][1],
+      total:'Rp '+O.rp(c.total),period:O.fmon(m.ps)+' – '+O.fmon(m.pe),sales:sales.name,pct:Math.round(c.pct*100)+'%',pctW:Math.round(c.pct*100)+'%',tf:c.tf+' dari '+c.tq+' konten',
+      tabs,isPub:s.tab==='pub',isSum:s.tab==='sum',isBill:s.tab==='bill',isAtt:s.tab==='att',
+      isDraft:st==='DRAFT',isCancelled:st==='CANCELLED',cancelReason:m.cancelReason,
+      canEditDraft:isAS&&st==='DRAFT',canRevise:isAS&&['SUBMITTED','ACTIVE','COMPLETED'].includes(st)&&!locked,canDup:isAS&&st!=='DRAFT',canCancel:isAS&&['SUBMITTED','ACTIVE'].includes(st)&&!locked,
+      canPub:pubOk,pubLocked:isAS&&locked,pubNoRole:isFIN,canBill:isFIN&&!['DRAFT','CANCELLED'].includes(st)&&c.billed<c.total,canUpload:isAS&&!['DRAFT','CANCELLED'].includes(st),
+      revNote:m.revOf?'Revisi dari '+((this.mo(m.revOf)||{}).number||'MO lama'):'',hasRev:!!m.revOf,
+      ben:c.ben.map(b=>({name:this.btName(b.code),text:b.f+'/'+b.qty,notes:b.notes,w:Math.round(b.pct*100)+'%',bar:b.f>=b.qty?'var(--status-success)':'var(--primary)',bonus:b.bonus?'+'+b.bonus+' bonus':'',done:b.f>=b.qty})),
+      pubs:m.pubs.slice().sort((a,b)=>b.date.localeCompare(a.date)).map(p=>({date:O.fdate(p.date),name:this.btName(p.code),title:p.title,url:p.url,bonus:p.bonus,warn:this.outside(m,p.date),del:()=>this.delPub(m.id,p.id)})),
+      hasPubs:m.pubs.length>0,noPubs:m.pubs.length===0,pubCount:m.pubs.length+' entri',
+      addPub:()=>this.openModal('pub',{code:m.benefits[0].code,date:O.TODAY,title:'',url:'',bonus:false,notes:''}),
+      addBulk:()=>this.openModal('bulk',{code:m.benefits[0].code,date:O.TODAY,text:'',bonus:false}),
+      groups:[
+        {t:'Header',rows:[kv('No. Media Order',m.number||'(otomatis)'),kv('Tanggal',O.fdate(m.date))]},
+        {t:'Data klien',rows:[kv('Nama (PIC)',m.pic),kv('Perusahaan / Biro Iklan',m.company),kv('Nomor NIK',m.nik),kv('Alamat',m.address),kv('Kota',m.city),kv('Kode Pos',m.postal),kv('Email',m.email),kv('No. Telp',m.phone)]},
+        {t:'Periode',rows:[kv('Masa periode',O.fmon(m.ps)+' - '+O.fmon(m.pe)),kv('Keterangan',m.desc)]},
+        {t:'Detail iklan',rows:[kv('Tanggal tayang',m.airing),kv('Jenis iklan',m.adTypes.join(', ')),kv('Bentuk kerjasama',m.coop),kv('Penempatan iklan',m.placements.join(', ')),kv('Spot Ads Website',m.spotWeb?(m.spotWebItems.join(', ')||'Ya'):''),kv('Spot Ads Mobile',m.spotMobile?'Ya':''),kv('Detail kerjasama',m.detail),kv('Term and conditions',m.terms)]},
+        {t:'Pembayaran',rows:[kv('Cara pembayaran',m.payMethod),kv('Cek/BG No',m.chequeNo),kv('Kwitansi No',m.receiptNo),kv('Jatuh tempo',m.due),kv('Produk iklan',m.product),kv('Subtotal','Rp '+O.rp(c.sub)),kv('DPP 11/12',m.taxable?'Rp '+O.rp(c.dpp):'Tidak kena PPN'),kv('PPN 12%',m.taxable?'Rp '+O.rp(c.ppn):'—'),kv('Total payment','Rp '+O.rp(c.total))]},
+        {t:'Penandatangan',rows:[kv('Dibuat oleh',sales.name+' · Sales'),kv('Diketahui oleh',m.ack+' · SPV Marketing & Sales'),kv('Disetujui oleh',m.app+' · Chief Business Officer')]}],
+      billTotal:'Rp '+O.rp(c.total),billed:'Rp '+O.rp(c.billed),paid:'Rp '+O.rp(c.paid),remain:'Rp '+O.rp(Math.max(0,c.total-c.paid)),
+      bills:m.bills.map(b=>({inv:b.inv,invDate:O.fdate(b.invDate),amount:'Rp '+O.rp(b.amount),paidDate:b.paidDate?O.fdate(b.paidDate):'Belum dibayar',paidAmount:b.paidAmount?'Rp '+O.rp(b.paidAmount):'—',receipt:b.receipt||'—',override:b.override,hasOverride:!!b.override,
+        canPay:isFIN&&!b.paidAmount,pay:()=>this.openModal('pay',{billId:b.id,date:O.TODAY,amount:String(b.amount),receipt:''})})),
+      hasBills:m.bills.length>0,noBills:m.bills.length===0,billNote:bi==='READY_TO_BILL'?'Semua benefit terpenuhi. MO siap ditagih.':bi==='NOT_READY'?'Benefit belum terpenuhi 100%. Penagihan tetap bisa dicatat dengan alasan (mis. termin).':bi==='PAID'?'Pembayaran sudah diterima penuh.':'Tagihan terkirim, menunggu pembayaran.',
+      addBill:()=>this.openModal('bill',{inv:'',invDate:O.TODAY,amount:String(Math.max(0,c.total-c.billed)),reason:'',notReady:bi==='NOT_READY'}),
+      atts:m.attachments,hasAtts:m.attachments.length>0,noAtts:m.attachments.length===0,onFile:e=>this.addAttachment(e),
+      log:m.log.slice().reverse(),
+      pdf:()=>this.go('pdf',{selId:m.id}),edit:()=>this.editDraft(m.id),dup:()=>this.duplicate(m.id),rev:()=>this.revise(m.id),del:()=>this.delDraft(m.id),
+      cancel:()=>this.openModal('cancel',{reason:''}),back:()=>this.go('mos'),
+      sumCols:wide?'repeat(2,minmax(0,1fr))':'minmax(0,1fr)',stripCols:s.w>=1100?'repeat(4,minmax(0,1fr))':'repeat(2,minmax(0,1fr))'};
+    const fn=('MO_'+(m.number?m.number.replace(/\//g,'-'):'DRAFT')+'_'+m.company.toUpperCase().replace(/[^A-Z0-9]+/g,'_').replace(/^_|_$/g,'')+'_'+O.fmon(m.ps).replace(' ','_')+'-'+O.fmon(m.pe).replace(' ','_')+'.pdf');
+    const p={number:m.number||'(otomatis)',date:O.fdate(m.date),draft:st==='DRAFT',signed:st!=='DRAFT',cancelled:st==='CANCELLED',fn,
+      pic:m.pic,company:m.company,nik:m.nik,address:m.address,city:m.city,postal:m.postal,email:m.email,phone:m.phone,period:O.fmon(m.ps)+' - '+O.fmon(m.pe),desc:m.desc,airing:m.airing,
+      ad:chk(O.AD_TYPES,m.adTypes),coop:chk(O.COOP,[m.coop]),place:chk(O.PLACEMENTS,m.placements),spot:chk(O.SPOT_WEB,m.spotWebItems),spotWeb:m.spotWeb?'☑':'☐',spotMobile:m.spotMobile?'☑':'☐',
+      detail:(m.detail||'').split('\n').concat(['','','','']).slice(0,4).map(t=>({t})),terms:(m.terms||'').split('\n').filter(Boolean).map((t,i)=>({t:(i+1)+'. '+t})),
+      pay:m.payMethod,cek:m.payMethod==='Cek/BG'?'☑':'☐',tf:m.payMethod==='Transfer'?'☑':'☐',chequeNo:m.chequeNo,receiptNo:m.receiptNo,due:m.due,product:m.product,
+      sub:O.rp(c.sub),dpp:O.rp(c.dpp),ppn:O.rp(c.ppn),total:O.rp(c.total),taxable:m.taxable,sales:sales.name,ack:m.ack,app:m.app,
+      back:()=>this.go(m.base==='DRAFT'&&s.form.id===m.id&&s.screen==='pdf'?'moDetail':'moDetail',{selId:m.id}),
+      download:()=>this.toast('PDF diunduh: '+fn)};
+    return {d,p};
+  }
+  otherVals(s,isAS,row){
+    const out={};const q=s.clientQ.toLowerCase();
+    const cnt=id=>s.mos.filter(m=>m.cid===id).length;
+    out.cl={q:s.clientQ,setQ:x=>this.setState({clientQ:val(x)}),canCrud:isAS,
+      rows:s.clients.filter(c=>!q||(c.company+' '+c.pic).toLowerCase().includes(q)).map(c=>({...c,city:c.city||'—',n:String(cnt(c.id)),open:()=>this.go('clientDetail',{clientId:c.id})})),
+      add:()=>this.openModal('client',{company:'',pic:'',email:'',phone:'',nik:'',address:'',city:'',postal:'',npwp:''})};
+    out.cl.empty=out.cl.rows.length===0;
+    const cd=s.clients.find(c=>c.id===s.clientId);
+    if(cd){const mos=s.mos.filter(m=>m.cid===cd.id).map(m=>row({m,c:this.calc(m)}));
+      out.cd={company:cd.company,rows:[['Nama PIC',cd.pic],['Email',cd.email],['No. Telp',cd.phone],['Nomor NIK',cd.nik?'••••••••••••'+cd.nik.slice(-4):''],['Alamat',cd.address],['Kota',cd.city],['Kode Pos',cd.postal],['NPWP',cd.npwp]].map(([k,v])=>({k,v:v||'—'})),
+        mos,hasMos:mos.length>0,noMos:mos.length===0,count:mos.length+' MO',
+        edit:()=>this.openModal('client',{...cd}),back:()=>this.go('clients'),
+        newMo:()=>{this.newMo();setTimeout(()=>this.pickClient(cd.id),0);}};}
+    else out.cd={};
+    const mt=s.masterTab;
+    out.ms={tabs:[['benefit','Jenis benefit'],['sign','Penandatangan'],['sales','Sales'],['tax','Pajak & penomoran'],['company','Profil perusahaan']].map(([k,l])=>({l,go:()=>this.setState({masterTab:k}),color:mt===k?'var(--primary)':'var(--ink-mute)',border:mt===k?'2px solid var(--primary)':'2px solid transparent'})),
+      isBenefit:mt==='benefit',isSign:mt==='sign',isSales:mt==='sales',isTax:mt==='tax',isCompany:mt==='company',
+      bts:s.bts.map((b,i)=>({...b,order:String(i+1)})),newBt:s.newBt,setNewBt:x=>this.setState({newBt:val(x)}),addBt:()=>this.addBt(),
+      signers:O.SIGNERS,sales:O.SALES.map(x=>({...x,n:String(s.mos.filter(m=>m.sid===x.id).length)})),
+      nextNo:O.pad((s.seq[2026]||0)+1)+'/MO-BMO/INC/IX/2026'};
+    // modals
+    const M=s.modal,mv=s.m;const m=s.selId?this.mo(s.selId):null;const setM=k=>x=>this.setM(k,val(x));
+    out.md={open:!!M,isPub:M==='pub',isBulk:M==='bulk',isBill:M==='bill',isPay:M==='pay',isCancel:M==='cancel',isClient:M==='client',
+      m:mv,err:mv.err||'',hasErr:!!mv.err,close:()=>this.closeModal(),
+      set:{code:setM('code'),date:setM('date'),title:setM('title'),url:setM('url'),bonus:setM('bonus'),notes:setM('notes'),text:setM('text'),inv:setM('inv'),invDate:setM('invDate'),reason:setM('reason'),receipt:setM('receipt'),
+        amount:x=>this.setM('amount',String(val(x)).replace(/\D/g,'')),company:setM('company'),pic:setM('pic'),email:setM('email'),phone:setM('phone'),nik:setM('nik'),address:setM('address'),city:setM('city'),postal:setM('postal'),npwp:setM('npwp')},
+      amountText:mv.amount?O.rp(mv.amount):'',
+      save:()=>({pub:()=>this.savePub(),bulk:()=>this.saveBulk(),bill:()=>this.saveBill(),pay:()=>this.savePay(),cancel:()=>this.saveCancel(),client:()=>this.saveClient()})[M](),
+      title:({pub:'Tambah realisasi publikasi',bulk:'Input realisasi massal',bill:'Tandai sudah ditagih',pay:'Catat pembayaran',cancel:'Batalkan MO',client:mv.id?'Edit klien':'Tambah klien baru'})[M]||'',
+      saveLabel:({pub:'Simpan realisasi',bulk:'Simpan',bill:'Simpan tagihan',pay:'Simpan pembayaran',cancel:'Batalkan MO',client:'Simpan klien'})[M]||'Simpan'};
+    if(m&&(M==='pub'||M==='bulk')){
+      out.md.benOpts=m.benefits.map(b=>({v:b.code,l:this.btName(b.code)+' (target '+b.qty+')'}));
+      out.md.periodNote='Masa periode MO: '+O.fmon(m.ps)+' – '+O.fmon(m.pe);
+      out.md.outside=this.outside(m,mv.date);
+      if(M==='bulk'){const {res,acc}=this.bulkPreview(m,mv);out.md.bulkRes=res.map(r=>({...r,color:r.ok?'var(--status-success-text)':'#b3093c'}));out.md.hasBulk=res.length>0;out.md.bulkSum=acc.length+' dari '+res.length+' URL siap disimpan';out.md.saveLabel='Simpan '+acc.length+' realisasi';}
+    }
+    if(M==='client'){const n=norm(mv.company);const dup=n.length>=3?s.clients.find(c=>c.id!==mv.id&&(norm(c.company)===n||norm(c.company).includes(n)||n.includes(norm(c.company)))):null;out.md.dupe=dup?'Mirip dengan klien yang sudah ada: '+dup.company+'. Pastikan bukan duplikat.':'';out.md.hasDupe=!!dup;}
+    if(M==='bill'){out.md.notReady=!!mv.notReady;}
+    // notif and pdf-less fallbacks
+    return out;
+  }
+}
+
+</script>
+</body>
+</html>
