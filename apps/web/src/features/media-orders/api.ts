@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import type { MediaOrderDto, MoDraftInput, TaxResult } from '@inc/shared'
+import type { MediaOrderDto, MoDraftInput, PublicationBulkResult, PublicationDto, PublicationInput, TaxResult } from '@inc/shared'
 import { api } from '@/lib/api-client'
 import { queryKeys } from '@/lib/query-keys'
 import { useDebounce } from '@/lib/use-debounce'
@@ -67,4 +67,49 @@ export function useCalculate(subtotal: string, isTaxable: boolean) {
     placeholderData: (prev) => prev,
     staleTime: Infinity,
   })
+}
+
+// ─────────────── Realisasi publikasi (M4) ───────────────
+
+export function usePublications(moId: string) {
+  return useQuery({
+    queryKey: queryKeys.mediaOrders.publications(moId),
+    queryFn: () => api<{ data: PublicationDto[] }>(`/media-orders/${moId}/publications`).then((r) => r.data),
+  })
+}
+
+type Ready = { becameReady: boolean }
+
+/** Tambah (tanpa id) atau ubah realisasi, lalu screenshot opsional. Invalidasi MO karena status & progress ikut berubah. */
+export function useSavePublication(moId: string) {
+  const invalidate = useInvalidate()
+  return useMutation({
+    mutationFn: async ({ id, body, screenshot }: { id?: string; body: PublicationInput; screenshot?: File | null }) => {
+      const res = await api<Ready & { publication: PublicationDto }>(id ? `/publications/${id}` : `/media-orders/${moId}/publications`, {
+        method: id ? 'PATCH' : 'POST',
+        json: body,
+      })
+      if (screenshot) {
+        const form = new FormData()
+        form.append('file', screenshot)
+        await api(`/publications/${res.publication.id}/screenshot`, { method: 'POST', body: form })
+      }
+      return res
+    },
+    onSettled: invalidate,
+  })
+}
+
+export function useBulkPublications(moId: string) {
+  const invalidate = useInvalidate()
+  return useMutation({
+    mutationFn: (body: { moBenefitId: string; publishedDate: string; urls: string[]; isBonus: boolean }) =>
+      api<Ready & PublicationBulkResult>(`/media-orders/${moId}/publications/bulk`, { method: 'POST', json: body }),
+    onSuccess: invalidate,
+  })
+}
+
+export function useDeletePublication() {
+  const invalidate = useInvalidate()
+  return useMutation({ mutationFn: (id: string) => api<Ready>(`/publications/${id}`, { method: 'DELETE' }), onSuccess: invalidate })
 }

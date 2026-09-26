@@ -1,11 +1,10 @@
 import { randomUUID } from 'node:crypto';
 import type { Request } from 'express';
-import { Prisma, type MoStatus } from '@prisma/client';
+import { Prisma } from '@prisma/client';
 import {
   formatMoNumber,
   moPdfFileName,
   moDraftSchema,
-  moStatusLabel,
   moSubmitSchema,
   today,
   type MediaOrderDto,
@@ -22,6 +21,8 @@ import { getObject, putObject, signedUrl } from '../../lib/storage';
 import { currentUser } from '../../middleware/authenticate';
 import { calculateTax, type TaxRate } from '../tax/tax.service';
 import { moHtml, type PdfImages } from './mo-pdf';
+import { assertTransition, lockMo } from './mo-status';
+import { recalcFulfillment } from '../publications/fulfillment.service';
 
 type Tx = Prisma.TransactionClient;
 
@@ -43,32 +44,6 @@ const org = (req: Request) => currentUser(req).orgId;
 const day = (d: Date) => d.toISOString().slice(0, 10);
 const notFound = () => new AppError('NOT_FOUND', 'Media Order tidak ditemukan', 404);
 const locked = () => new AppError('MO_LOCKED', 'MO yang sudah disubmit tidak bisa diubah. Gunakan Revisi.', 409);
-
-// ─────────────── Status (PRD §4) ───────────────
-
-const transitions: Record<MoStatus, MoStatus[]> = {
-  DRAFT: ['SUBMITTED'],
-  SUBMITTED: ['ACTIVE', 'CANCELLED'],
-  ACTIVE: ['COMPLETED', 'CANCELLED'],
-  COMPLETED: [],
-  CANCELLED: [],
-};
-
-/** Satu-satunya pintu perubahan status (ARCHITECTURE §4.3). Panggil setelah `lockMo` di transaksi yang sama. */
-export function assertTransition(from: MoStatus, to: MoStatus) {
-  if (!transitions[from].includes(to)) {
-    throw new AppError('INVALID_STATUS', `MO berstatus ${moStatusLabel[from]} tidak bisa menjadi ${moStatusLabel[to]}`, 409);
-  }
-}
-
-/** Kunci baris MO sampai transaksi selesai; mencegah edit/submit/batal bersamaan. */
-export async function lockMo(tx: Tx, orgId: string, id: string): Promise<MoStatus> {
-  const rows = await tx.$queryRaw<{ status: MoStatus }[]>(
-    Prisma.sql`SELECT status FROM media_orders WHERE id = ${id}::uuid AND organization_id = ${orgId}::uuid FOR UPDATE`,
-  );
-  if (!rows[0]) throw notFound();
-  return rows[0].status;
-}
 
 // ─────────────── Mapping ───────────────
 
@@ -128,6 +103,8 @@ async function toDto(mo: MoRow): Promise<MediaOrderDto> {
     submittedAt: mo.submittedAt?.toISOString() ?? null,
     sales: { name: mo.sales.name, code: mo.sales.code },
     signatories: { createdBy: pub(s.createdBy), acknowledgedBy: pub(s.acknowledgedBy), approvedBy: pub(s.approvedBy) },
+    fulfillmentPct: mo.fulfillmentPct.toString(),
+    benefitProgress: mo.benefits.map((b) => ({ id: b.id, benefitTypeId: b.benefitTypeId, targetQty: b.targetQty, realizedQty: b.realizedQty, bonusQty: b.bonusQty })),
     revisionOf: mo.revisionOf,
     revisedInto: mo.revisedInto,
     attachments: await Promise.all(
@@ -278,6 +255,11 @@ export async function submit(req: Request, id: string) {
       include,
     });
     await writeAudit(tx, req, { entity: 'media_order', entityId: id, action: 'SUBMIT', before, after });
+    // Draft revisi membawa realisasi MO lama: status & pemenuhan langsung dihitung ulang.
+    if (before.benefits.some((b) => b.realizedQty + b.bonusQty > 0)) {
+      await recalcFulfillment(tx, req, id);
+      return tx.mediaOrder.findUniqueOrThrow({ where: { id }, include });
+    }
     return after;
   });
   // Di luar transaksi: gagal render/unggah tidak membatalkan submit; `/pdf` merender saat diminta.
@@ -307,11 +289,11 @@ export async function revise(req: Request, id: string) {
     const draft = await createDraft(tx, req, { ...toDraft(old), moDate: today() }, id);
     for (const b of old.benefits) {
       const nb = draft.benefits.find((x) => x.benefitTypeId === b.benefitTypeId)!;
-      await tx.moBenefit.update({ where: { id: nb.id }, data: { realizedQty: b.realizedQty, bonusQty: b.bonusQty } });
       await tx.publication.updateMany({ where: { moBenefitId: b.id }, data: { mediaOrderId: draft.id, moBenefitId: nb.id } });
     }
+    await recalcFulfillment(tx, req, draft.id); // Draft: hanya angka pemenuhan, status tetap
     await writeAudit(tx, req, { entity: 'media_order', entityId: id, action: 'REVISE', after: { revisedInto: draft.id } });
-    return draft;
+    return tx.mediaOrder.findUniqueOrThrow({ where: { id: draft.id }, include });
   });
   return toDto(mo);
 }

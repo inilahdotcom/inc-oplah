@@ -1,5 +1,5 @@
 import { beforeAll, describe, expect, it, vi } from 'vitest';
-import { as } from '../../test/helpers';
+import { as, sampleMo, submittedMo } from '../../test/helpers';
 
 vi.mock('../../lib/storage', () => ({
   putObject: vi.fn(async () => undefined),
@@ -12,40 +12,11 @@ const PDF = Buffer.from('%PDF-1.4 lampiran');
 let sample: Record<string, unknown>;
 let ackName: string;
 
-// Data contoh PRD §14 (PT Bukit Asam, Artikel Rilis 12x, subtotal 20 juta).
 beforeAll(async () => {
-  const sa = await as('SUPER_ADMIN');
-  const client = (await sa.get('/clients?q=Bukit')).body.data[0];
-  const sales = (await sa.get('/sales')).body.data.find((s: { code: string }) => s.code === 'BMO');
-  const artikel = (await sa.get('/benefit-types')).body.data.find((b: { code: string }) => b.code === 'ARTIKEL_RILIS');
-  const sigs = (await sa.get('/signatories')).body.data as { id: string; name: string; docRole: string; isDefault: boolean }[];
-  const ack = sigs.find((s) => s.docRole === 'ACKNOWLEDGED_BY' && s.isDefault)!;
-  ackName = ack.name;
-  sample = {
-    moDate: '2026-05-22',
-    clientId: client.id,
-    salesId: sales.id,
-    clientSnapshot: { picName: client.picName, companyName: client.companyName, email: client.email, phone: client.phone },
-    periodStart: '2026-06-01',
-    periodEnd: '2027-05-31',
-    description: 'Publikasi Rilis Artikel',
-    selectedOptions: { AD_TYPE: ['ARTIKEL'] },
-    benefits: [{ benefitTypeId: artikel.id, targetQty: 12, notes: 'Materi Ready To Post' }],
-    cooperationDetail: 'Artikel Release (Materi Ready To Post) 12x',
-    termsConditions: 'Pembayaran pada bulan September 2026.',
-    paymentMethod: 'TRANSFER',
-    isTaxable: true,
-    subtotal: '20000000',
-    acknowledgedById: ack.id,
-    approvedById: sigs.find((s) => s.docRole === 'APPROVED_BY' && s.isDefault)!.id,
-  };
+  ({ sample, ackName } = await sampleMo());
 });
 
-const createSubmitted = async () => {
-  const s = await as('ADMIN_SALES');
-  const draft = await s.post('/media-orders').send(sample);
-  return (await s.post(`/media-orders/${draft.body.id}/submit`)).body;
-};
+const createSubmitted = () => submittedMo(sample);
 
 describe('Pajak', () => {
   it('AC M3: 20.000.000 → DPP 18.333.333, PPN 2.200.000, Total 22.200.000', async () => {

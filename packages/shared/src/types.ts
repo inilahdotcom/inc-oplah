@@ -158,7 +158,36 @@ export interface MediaOrderDto extends MoDraft {
   submittedAt: string | null;
   sales: { name: string; code: string };
   signatories: { createdBy: Signer; acknowledgedBy: Signer; approvedBy: Signer };
+  fulfillmentPct: string;
+  /** Progress per benefit (FR-PUB-07). `id` = mo_benefit id, dipakai saat input realisasi. */
+  benefitProgress: { id: string; benefitTypeId: string; targetQty: number; realizedQty: number; bonusQty: number }[];
   revisionOf: { id: string; moNumber: string | null } | null;
   revisedInto: { id: string; moNumber: string | null } | null;
   attachments: MoAttachmentDto[];
+}
+
+export interface PublicationDto {
+  id: string;
+  moBenefitId: string;
+  benefitTypeId: string;
+  publishedDate: string;
+  title: string | null;
+  url: string;
+  notes: string | null;
+  isBonus: boolean;
+  screenshotUrl: string | null;
+  createdAt: string;
+}
+
+export interface PublicationBulkResult {
+  created: number;
+  rejected: { url: string; reason: string }[];
+}
+
+export interface NotificationDto {
+  id: string;
+  type: 'MO_READY_TO_BILL' | 'MO_PERIOD_ENDING' | 'MO_BILLING_OVERRIDE';
+  payload: { moId: string; moNumber: string | null; companyName: string | null };
+  readAt: string | null;
+  createdAt: string;
 }

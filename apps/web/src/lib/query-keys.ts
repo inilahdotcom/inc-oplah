@@ -8,6 +8,7 @@ export const queryKeys = {
   mediaOrders: {
     all: ['media-orders'] as const,
     detail: (id: string) => ['media-orders', id] as const,
+    publications: (id: string) => ['media-orders', id, 'publications'] as const,
     calculate: (subtotal: string, isTaxable: boolean) => ['media-orders', 'calculate', subtotal, isTaxable] as const,
   },
   sales: ['master', 'sales'] as const,
@@ -16,4 +17,5 @@ export const queryKeys = {
   formOptions: ['master', 'form-options'] as const,
   settings: ['master', 'settings'] as const,
   users: ['users'] as const,
+  notifications: ['notifications'] as const,
 }

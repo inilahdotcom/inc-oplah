@@ -28,15 +28,23 @@ import {
 } from '@/components/ui/alert-dialog'
 import { Textarea } from '@/components/ui/textarea'
 import { downloadFile } from '@/lib/api-client'
+import { cn } from '@/lib/utils'
 import { useCurrentUser } from '@/lib/auth-store'
 import { queryKeys } from '@/lib/query-keys'
 import { useMasterList } from '@/features/master-data/api'
+import { PublicationsTab } from '../components/PublicationsTab'
 import { useDeleteMo, useMediaOrder, useMoAction, useRegeneratePdf, useUploadAttachment, type MoAction } from '../api'
 
 type Confirm = 'delete' | 'revise' | 'cancel' | null
+type Tab = 'realisasi' | 'ringkasan' | 'lampiran'
+const TABS: [Tab, string][] = [
+  ['realisasi', 'Realisasi publikasi'],
+  ['ringkasan', 'Ringkasan MO'],
+  ['lampiran', 'Lampiran'],
+]
 const fail = (e: unknown) => toast(e instanceof Error ? e.message : 'Gagal memproses')
 
-/** Detail MO (README desain §7). Tab Realisasi, Penagihan & Riwayat menyusul di M4–M6. */
+/** Detail MO (README desain §5). Tab Penagihan menyusul di M5, riwayat audit di M6. */
 export function MoDetailPage() {
   const id = useParams().id!
   const query = useMediaOrder(id)
@@ -56,6 +64,7 @@ function MoDetail({ mo }: { mo: MediaOrderDto }) {
   const remove = useDeleteMo()
   const regenerate = useRegeneratePdf()
   const [confirm, setConfirm] = useState<Confirm>(null)
+  const [tab, setTab] = useState<Tab>(mo.status === 'DRAFT' ? 'ringkasan' : 'realisasi')
   const [reason, setReason] = useState('')
 
   const isDraft = mo.status === 'DRAFT'
@@ -173,17 +182,37 @@ function MoDetail({ mo }: { mo: MediaOrderDto }) {
           ['Total payment', `Rp ${formatRupiah(mo.totalAmount)}`],
           ['Masa periode', formatPeriode(mo.periodStart, mo.periodEnd)],
           ['Sales', `${mo.sales.name} (${mo.sales.code})`],
-          ['Tanggal MO', formatTanggal(mo.moDate)],
         ].map(([k, v]) => (
           <div key={k} className="flex flex-col gap-1 border-hairline px-5 py-4 not-first:border-l">
             <span className="text-xs text-ink-mute">{k}</span>
             <span className="tnum text-base">{v}</span>
           </div>
         ))}
+        <div className="flex flex-col gap-1.5 border-l border-hairline px-5 py-4">
+          <span className="text-xs text-ink-mute">Pemenuhan</span>
+          <span className="tnum text-base">{Number(mo.fulfillmentPct).toLocaleString('id-ID')}%</span>
+          <div className="h-1.5 overflow-hidden rounded-full bg-canvas-soft">
+            <div className={cn('h-full rounded-full', Number(mo.fulfillmentPct) >= 100 ? 'bg-[#15be53]' : 'bg-primary')} style={{ width: `${Math.min(100, Number(mo.fulfillmentPct))}%` }} />
+          </div>
+        </div>
       </div>
 
-      <Summary mo={mo} />
-      <Attachments mo={mo} />
+      <nav className="flex gap-5 overflow-x-auto border-b border-hairline" aria-label="Tab detail MO">
+        {TABS.map(([key, label]) => (
+          <button
+            key={key}
+            type="button"
+            onClick={() => setTab(key)}
+            aria-current={tab === key ? 'page' : undefined}
+            className={cn('-mb-px border-b-2 py-2.5 text-sm whitespace-nowrap', tab === key ? 'border-primary text-primary' : 'border-transparent text-ink-mute hover:text-ink')}
+          >
+            {label}
+          </button>
+        ))}
+      </nav>
+      {tab === 'realisasi' && <PublicationsTab mo={mo} />}
+      {tab === 'ringkasan' && <Summary mo={mo} />}
+      {tab === 'lampiran' && <Attachments mo={mo} />}
 
       <AlertDialog open={confirm === 'delete'} onOpenChange={(o) => !o && setConfirm(null)}>
         <AlertDialogContent>

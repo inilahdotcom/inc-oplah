@@ -31,3 +31,5 @@ function fileUpload(types: FileType[], maxMb: number, typeMessage: string): Requ
 export const pngUpload = fileUpload(['png'], 2, 'File harus berupa gambar PNG');
 /** Lampiran MO bertanda tangan: PDF/JPG/PNG maks 10 MB (FR-MO-12). */
 export const attachmentUpload = fileUpload(['pdf', 'jpg', 'png'], 10, 'File harus berupa PDF, JPG, atau PNG');
+/** Screenshot realisasi: PNG/JPG maks 5 MB (FR-PUB-01). */
+export const imageUpload = fileUpload(['png', 'jpg'], 5, 'File harus berupa gambar PNG atau JPG');

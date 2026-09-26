@@ -1,6 +1,7 @@
 import { NavLink, Outlet, useLocation, useNavigate } from 'react-router-dom'
 import { roleLabel } from '@inc/shared'
 import { LogoMark } from '@/components/logo-mark'
+import { NotificationBell } from '@/components/notification-bell'
 import { useAuth, useCurrentUser } from '@/lib/auth-store'
 import { cn } from '@/lib/utils'
 import { navFor } from '../nav'
@@ -62,6 +63,7 @@ export function AppLayout() {
         <header className="sticky top-0 z-10 flex h-14 items-center gap-3 border-b border-hairline bg-background px-5">
           <span className="truncate text-sm text-ink-mute">Inilah.com{crumb ? ` / ${crumb}` : ''}</span>
           <div className="flex-1" />
+          <NotificationBell />
           <div className="flex items-center gap-2">
             <span className="flex size-[30px] items-center justify-center rounded-full bg-brand-dark text-xs font-normal text-white" aria-hidden>
               {initials(user.name)}

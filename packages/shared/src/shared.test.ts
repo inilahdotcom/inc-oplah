@@ -10,6 +10,8 @@ import {
   monthRange,
   moPdfFileName,
   moSubmitSchema,
+  normalizeUrl,
+  isHttpUrl,
   normalizeCompanyName,
   toCode,
 } from './index';
@@ -96,4 +98,11 @@ describe('MO', () => {
     const bad = moSubmitSchema.safeParse({ ...draft, benefits: [], paymentMethod: 'CHEQUE_BG', subtotal: '0', periodEnd: '2026-01-31' });
     expect(bad.error?.issues.map((i) => i.path.join('.')).sort()).toEqual(['benefits', 'chequeNo', 'periodEnd', 'subtotal']);
   });
+});
+
+it('normalizeUrl: host kecil, tanpa www/utm/hash/slash akhir', () => {
+  expect(normalizeUrl('https://WWW.Inilah.com/berita/abc/?utm_source=x&id=2#top')).toBe('https://inilah.com/berita/abc?id=2');
+  expect(normalizeUrl('https://inilah.com/berita/abc')).toBe(normalizeUrl('https://www.inilah.com/berita/abc/'));
+  expect(isHttpUrl('ftp://a.b')).toBe(false);
+  expect(isHttpUrl('bukan url')).toBe(false);
 });
