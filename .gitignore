@@ -26,3 +26,6 @@ dist-ssr
 apps/api/.env
 apps/web/.env
 bun.lock
+# Playwright
+test-results/
+playwright-report/

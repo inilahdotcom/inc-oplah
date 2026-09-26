@@ -50,3 +50,11 @@ Keputusan yang tidak dijawab dokumen acuan (PRD §0.6, AGENT.md §1). Format: ta
 | 2026-09-26 | Status otomatis M4 | `recalcFulfillment` (satu fungsi) dipanggil di transaksi setiap perubahan realisasi, saat revisi, dan saat submit draft revisi: SUBMITTED→ACTIVE (realisasi/lampiran pertama), ACTIVE→COMPLETED (semua 100%), COMPLETED→ACTIVE (turun & belum BILLED); penagihan NOT_READY⇄READY_TO_BILL, BILLED/PAID tidak disentuh | PRD §5.7, ARCHITECTURE §4.3 |
 | 2026-09-26 | Notifikasi | In-app saja; web polling tiap 60 detik. Notifikasi H-30 akhir periode (job terjadwal) menyusul M6 | PRD §13 menempatkan notifikasi H-30 di M6 |
 | 2026-09-26 | Detail MO | Tab: Realisasi publikasi · Ringkasan MO · Lampiran. Tab Penagihan menyusul M5, riwayat audit M6 | Sesuai milestone |
+| 2026-09-26 | Daftar MO | Satu halaman `/mo` untuk semua role (desain §3), bukan `/finance` terpisah (ARCHITECTURE). Endpoint `GET /media-orders` + ekspor `GET /finance/media-orders/export` memakai filter yang sama. Draft ikut tampil (bisa difilter status); chip penagihan tidak menghitung Draft/Dibatalkan; footer tanpa Dibatalkan | Desain lebih baru & satu daftar lebih sederhana |
+| 2026-09-26 | Ekspor Excel | ExcelJS, workbook di memori (maks 20 rb baris), bukan mode streaming | Volume MO jauh di bawah batas; ditandai `ponytail:` |
+| 2026-09-26 | Penagihan | Nominal tagihan tidak boleh melebihi sisa belum ditagih. Menagih saat `NOT_READY` wajib alasan (`override_reason`) dan memberi notifikasi `MO_BILLING_OVERRIDE` ke Super Admin. PAID bila total dibayar ≥ total MO | FR-FIN-05, enum notifikasi yang sudah ada |
+| 2026-09-26 | Dashboard | Grafik batang dengan CSS, tanpa library chart | 12 batang sederhana |
+| 2026-09-26 | Job terjadwal | Interval dalam proses API tiap jam (idempoten, advisory lock) menggantikan cron 08:00/02:00 | Tanpa dependensi scheduler; ditandai `ponytail:` |
+| 2026-09-26 | Riwayat audit | Tab "Lampiran & riwayat" menampilkan audit MO + realisasi + tagihan (dicocokkan lewat `mediaOrderId` di JSON audit), maks 200 entri | FR-AUD-01 |
+| 2026-09-26 | E2E | Playwright (`bun run e2e`) memakai DB dev dan membuat data uji sendiri (klien `PT E2E …`) | PRD §13 M6 |
+| 2026-09-26 | Deployment | Dokumen untuk satu server + nginx (origin sama, `/api` di-proxy). Dockerfile belum dibuat | Platform hosting belum ditentukan |

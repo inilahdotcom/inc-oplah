@@ -23,6 +23,7 @@ import {
 } from '@inc/shared'
 import { Field, Notice, selectClass } from '@/components/field'
 import { PageHeader } from '@/components/page-header'
+import { RupiahInput } from '@/components/rupiah-input'
 import { QueryState } from '@/components/query-state'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -534,19 +535,7 @@ function MoForm({ mo, master }: { mo?: MediaOrderDto; master: Master }) {
                   control={control}
                   name="subtotal"
                   render={({ field }) => (
-                    <div className="relative">
-                      <span className="pointer-events-none absolute top-1/2 left-3 -translate-y-1/2 text-[15px] text-ink-mute">Rp</span>
-                      <Input
-                        id="mo-subtotal"
-                        inputMode="numeric"
-                        className="tnum pl-10"
-                        placeholder="20.000.000"
-                        aria-invalid={!!err('subtotal')}
-                        value={field.value ? formatRupiah(field.value) : ''}
-                        onChange={(e) => field.onChange(e.target.value.replace(/\D/g, '').replace(/^0+(?=\d)/, '').slice(0, 15))}
-                        onBlur={field.onBlur}
-                      />
-                    </div>
+                    <RupiahInput id="mo-subtotal" placeholder="20.000.000" aria-invalid={!!err('subtotal')} value={field.value} onChange={field.onChange} onBlur={field.onBlur} />
                   )}
                 />
               </Field>

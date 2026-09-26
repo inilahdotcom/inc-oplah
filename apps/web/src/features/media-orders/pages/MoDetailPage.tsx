@@ -1,5 +1,5 @@
 import { useRef, useState } from 'react'
-import { Link, useNavigate, useParams } from 'react-router-dom'
+import { Link, useNavigate, useParams, useSearchParams } from 'react-router-dom'
 import { toast } from 'sonner'
 import {
   can,
@@ -32,19 +32,22 @@ import { cn } from '@/lib/utils'
 import { useCurrentUser } from '@/lib/auth-store'
 import { queryKeys } from '@/lib/query-keys'
 import { useMasterList } from '@/features/master-data/api'
+import { BillingTab } from '@/features/finance/BillingTab'
+import { useHistory } from '@/features/finance/api'
 import { PublicationsTab } from '../components/PublicationsTab'
 import { useDeleteMo, useMediaOrder, useMoAction, useRegeneratePdf, useUploadAttachment, type MoAction } from '../api'
 
 type Confirm = 'delete' | 'revise' | 'cancel' | null
-type Tab = 'realisasi' | 'ringkasan' | 'lampiran'
+type Tab = 'realisasi' | 'ringkasan' | 'penagihan' | 'lampiran'
 const TABS: [Tab, string][] = [
   ['realisasi', 'Realisasi publikasi'],
   ['ringkasan', 'Ringkasan MO'],
-  ['lampiran', 'Lampiran'],
+  ['penagihan', 'Penagihan'],
+  ['lampiran', 'Lampiran & riwayat'],
 ]
 const fail = (e: unknown) => toast(e instanceof Error ? e.message : 'Gagal memproses')
 
-/** Detail MO (README desain §5). Tab Penagihan menyusul di M5, riwayat audit di M6. */
+/** Detail MO (README desain §5): tab dari `?tab=` agar bisa ditautkan (Finance langsung ke Penagihan). */
 export function MoDetailPage() {
   const id = useParams().id!
   const query = useMediaOrder(id)
@@ -64,7 +67,9 @@ function MoDetail({ mo }: { mo: MediaOrderDto }) {
   const remove = useDeleteMo()
   const regenerate = useRegeneratePdf()
   const [confirm, setConfirm] = useState<Confirm>(null)
-  const [tab, setTab] = useState<Tab>(mo.status === 'DRAFT' ? 'ringkasan' : 'realisasi')
+  const [params, setParams] = useSearchParams()
+  const tab = (TABS.find(([k]) => k === params.get('tab'))?.[0] ?? (mo.status === 'DRAFT' ? 'ringkasan' : 'realisasi')) as Tab
+  const setTab = (t: Tab) => setParams({ tab: t }, { replace: true })
   const [reason, setReason] = useState('')
 
   const isDraft = mo.status === 'DRAFT'
@@ -212,7 +217,13 @@ function MoDetail({ mo }: { mo: MediaOrderDto }) {
       </nav>
       {tab === 'realisasi' && <PublicationsTab mo={mo} />}
       {tab === 'ringkasan' && <Summary mo={mo} />}
-      {tab === 'lampiran' && <Attachments mo={mo} />}
+      {tab === 'penagihan' && <BillingTab mo={mo} />}
+      {tab === 'lampiran' && (
+        <>
+          <Attachments mo={mo} />
+          <History moId={mo.id} />
+        </>
+      )}
 
       <AlertDialog open={confirm === 'delete'} onOpenChange={(o) => !o && setConfirm(null)}>
         <AlertDialogContent>
@@ -413,6 +424,33 @@ function Attachments({ mo }: { mo: MediaOrderDto }) {
           {mo.status === 'SUBMITTED' && <span className="text-xs">Unggahan pertama mengubah status MO menjadi Berjalan.</span>}
         </div>
       )}
+    </section>
+  )
+}
+
+/** Riwayat perubahan dari audit_logs (FR-AUD-01). */
+function History({ moId }: { moId: string }) {
+  const query = useHistory(moId)
+  return (
+    <section className="flex flex-col gap-2 rounded-lg border border-hairline bg-background px-6 py-5">
+      <h2 className="text-base font-normal">Riwayat</h2>
+      <QueryState query={query} rows={3} isEmpty={(d) => d.length === 0} empty="Belum ada riwayat.">
+        {(rows) => (
+          <ol className="flex flex-col">
+            {rows.map((r) => (
+              <li key={r.id} className="flex flex-wrap justify-between gap-x-4 gap-y-0.5 border-t border-hairline py-2.5 text-sm">
+                <span>
+                  {r.action}
+                  {r.summary && <span className="text-ink-mute"> · {r.summary}</span>}
+                </span>
+                <span className="text-[13px] text-ink-mute">
+                  {r.userName ?? 'Sistem'} · {new Date(r.createdAt).toLocaleString('id-ID', { dateStyle: 'medium', timeStyle: 'short', timeZone: 'Asia/Jakarta' })}
+                </span>
+              </li>
+            ))}
+          </ol>
+        )}
+      </QueryState>
     </section>
   )
 }

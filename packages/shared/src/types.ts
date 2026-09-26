@@ -164,6 +164,19 @@ export interface MediaOrderDto extends MoDraft {
   revisionOf: { id: string; moNumber: string | null } | null;
   revisedInto: { id: string; moNumber: string | null } | null;
   attachments: MoAttachmentDto[];
+  billings: BillingDto[];
+}
+
+export interface BillingDto {
+  id: string;
+  invoiceNo: string;
+  invoiceDate: string;
+  amount: string;
+  paidDate: string | null;
+  paidAmount: string | null;
+  receiptNo: string | null;
+  overrideReason: string | null;
+  notes: string | null;
 }
 
 export interface PublicationDto {
@@ -190,4 +203,48 @@ export interface NotificationDto {
   payload: { moId: string; moNumber: string | null; companyName: string | null };
   readAt: string | null;
   createdAt: string;
+}
+
+/** Baris Daftar MO (PRD §5.8). `benefits` per benefitTypeId. */
+export interface MoListRow {
+  id: string;
+  moNumber: string | null;
+  moDate: string;
+  periodStart: string;
+  periodEnd: string;
+  companyName: string | null;
+  salesName: string;
+  subtotal: string;
+  ppnAmount: string;
+  totalAmount: string;
+  fulfillmentPct: string;
+  status: MoStatus;
+  billingStatus: BillingStatus;
+  benefits: Record<string, { targetQty: number; realizedQty: number }>;
+}
+
+export interface MoListResponse extends Paginated<MoListRow> {
+  totals: { subtotal: string; ppnAmount: string; totalAmount: string };
+  /** Hitungan chip status penagihan (tanpa Draft & Dibatalkan), mengikuti filter lain. */
+  billingCounts: Record<BillingStatus, number>;
+}
+
+export interface DashboardDto {
+  year: number;
+  moCount: number;
+  contractValue: string;
+  readyCount: number;
+  receivable: string;
+  months: { month: number; count: number; total: string }[];
+  ready: { id: string; moNumber: string | null; companyName: string | null; totalAmount: string }[];
+  ending: { id: string; moNumber: string | null; companyName: string | null; periodEnd: string; fulfillmentPct: string }[];
+}
+
+export interface AuditEntryDto {
+  id: string;
+  entity: string;
+  action: string;
+  userName: string | null;
+  createdAt: string;
+  summary: string | null;
 }

@@ -2,13 +2,30 @@
   "name": "inc-oplah",
   "private": true,
   "packageManager": "bun@1.3.14",
-  "engines": { "node": ">=20" },
-  "workspaces": ["apps/*", "packages/*"],
-  "trustedDependencies": ["@prisma/client", "@prisma/engines", "@swc/core", "bcrypt", "esbuild", "prisma", "puppeteer"],
+  "engines": {
+    "node": ">=20"
+  },
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "trustedDependencies": [
+    "@prisma/client",
+    "@prisma/engines",
+    "@swc/core",
+    "bcrypt",
+    "esbuild",
+    "prisma",
+    "puppeteer"
+  ],
   "scripts": {
     "dev": "bun --filter web --filter api dev",
     "lint": "bun --filter './apps/*' --filter './packages/*' lint",
     "typecheck": "bun --filter './apps/*' --filter './packages/*' typecheck",
-    "test": "bun --filter './apps/*' --filter './packages/*' test"
+    "test": "bun --filter './apps/*' --filter './packages/*' test",
+    "e2e": "playwright test"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.63.0"
   }
 }

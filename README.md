@@ -4,7 +4,7 @@ Monorepo (bun workspaces):
 
 | Path | Isi |
 |---|---|
-| `apps/web` | React 18 + Vite + Tailwind v4 + shadcn/ui |
+| `apps/web` | React 19 + Vite + Tailwind v4 + shadcn/ui (Base UI) |
 | `apps/api` | Node.js + Express 5 + Prisma 5 (PostgreSQL 16) |
 | `packages/shared` | `@inc/shared`: enum, matriks izin, skema Zod, util format |
 
@@ -41,10 +41,16 @@ Tanpa kredensial, API tetap jalan; hanya endpoint upload yang membalas "Storage 
 
 ```bash
 bun run lint && bun run typecheck && bun run test   # test API me-reset database inc_mo_test
+bun run e2e                                         # Playwright alur utama; butuh DB dev ter-seed (memakai `bun run dev` bila belum jalan)
 ```
+
+Pertama kali: `bunx playwright install chromium`. Produksi: [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md).
 
 ## Status milestone
 
 - [x] **M1 Fondasi**: monorepo, Docker, schema + migration (termasuk constraint & view `v_mo_finance`), seed, auth (login/refresh/logout/me), RBAC, halaman Login + app shell.
 - [x] **M2 Master data & klien**: CRUD klien + pencarian + peringatan duplikat, master data (benefit, penandatangan + upload TTD/stempel, sales, opsi formulir, pajak & penomoran, profil perusahaan, pengguna).
-- [ ] M3 MO & PDF · M4 Realisasi · M5 Finance · M6 Hardening
+- [x] **M3 MO & PDF**: form MO A–F, pajak (`tax.service`), draft/submit, penomoran, PDF Puppeteer, revisi, duplikat, lampiran.
+- [x] **M4 Realisasi**: input tunggal & massal, kuota/bonus/URL ganda, progress per benefit, status otomatis COMPLETED/READY_TO_BILL, notifikasi Finance.
+- [x] **M5 Finance**: Daftar MO (filter tanggal/periode overlap, kolom benefit dinamis, footer total), ekspor Excel/CSV, penagihan bertahap BILLED→PAID (+ alasan bila < 100%), dashboard.
+- [x] **M6 Hardening**: riwayat audit per MO, notifikasi H-30 (job terjadwal), E2E Playwright alur utama, [dokumentasi deployment](docs/DEPLOYMENT.md).

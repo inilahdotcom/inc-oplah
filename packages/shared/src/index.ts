@@ -9,3 +9,4 @@ export * from './schemas/master-data';
 export * from './schemas/user';
 export * from './schemas/media-order';
 export * from './schemas/publication';
+export * from './schemas/finance';

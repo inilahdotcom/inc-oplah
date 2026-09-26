@@ -23,6 +23,7 @@ import { calculateTax, type TaxRate } from '../tax/tax.service';
 import { moHtml, type PdfImages } from './mo-pdf';
 import { assertTransition, lockMo } from './mo-status';
 import { recalcFulfillment } from '../publications/fulfillment.service';
+import { toBillingDto } from '../finance/finance.service';
 
 type Tx = Prisma.TransactionClient;
 
@@ -32,6 +33,7 @@ const include = {
   approvedBy: true,
   benefits: { orderBy: { sortOrder: 'asc' } },
   attachments: { orderBy: { createdAt: 'desc' } },
+  billings: { orderBy: [{ invoiceDate: 'asc' }, { createdAt: 'asc' }] },
   revisionOf: { select: { id: true, moNumber: true } },
   revisedInto: { select: { id: true, moNumber: true } },
 } satisfies Prisma.MediaOrderInclude;
@@ -117,6 +119,7 @@ async function toDto(mo: MoRow): Promise<MediaOrderDto> {
         url: await signedUrl(a.fileKey),
       })),
     ),
+    billings: mo.billings.map(toBillingDto),
   };
 }
 
@@ -386,4 +389,50 @@ export async function regeneratePdf(req: Request, id: string) {
   if (!mo) throw notFound();
   if (mo.status === 'DRAFT') throw new AppError('INVALID_STATUS', 'PDF final hanya untuk MO yang sudah disubmit', 409);
   await storePdf(mo);
+}
+
+// ─────────────── Riwayat (FR-AUD-01) ───────────────
+
+type AuditRow = { id: string; entity: string; action: string; before: Record<string, unknown> | null; after: Record<string, unknown> | null; user_name: string | null; created_at: Date };
+
+const ACTION_LABEL: Record<string, string> = {
+  CREATE: 'Dibuat',
+  UPDATE: 'Diubah',
+  DELETE: 'Dihapus',
+  SUBMIT: 'Disubmit',
+  CANCEL: 'Dibatalkan',
+  REVISE: 'Direvisi',
+  STATUS_CHANGE: 'Status berubah',
+};
+
+/** Ringkasan satu baris untuk tampilan riwayat; detail lengkap tetap di kolom JSONB audit_logs. */
+function auditSummary(r: AuditRow): string | null {
+  const v = r.after ?? r.before ?? {};
+  if (r.entity === 'publication') return `Realisasi: ${String(v.url ?? '')}`;
+  if (r.entity === 'billing') return r.action === 'CREATE' ? `Tagihan ${String(v.invoiceNo)} Rp ${String(v.amount)}` : `Pembayaran ${String(v.invoiceNo)} Rp ${String(v.paidAmount ?? '')}`;
+  if (r.action === 'STATUS_CHANGE') return Object.entries(r.after ?? {}).map(([k, to]) => `${k}: ${String((r.before ?? {})[k])} → ${String(to)}`).join(', ');
+  if (r.action === 'CANCEL') return `Alasan: ${String(v.cancelReason ?? '')}`;
+  if (r.action === 'SUBMIT') return `Nomor ${String(v.moNumber ?? '')}`;
+  if (v.attachment) return `Lampiran: ${String((v.attachment as { fileName?: string }).fileName ?? '')}`;
+  return null;
+}
+
+/** Audit MO beserta realisasi & tagihannya (dicocokkan lewat `mediaOrderId` di snapshot JSON). */
+export async function history(req: Request, id: string) {
+  if (!(await prisma.mediaOrder.count({ where: { id, organizationId: org(req) } }))) throw notFound();
+  const rows = await prisma.$queryRaw<AuditRow[]>(Prisma.sql`
+    SELECT a.id, a.entity, a.action, a.before, a.after, u.name AS user_name, a.created_at
+    FROM audit_logs a LEFT JOIN users u ON u.id = a.user_id
+    WHERE a.organization_id = ${org(req)}::uuid
+      AND ((a.entity = 'media_order' AND a.entity_id = ${id}::uuid)
+        OR (a.entity IN ('publication', 'billing') AND COALESCE(a.after->>'mediaOrderId', a.before->>'mediaOrderId') = ${id}))
+    ORDER BY a.created_at DESC LIMIT 200`);
+  return rows.map((r) => ({
+    id: r.id,
+    entity: r.entity,
+    action: ACTION_LABEL[r.action] ?? r.action,
+    userName: r.user_name,
+    createdAt: r.created_at.toISOString(),
+    summary: auditSummary(r),
+  }));
 }

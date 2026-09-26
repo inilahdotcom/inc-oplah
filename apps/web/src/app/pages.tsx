@@ -2,18 +2,6 @@ import { Link } from 'react-router-dom'
 import { PageHeader } from '@/components/page-header'
 import { buttonVariants } from '@/components/ui/button'
 
-/** Halaman fitur yang dibangun di milestone berikutnya (PRD §13). */
-export function ComingSoonPage({ title, milestone }: { title: string; milestone: string }) {
-  return (
-    <div className="flex flex-col gap-6">
-      <PageHeader eyebrow={`Segera hadir · ${milestone}`} title={title} />
-      <div className="rounded-lg border border-dashed border-hairline bg-canvas-soft p-8 text-sm text-ink-mute">
-        Halaman ini dikerjakan pada milestone {milestone}.
-      </div>
-    </div>
-  )
-}
-
 export function ForbiddenPage() {
   return (
     <div className="flex flex-col items-start gap-4">

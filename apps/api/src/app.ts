@@ -16,6 +16,7 @@ import { masterDataRouter } from './modules/master-data/master-data.routes';
 import { mediaOrdersRouter } from './modules/media-orders/media-orders.routes';
 import { publicationsRouter } from './modules/publications/publications.routes';
 import { notificationsRouter } from './modules/notifications/notifications.routes';
+import { financeRouter } from './modules/finance/finance.routes';
 
 export const app = express();
 
@@ -36,6 +37,7 @@ api.use('/auth', authRouter);
 api.use('/users', usersRouter);
 api.use('/clients', clientsRouter);
 api.use('/notifications', notificationsRouter);
+api.use(financeRouter); // GET /media-orders, /finance/*, billings
 api.use(publicationsRouter); // /media-orders/:id/publications, /publications/:id
 api.use('/media-orders', mediaOrdersRouter);
 api.use(masterDataRouter); // /sales, /signatories, /benefit-types, /form-options, /settings

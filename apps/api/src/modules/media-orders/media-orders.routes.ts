@@ -6,7 +6,7 @@ import { paramId, validate } from '../../middleware/validate';
 import { attachmentUpload } from '../../lib/upload';
 import * as mo from './media-orders.service';
 
-// RBAC PRD §3 / §10. Daftar MO (GET /) menyusul di M5.
+// RBAC PRD §3 / §10. Daftar MO (GET /media-orders) ada di modul finance.
 export const mediaOrdersRouter = Router();
 mediaOrdersRouter.use(authenticate);
 
@@ -16,6 +16,7 @@ const edit = requireRole('editMo');
 mediaOrdersRouter.post('/calculate', edit, validate(calculateSchema), async (req, res) => res.json(await mo.calculate(req, req.body)));
 mediaOrdersRouter.post('/', edit, validate(moDraftSchema), async (req, res) => res.status(201).json(await mo.create(req, req.body)));
 mediaOrdersRouter.get('/:id', requireRole('viewMo'), byId, async (req, res) => res.json(await mo.get(req, paramId(req))));
+mediaOrdersRouter.get('/:id/history', requireRole('viewMo'), byId, async (req, res) => res.json({ data: await mo.history(req, paramId(req)) }));
 // Body divalidasi di service setelah cek kunci, agar MO terkunci selalu 409 (bukan 400).
 mediaOrdersRouter.patch('/:id', edit, byId, async (req, res) => res.json(await mo.update(req, paramId(req), req.body)));
 mediaOrdersRouter.delete('/:id', edit, byId, async (req, res) => {

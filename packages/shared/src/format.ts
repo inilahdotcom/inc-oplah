@@ -50,3 +50,8 @@ export const moPdfFileName = (mo: { moNumber: string | null; companyName: string
   const period = `${formatBulan(mo.periodStart)}-${formatBulan(mo.periodEnd)}`.replaceAll(' ', '_');
   return `MO_${(mo.moNumber ?? 'DRAFT').replaceAll('/', '-')}_${slug(mo.companyName).toUpperCase()}_${period}.pdf`;
 };
+
+const bulanPendek = new Intl.DateTimeFormat('id-ID', { month: 'short', year: 'numeric', timeZone: 'UTC' });
+/** Kolom Periode Tayang daftar MO (PRD §5.8): "Jun 2026 – Mei 2027". */
+export const formatPeriodeSingkat = (start: string, end: string) =>
+  `${bulanPendek.format(new Date(start.slice(0, 10)))} – ${bulanPendek.format(new Date(end.slice(0, 10)))}`;
