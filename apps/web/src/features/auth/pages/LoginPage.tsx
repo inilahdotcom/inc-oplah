@@ -6,7 +6,7 @@ import { toast } from 'sonner'
 import { loginSchema, type LoginInput } from '@inc/shared'
 import { Field } from '@/components/field'
 import { GradientMesh } from '@/components/gradient-mesh'
-import { LogoMark } from '@/components/logo-mark'
+import logo from '@/assets/oplah-brand/oplah-logo.svg'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { ApiError } from '@/lib/api-client'
@@ -54,12 +54,9 @@ export function LoginPage() {
         noValidate
         className="relative flex w-full max-w-[420px] flex-col gap-5 rounded-lg border border-hairline bg-background p-8 shadow-l2"
       >
-        <div className="flex items-center gap-2.5">
-          <LogoMark className="size-7 text-[13px]" />
-          <div className="flex flex-col">
-            <span className="text-sm font-normal">Inilah.com</span>
-            <span className="text-xs text-ink-mute">Client &amp; Media Order Management</span>
-          </div>
+        <div className="flex flex-col gap-1.5">
+          <img src={logo} alt="Oplah" className="h-8 w-fit" />
+          <span className="text-xs text-ink-mute">Client &amp; Media Order Management · Inilah.com</span>
         </div>
 
         <div className="flex flex-col gap-1.5">

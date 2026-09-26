@@ -1,6 +1,9 @@
+import { useState } from 'react'
 import { NavLink, Outlet, useLocation, useNavigate } from 'react-router-dom'
+import { LogOut, PanelLeftClose, PanelLeftOpen } from 'lucide-react'
 import { roleLabel } from '@inc/shared'
-import { LogoMark } from '@/components/logo-mark'
+import logoDark from '@/assets/oplah-brand/oplah-logo-dark.svg'
+import mark from '@/assets/oplah-brand/oplah-mark.svg'
 import { NotificationBell } from '@/components/notification-bell'
 import { useAuth, useCurrentUser } from '@/lib/auth-store'
 import { cn } from '@/lib/utils'
@@ -13,7 +16,9 @@ const initials = (name: string) =>
     .map((w) => w[0]?.toUpperCase())
     .join('')
 
-// App shell sesuai README desain "Global layout": sidebar ≥ 900px, pill nav horizontal < 900px.
+const COLLAPSE_KEY = 'sidebar-collapsed'
+
+// App shell sesuai README desain "Global layout": sidebar ≥ 900px (bisa diciutkan jadi ikon), pill nav horizontal < 900px.
 export function AppLayout() {
   const user = useCurrentUser()
   const { logout } = useAuth()
@@ -22,6 +27,22 @@ export function AppLayout() {
   const nav = navFor(user.role)
   const crumb = [...nav].sort((a, b) => b.to.length - a.to.length).find((n) => (n.to === '/' ? pathname === '/' : pathname.startsWith(n.to)))?.label
 
+  const [collapsed, setCollapsed] = useState(() => {
+    try {
+      return localStorage.getItem(COLLAPSE_KEY) === '1'
+    } catch {
+      return false
+    }
+  })
+  const toggle = () => {
+    setCollapsed(!collapsed)
+    try {
+      localStorage.setItem(COLLAPSE_KEY, collapsed ? '0' : '1')
+    } catch {
+      // penyimpanan diblokir: status tetap berlaku sampai reload
+    }
+  }
+
   const onLogout = async () => {
     await logout()
     navigate('/login', { replace: true })
@@ -29,13 +50,31 @@ export function AppLayout() {
 
   return (
     <div className="flex min-h-screen bg-background">
-      <aside className="sticky top-0 hidden h-screen w-[232px] flex-none flex-col gap-5 bg-brand-dark px-3 py-[18px] min-[900px]:flex">
-        <div className="flex items-center gap-2.5 px-2.5 py-1">
-          <LogoMark />
-          <div className="flex flex-col">
-            <span className="text-sm font-normal text-white">Inilah.com</span>
-            <span className="text-xs text-white/60">Media Order</span>
-          </div>
+      <aside
+        className={cn(
+          'sticky top-0 hidden h-screen flex-none flex-col gap-5 bg-brand-dark px-3 py-[18px] transition-[width] duration-200 min-[900px]:flex',
+          collapsed ? 'w-16' : 'w-[232px]',
+        )}
+      >
+        <div className={cn('flex items-start gap-2 py-1', collapsed ? 'flex-col items-center px-0' : 'justify-between px-2.5')}>
+          {collapsed ? (
+            <img src={mark} alt="Oplah" className="size-8" />
+          ) : (
+            <div className="flex flex-col gap-1">
+              <img src={logoDark} alt="Oplah" className="h-7 w-fit" />
+              <span className="text-xs text-white/60">Media Order</span>
+            </div>
+          )}
+          <button
+            type="button"
+            onClick={toggle}
+            aria-label={collapsed ? 'Perluas sidebar' : 'Ciutkan sidebar'}
+            aria-expanded={!collapsed}
+            title={collapsed ? 'Perluas sidebar' : 'Ciutkan sidebar'}
+            className="rounded-sm p-1.5 text-white/60 hover:bg-white/10 hover:text-white"
+          >
+            {collapsed ? <PanelLeftOpen className="size-4" /> : <PanelLeftClose className="size-4" />}
+          </button>
         </div>
         <nav className="flex flex-col gap-0.5" aria-label="Navigasi utama">
           {nav.map((n) => (
@@ -43,18 +82,32 @@ export function AppLayout() {
               key={n.to}
               to={n.to}
               end={n.to === '/' || n.to === '/mo'}
+              title={collapsed ? n.label : undefined}
+              aria-label={collapsed ? n.label : undefined}
               className={({ isActive }) =>
-                cn('rounded-sm px-2.5 py-2 text-sm font-normal transition-colors hover:text-white', isActive ? 'bg-white/10 text-white' : 'text-white/72')
+                cn(
+                  'flex items-center gap-2.5 rounded-sm py-2 text-sm font-normal transition-colors hover:text-white',
+                  collapsed ? 'justify-center px-0' : 'px-2.5',
+                  isActive ? 'bg-white/10 text-white' : 'text-white/72',
+                )
               }
             >
-              {n.label}
+              <n.icon className="size-4 flex-none" aria-hidden />
+              {!collapsed && n.label}
             </NavLink>
           ))}
         </nav>
-        <div className="mt-auto flex flex-col gap-0.5 px-2.5">
-          <span className="text-xs text-white/60">{user.organizationName}</span>
-          <button type="button" onClick={onLogout} className="w-fit text-left text-[13px] text-white/85 hover:text-white">
-            Keluar
+        <div className={cn('mt-auto flex flex-col gap-0.5', collapsed ? 'items-center' : 'px-2.5')}>
+          {!collapsed && <span className="text-xs text-white/60">{user.organizationName}</span>}
+          <button
+            type="button"
+            onClick={onLogout}
+            title={collapsed ? 'Keluar' : undefined}
+            aria-label={collapsed ? 'Keluar' : undefined}
+            className="flex w-fit items-center gap-2 py-1 text-left text-[13px] text-white/85 hover:text-white"
+          >
+            <LogOut className="size-4" aria-hidden />
+            {!collapsed && 'Keluar'}
           </button>
         </div>
       </aside>
@@ -83,20 +136,26 @@ export function AppLayout() {
               end={n.to === '/' || n.to === '/mo'}
               className={({ isActive }) =>
                 cn(
-                  'rounded-full border px-3 py-1.5 text-[13px] font-normal whitespace-nowrap',
+                  'flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-[13px] font-normal whitespace-nowrap',
                   isActive ? 'border-primary bg-primary text-white hover:text-white' : 'border-hairline bg-background text-ink hover:text-ink',
                 )
               }
             >
+              <n.icon className="size-3.5 flex-none" aria-hidden />
               {n.label}
             </NavLink>
           ))}
-          <button type="button" onClick={onLogout} className="rounded-full border border-hairline bg-background px-3 py-1.5 text-[13px] whitespace-nowrap text-ink-secondary">
+          <button
+            type="button"
+            onClick={onLogout}
+            className="flex items-center gap-1.5 rounded-full border border-hairline bg-background px-3 py-1.5 text-[13px] whitespace-nowrap text-ink-secondary"
+          >
+            <LogOut className="size-3.5" aria-hidden />
             Keluar
           </button>
         </nav>
 
-        <main className="box-border w-full max-w-[1440px] px-4 pt-5 pb-14 min-[900px]:px-8 min-[900px]:pt-7 min-[900px]:pb-16">
+        <main className="box-border w-full px-4 pt-5 pb-14 min-[900px]:px-8 min-[900px]:pt-7 min-[900px]:pb-16">
           <Outlet />
         </main>
       </div>
