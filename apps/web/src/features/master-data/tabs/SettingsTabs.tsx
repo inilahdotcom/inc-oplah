@@ -9,17 +9,17 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { applyServerErrors } from '@/lib/form-errors'
-import { settingsBody, useSaveSettings, useSettings } from '../api'
+import { useSaveSettings, useSettings } from '../api'
 
 type Out = z.output<typeof settingsSchema>
 const card = 'flex flex-col gap-3.5 rounded-lg border border-hairline bg-background px-6 py-5'
 
 function useSettingsForm(data: SettingsDto) {
   const save = useSaveSettings()
-  const form = useForm<SettingsInput, unknown, Out>({ resolver: zodResolver(settingsSchema), defaultValues: settingsBody(data) })
+  const form = useForm<SettingsInput, unknown, Out>({ resolver: zodResolver(settingsSchema), defaultValues: data }) // `nextSeq` ikut di default tapi dibuang skema saat submit
   const onSubmit = form.handleSubmit(async (body) => {
     try {
-      form.reset(settingsBody(await save.mutateAsync(body)))
+      form.reset(await save.mutateAsync(body))
       toast('Pengaturan tersimpan.')
     } catch (e) {
       applyServerErrors(e, form.setError, [])

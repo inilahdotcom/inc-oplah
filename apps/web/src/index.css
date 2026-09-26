@@ -96,6 +96,9 @@
   html {
     font-feature-settings: "ss01";
   }
+  input[type="checkbox"] {
+    @apply size-4 accent-primary;
+  }
   body {
     @apply bg-background font-sans text-[15px] leading-[1.4] font-light text-foreground antialiased;
   }

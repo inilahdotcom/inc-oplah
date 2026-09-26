@@ -15,7 +15,6 @@ import { useCurrentUser } from '@/lib/auth-store'
 import { applyServerErrors } from '@/lib/form-errors'
 import { queryKeys } from '@/lib/query-keys'
 import { useMasterList, useMasterSave } from '../api'
-import { checkboxClass } from '../components/list-card'
 
 export function UsersTab() {
   const query = useMasterList<UserDto>(queryKeys.users, '/users')
@@ -87,7 +86,7 @@ function UserDialog({ item, onClose }: { item?: UserDto; onClose: () => void }) 
   const me = useCurrentUser()
   const isSelf = item?.id === me.id
   const sales = useMasterList<SalesDto>(queryKeys.sales, '/sales')
-  const save = useMasterSave<unknown>(queryKeys.users, '/users')
+  const save = useMasterSave(queryKeys.users, '/users')
   const {
     register,
     handleSubmit,
@@ -167,7 +166,7 @@ function UserDialog({ item, onClose }: { item?: UserDto; onClose: () => void }) 
             </Field>
             {item && (
               <label className="flex items-center gap-2 text-sm">
-                <input type="checkbox" className={checkboxClass} disabled={isSelf} {...register('isActive')} /> Aktif (nonaktif = tidak bisa login, sesi dicabut)
+                <input type="checkbox" disabled={isSelf} {...register('isActive')} /> Aktif (nonaktif = tidak bisa login, sesi dicabut)
               </label>
             )}
           </DialogBody>

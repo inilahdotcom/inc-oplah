@@ -5,6 +5,11 @@ export const queryKeys = {
     detail: (id: string) => ['clients', 'detail', id] as const,
     similar: (name: string, excludeId?: string) => ['clients', 'similar', name, excludeId] as const,
   },
+  mediaOrders: {
+    all: ['media-orders'] as const,
+    detail: (id: string) => ['media-orders', id] as const,
+    calculate: (subtotal: string, isTaxable: boolean) => ['media-orders', 'calculate', subtotal, isTaxable] as const,
+  },
   sales: ['master', 'sales'] as const,
   signatories: ['master', 'signatories'] as const,
   benefitTypes: ['master', 'benefit-types'] as const,

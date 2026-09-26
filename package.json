@@ -4,7 +4,7 @@
   "packageManager": "bun@1.3.14",
   "engines": { "node": ">=20" },
   "workspaces": ["apps/*", "packages/*"],
-  "trustedDependencies": ["@prisma/client", "@prisma/engines", "@swc/core", "bcrypt", "esbuild", "prisma"],
+  "trustedDependencies": ["@prisma/client", "@prisma/engines", "@swc/core", "bcrypt", "esbuild", "prisma", "puppeteer"],
   "scripts": {
     "dev": "bun --filter web --filter api dev",
     "lint": "bun --filter './apps/*' --filter './packages/*' lint",

@@ -303,7 +303,6 @@ S3_REGION=sgp1
 S3_BUCKET=inc-mo-dev
 S3_ACCESS_KEY=
 S3_SECRET_KEY=
-APP_TIMEZONE=Asia/Jakarta
 PUPPETEER_EXECUTABLE_PATH=
 SMTP_URL=                       # untuk reset password
 

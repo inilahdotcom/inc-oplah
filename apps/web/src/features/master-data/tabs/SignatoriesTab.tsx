@@ -14,7 +14,6 @@ import { Input } from '@/components/ui/input'
 import { applyServerErrors } from '@/lib/form-errors'
 import { queryKeys } from '@/lib/query-keys'
 import { useMasterList, useMasterSave, useUploadPng } from '../api'
-import { checkboxClass } from '../components/list-card'
 import { PngUpload } from '../components/png-upload'
 
 type In = z.input<typeof signatorySchema>
@@ -138,10 +137,10 @@ function SignatoryDialog({ item, onClose }: { item?: SignatoryDto; onClose: () =
               </select>
             </Field>
             <label className="flex items-center gap-2 text-sm">
-              <input type="checkbox" className={checkboxClass} {...register('isDefault')} /> Jadikan default untuk peran ini
+              <input type="checkbox" {...register('isDefault')} /> Jadikan default untuk peran ini
             </label>
             <label className="flex items-center gap-2 text-sm">
-              <input type="checkbox" className={checkboxClass} {...register('isActive')} /> Aktif
+              <input type="checkbox" {...register('isActive')} /> Aktif
             </label>
             {!item && <span className="text-[13px] text-ink-mute">Tanda tangan dan stempel bisa diunggah setelah disimpan.</span>}
           </DialogBody>

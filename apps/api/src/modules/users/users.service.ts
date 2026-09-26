@@ -7,6 +7,7 @@ import { prisma } from '../../lib/prisma';
 import { AppError } from '../../lib/app-error';
 import { writeAudit } from '../../lib/audit';
 import { currentUser } from '../../middleware/authenticate';
+import { revokeAllSessions } from '../auth/auth.service';
 
 const BCRYPT_COST = 12;
 
@@ -61,7 +62,7 @@ export function update(req: Request, id: string, { password, ...data }: z.output
     });
     // FR-AUTH-03: nonaktif atau ganti password → semua sesi dicabut.
     if (data.isActive === false || password) {
-      await tx.refreshToken.updateMany({ where: { userId: id, revokedAt: null }, data: { revokedAt: new Date() } });
+      await revokeAllSessions(tx, id);
     }
     await writeAudit(tx, req, { entity: 'user', entityId: id, action: 'UPDATE', before, after: { ...user, passwordChanged: !!password } });
     return user;

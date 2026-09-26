@@ -14,7 +14,7 @@ import { applyServerErrors } from '@/lib/form-errors'
 import { queryKeys } from '@/lib/query-keys'
 import { cn } from '@/lib/utils'
 import { useMasterList, useMasterSave } from '../api'
-import { checkboxClass, ListCard, ListRow } from '../components/list-card'
+import { ListCard, ListRow } from '../components/list-card'
 
 type In = z.input<typeof formOptionSchema>
 type Out = z.output<typeof formOptionSchema>
@@ -130,7 +130,7 @@ function FormOptionDialog({ group, item, parents, onClose }: { group: FormOption
               </Field>
             )}
             <label className="flex items-center gap-2 text-sm">
-              <input type="checkbox" className={checkboxClass} {...register('isActive')} /> Aktif
+              <input type="checkbox" {...register('isActive')} /> Aktif
             </label>
           </DialogBody>
           <DialogFooter showCloseButton>

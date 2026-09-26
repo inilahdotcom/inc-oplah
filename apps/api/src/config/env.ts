@@ -8,9 +8,9 @@ const schema = z.object({
   DATABASE_URL: z.string().url(),
   JWT_ACCESS_SECRET: z.string().min(32),
   CORS_ORIGINS: z.string().default('http://localhost:5173'),
-  APP_TIMEZONE: z.string().default('Asia/Jakarta'),
   // DigitalOcean Spaces (S3). Opsional: tanpa ini fitur upload membalas 503.
-  S3_ENDPOINT: optional,
+  // Host tanpa skema (mis. `sgp1.digitaloceanspaces.com`) dianggap https.
+  S3_ENDPOINT: optional.transform((v) => (v && !/^https?:\/\//.test(v) ? `https://${v}` : v)),
   S3_REGION: optional,
   S3_BUCKET: optional,
   S3_ACCESS_KEY: optional,

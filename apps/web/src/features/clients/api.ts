@@ -17,7 +17,7 @@ export function useClients(params: { q?: string; page: number }) {
 }
 
 export function useClient(id: string) {
-  return useQuery({ queryKey: queryKeys.clients.detail(id), queryFn: () => api<ClientDetailDto>(`/clients/${id}`) })
+  return useQuery({ queryKey: queryKeys.clients.detail(id), queryFn: () => api<ClientDetailDto>(`/clients/${id}`), enabled: !!id })
 }
 
 export function useSimilarClients(name: string, excludeId?: string) {

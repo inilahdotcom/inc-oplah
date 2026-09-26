@@ -1,4 +1,5 @@
 import type { BillingStatus, FormOptionGroup, MoStatus, Role, SignatoryRole } from './enums';
+import type { MoDraft } from './schemas/media-order';
 
 export interface AuthUser {
   id: string;
@@ -118,4 +119,46 @@ export interface UserDto {
   salesId: string | null;
   lastLoginAt: string | null;
   sales: { name: string; code: string } | null;
+}
+
+export interface TaxResult {
+  subtotal: string;
+  dpp: string;
+  ppn: string;
+  total: string;
+  ppnRate: string;
+  dppNum: number;
+  dppDen: number;
+}
+
+export interface MoAttachmentDto {
+  id: string;
+  fileName: string;
+  mimeType: string;
+  sizeBytes: number;
+  url: string | null;
+  createdAt: string;
+}
+
+type Signer = { name: string; title: string } | null;
+
+/** Detail MO. Nilai form memakai bentuk `MoDraft` (tanggal `YYYY-MM-DD`, nominal string). */
+export interface MediaOrderDto extends MoDraft {
+  id: string;
+  moNumber: string | null;
+  status: MoStatus;
+  billingStatus: BillingStatus;
+  dppAmount: string;
+  ppnAmount: string;
+  totalAmount: string;
+  ppnRate: string;
+  dppFactorNum: number;
+  dppFactorDen: number;
+  cancelReason: string | null;
+  submittedAt: string | null;
+  sales: { name: string; code: string };
+  signatories: { createdBy: Signer; acknowledgedBy: Signer; approvedBy: Signer };
+  revisionOf: { id: string; moNumber: string | null } | null;
+  revisedInto: { id: string; moNumber: string | null } | null;
+  attachments: MoAttachmentDto[];
 }

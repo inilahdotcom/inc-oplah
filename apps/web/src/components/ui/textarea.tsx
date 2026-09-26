@@ -1,6 +1,7 @@
 import * as React from "react"
 import { cn } from "@/lib/utils"
 
+// React 19: `ref` ikut di `props`, tanpa forwardRef.
 function Textarea({ className, ...props }: React.ComponentProps<"textarea">) {
   return (
     <textarea

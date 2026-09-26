@@ -1,5 +1,18 @@
 import { describe, expect, it } from 'vitest';
-import { can, clientSchema, formatRupiah, formatTanggal, isSimilarCompany, normalizeCompanyName, toCode } from './index';
+import {
+  can,
+  clientSchema,
+  formatMoNumber,
+  formatPeriode,
+  formatRupiah,
+  formatTanggal,
+  isSimilarCompany,
+  monthRange,
+  moPdfFileName,
+  moSubmitSchema,
+  normalizeCompanyName,
+  toCode,
+} from './index';
 
 describe('permissions', () => {
   it('mengikuti matriks PRD §3', () => {
@@ -47,4 +60,40 @@ describe('clientSchema', () => {
 
 it('toCode', () => {
   expect(toCode('YouTube Shorts')).toBe('YOUTUBE_SHORTS');
+});
+
+describe('MO', () => {
+  it('nomor MO dari template (PRD §5.5)', () => {
+    const v = { seq: 7, salesCode: 'BMO', moDate: '2026-05-22' };
+    expect(formatMoNumber('{SEQ}/MO-{SALES_CODE}/INC/{MONTH_ROMAN}/{YEAR}', v)).toBe('007/MO-BMO/INC/V/2026');
+    expect(formatMoNumber('{SEQ:4}-{MONTH_ROMAN}', { ...v, moDate: '2026-12-01' })).toBe('0007-XII');
+    expect(formatMoNumber('{SEQ}', { ...v, seq: 1234 })).toBe('1234');
+  });
+
+  it('periode & nama file PDF (PRD §8)', () => {
+    expect(monthRange('2027-02')).toEqual(['2027-02-01', '2027-02-28']);
+    expect(formatPeriode('2026-06-01', '2027-05-31')).toBe('Juni 2026 - Mei 2027');
+    const mo = { moNumber: '007/MO-BMO/INC/V/2026', companyName: 'PT Bukit Asam', periodStart: '2026-06-01', periodEnd: '2027-05-31' };
+    expect(moPdfFileName(mo)).toBe('MO_007-MO-BMO-INC-V-2026_PT_BUKIT_ASAM_Juni_2026-Mei_2027.pdf');
+  });
+
+  it('submit menolak draft yang belum lengkap', () => {
+    const uuid = '00000000-0000-4000-8000-000000000001';
+    const draft = {
+      moDate: '2026-05-22',
+      clientId: uuid,
+      salesId: uuid,
+      clientSnapshot: { companyName: 'PT A', picName: 'Budi', email: 'a@b.co', phone: '0812' },
+      periodStart: '2026-06-01',
+      periodEnd: '2027-05-31',
+      description: 'Publikasi',
+      selectedOptions: {},
+      benefits: [{ benefitTypeId: uuid, targetQty: 12 }],
+      cooperationDetail: 'Artikel 12x',
+      subtotal: '20000000',
+    };
+    expect(moSubmitSchema.safeParse(draft).success).toBe(true);
+    const bad = moSubmitSchema.safeParse({ ...draft, benefits: [], paymentMethod: 'CHEQUE_BG', subtotal: '0', periodEnd: '2026-01-31' });
+    expect(bad.error?.issues.map((i) => i.path.join('.')).sort()).toEqual(['benefits', 'chequeNo', 'periodEnd', 'subtotal']);
+  });
 });

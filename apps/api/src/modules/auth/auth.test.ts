@@ -1,6 +1,8 @@
 import { describe, expect, it } from 'vitest';
 import request from 'supertest';
+import { createHash } from 'node:crypto';
 import { app } from '../../app';
+import { prisma } from '../../lib/prisma';
 
 const PASSWORD = process.env.SEED_PASSWORD || 'password123';
 const accounts = {
@@ -56,15 +58,24 @@ describe('RBAC GET /users (SUPER_ADMIN saja)', () => {
 });
 
 describe('refresh & logout', () => {
-  it('refresh merotasi token; token lama ditolak', async () => {
+  it('refresh merotasi token; token lama masih diterima selama masa tenggang', async () => {
     const first = refreshCookie(await login(accounts.ADMIN_SALES));
     const r1 = await request(app).post('/api/v1/auth/refresh').set('Cookie', first);
     expect(r1.status).toBe(200);
     expect(r1.body.user.email).toBe(accounts.ADMIN_SALES);
+    expect(refreshCookie(r1)).not.toBe(first);
+    // respons r1 "tidak sampai" (reload/dua tab): cookie lama dikirim lagi → tetap dapat sesi
+    const retry = await request(app).post('/api/v1/auth/refresh').set('Cookie', first);
+    expect(retry.status).toBe(200);
+  });
 
-    const reused = await request(app).post('/api/v1/auth/refresh').set('Cookie', first);
-    expect(reused.status).toBe(401);
-    // pemakaian ulang mencabut semua sesi, termasuk token hasil rotasi
+  it('token lama dipakai ulang setelah masa tenggang → semua sesi dicabut', async () => {
+    const first = refreshCookie(await login(accounts.ADMIN_SALES));
+    const r1 = await request(app).post('/api/v1/auth/refresh').set('Cookie', first);
+    const hash = createHash('sha256').update(first.split(';')[0].split('=')[1]).digest('hex');
+    await prisma.refreshToken.update({ where: { tokenHash: hash }, data: { revokedAt: new Date(Date.now() - 1000) } });
+
+    expect((await request(app).post('/api/v1/auth/refresh').set('Cookie', first)).status).toBe(401);
     expect((await request(app).post('/api/v1/auth/refresh').set('Cookie', refreshCookie(r1))).status).toBe(401);
   });
 

@@ -1,8 +1,7 @@
 import type { Request } from 'express';
 import type { Prisma } from '@prisma/client';
-import { toCode, type benefitTypeSchema, type formOptionSchema, type salesSchema, type settingsSchema, type signatorySchema } from '@inc/shared';
+import { toCode, today, type benefitTypeSchema, type formOptionSchema, type salesSchema, type settingsSchema, type signatorySchema } from '@inc/shared';
 import type { z } from 'zod';
-import { env } from '../../config/env';
 import { prisma } from '../../lib/prisma';
 import { AppError } from '../../lib/app-error';
 import { writeAudit } from '../../lib/audit';
@@ -144,10 +143,17 @@ export function listFormOptions(req: Request) {
   return prisma.formOption.findMany({ where: { organizationId: org(req) }, orderBy: [{ group: 'asc' }, { sortOrder: 'asc' }] });
 }
 
-async function assertParent(tx: Prisma.TransactionClient, orgId: string, data: Out<typeof formOptionSchema>) {
+const invalidParent = (message: string) => new AppError('VALIDATION_ERROR', message, 400, [{ field: 'parentCode', message: 'Tidak valid' }]);
+
+/** Hierarki hanya satu tingkat: induk harus opsi akar di grup yang sama, bukan dirinya, dan opsi yang punya anak tidak boleh jadi anak. */
+async function assertParent(tx: Prisma.TransactionClient, orgId: string, data: Out<typeof formOptionSchema>, selfCode?: string) {
   if (!data.parentCode) return;
+  if (data.parentCode === selfCode) throw invalidParent('Opsi tidak bisa menjadi induk dirinya sendiri');
   const parent = await tx.formOption.findFirst({ where: { organizationId: orgId, group: data.group, code: data.parentCode, parentCode: null } });
-  if (!parent) throw new AppError('VALIDATION_ERROR', 'Opsi induk tidak ditemukan di grup yang sama', 400, [{ field: 'parentCode', message: 'Tidak valid' }]);
+  if (!parent) throw invalidParent('Opsi induk tidak ditemukan di grup yang sama');
+  if (selfCode && (await tx.formOption.count({ where: { organizationId: orgId, group: data.group, parentCode: selfCode } }))) {
+    throw invalidParent('Opsi yang punya anak tidak bisa dijadikan anak');
+  }
 }
 
 export function createFormOption(req: Request, data: Out<typeof formOptionSchema>) {
@@ -166,7 +172,7 @@ export function updateFormOption(req: Request, id: string, data: Out<typeof form
   return prisma.$transaction(async (tx) => {
     const before = await tx.formOption.findFirst({ where: { id, organizationId: org(req) } });
     if (!before) throw notFound('Opsi formulir');
-    await assertParent(tx, org(req), { ...data, group: before.group });
+    await assertParent(tx, org(req), { ...data, group: before.group }, before.code);
     // Grup & kode tetap: kode tersimpan di selected_options MO.
     const opt = await tx.formOption.update({
       where: { id },
@@ -179,7 +185,7 @@ export function updateFormOption(req: Request, id: string, data: Out<typeof form
 
 // ─────────────── Pengaturan (pajak, penomoran, profil) ───────────────
 
-const currentYear = () => Number(new Intl.DateTimeFormat('en', { timeZone: env.APP_TIMEZONE, year: 'numeric' }).format(new Date()));
+const currentYear = () => Number(today().slice(0, 4));
 
 export async function getSettings(req: Request) {
   const o = await prisma.organization.findUniqueOrThrow({ where: { id: org(req) } });

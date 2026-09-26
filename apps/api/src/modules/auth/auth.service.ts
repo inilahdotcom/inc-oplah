@@ -49,27 +49,38 @@ export async function login({ email, password }: LoginInput, ip?: string, userAg
   return issueTokens(user, userAgent);
 }
 
-/** Rotasi: token lama dicabut, token baru diterbitkan. Token yang sudah dicabut dipakai ulang → semua sesi user dicabut. */
+/**
+ * Token yang dirotasi masih diterima selama `ROTATION_GRACE_MS` (kolom `revokedAt` diisi waktu di masa depan).
+ * Tanpa ini, respons refresh yang tidak sampai ke browser (reload/pindah halaman saat request berjalan, dua tab,
+ * jaringan putus) membuat cookie lama terkirim ulang, terdeteksi sebagai pencurian, dan semua sesi user dicabut.
+ */
+const ROTATION_GRACE_MS = 30_000;
+const live = () => ({ OR: [{ revokedAt: null }, { revokedAt: { gt: new Date() } }] });
+
+/** Cabut semua sesi user sekarang juga (logout paksa, nonaktif, ganti password, token dicuri). */
+export const revokeAllSessions = (db: Pick<typeof prisma, 'refreshToken'>, userId: string) =>
+  db.refreshToken.updateMany({ where: { userId, ...live() }, data: { revokedAt: new Date() } });
+
+/** Rotasi: token lama dicabut (setelah masa tenggang), token baru diterbitkan. Token yang sudah dicabut dipakai ulang → semua sesi user dicabut. */
 export async function refresh(token: string | undefined, userAgent?: string) {
   const invalid = new AppError('INVALID_REFRESH_TOKEN', 'Sesi berakhir, silakan login ulang', 401);
   if (!token) throw invalid;
   const row = await prisma.refreshToken.findUnique({ where: { tokenHash: hashToken(token) }, include: { user: { include: withOrg } } });
   if (!row) throw invalid;
-  if (row.revokedAt) {
-    await prisma.refreshToken.updateMany({ where: { userId: row.userId, revokedAt: null }, data: { revokedAt: new Date() } });
+  if (row.revokedAt && row.revokedAt <= new Date()) {
+    await revokeAllSessions(prisma, row.userId);
     throw invalid;
   }
   if (row.expiresAt < new Date() || !row.user.isActive || row.user.deletedAt) throw invalid;
 
-  // updateMany + filter revokedAt agar dua refresh bersamaan tidak sama-sama lolos.
-  const { count } = await prisma.refreshToken.updateMany({ where: { id: row.id, revokedAt: null }, data: { revokedAt: new Date() } });
-  if (count === 0) throw invalid;
+  // Rotasi pertama memulai masa tenggang; refresh bersamaan dalam masa itu sama-sama mendapat token baru.
+  await prisma.refreshToken.updateMany({ where: { id: row.id, revokedAt: null }, data: { revokedAt: new Date(Date.now() + ROTATION_GRACE_MS) } });
   return issueTokens(row.user, userAgent);
 }
 
 export async function logout(token: string | undefined) {
   if (!token) return;
-  await prisma.refreshToken.updateMany({ where: { tokenHash: hashToken(token), revokedAt: null }, data: { revokedAt: new Date() } });
+  await prisma.refreshToken.updateMany({ where: { tokenHash: hashToken(token), ...live() }, data: { revokedAt: new Date() } });
 }
 
 export async function me(userId: string, orgId: string) {

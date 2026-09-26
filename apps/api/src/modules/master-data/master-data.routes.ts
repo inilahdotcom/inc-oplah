@@ -48,5 +48,6 @@ masterDataRouter.patch('/form-options/:id', admin, byId, validate(formOptionSche
   res.json(await md.updateFormOption(req, paramId(req), req.body)),
 );
 
-masterDataRouter.get('/settings', admin, async (req, res) => res.json(await md.getSettings(req)));
+// Form MO (Admin Sales) butuh tarif, template T&C & pratinjau nomor.
+masterDataRouter.get('/settings', requireRole('editMo'), async (req, res) => res.json(await md.getSettings(req)));
 masterDataRouter.patch('/settings', admin, validate(settingsSchema), async (req, res) => res.json(await md.updateSettings(req, req.body)));

@@ -41,7 +41,7 @@ async function toError(res: Response) {
   return new ApiError(res.status, body?.error.code ?? 'HTTP_ERROR', body?.error.message ?? 'Terjadi kesalahan, coba lagi', body?.error.details)
 }
 
-// Satu refresh untuk banyak request 401 yang bersamaan.
+// Satu refresh untuk banyak request 401 yang bersamaan di tab ini. Antar-tab/reload ditangani masa tenggang rotasi di API.
 let refreshing: Promise<LoginResponse | null> | null = null
 
 export function refreshSession(): Promise<LoginResponse | null> {
@@ -58,13 +58,32 @@ export function refreshSession(): Promise<LoginResponse | null> {
   return refreshing
 }
 
-/** Semua panggilan API lewat sini: token, refresh sekali saat 401, error standar → ApiError. */
-export async function api<T>(path: string, init: RequestInit & { json?: unknown } = {}): Promise<T> {
+/** Token, refresh sekali saat 401, error standar → ApiError. */
+async function request(path: string, init: RequestInit & { json?: unknown }) {
   let res = await send(path, init)
   if (res.status === 401 && accessToken && !path.startsWith('/auth/')) {
     if (await refreshSession()) res = await send(path, init)
     else onSessionExpired()
   }
   if (!res.ok) throw await toError(res)
+  return res
+}
+
+/** Semua panggilan API JSON lewat sini. */
+export async function api<T>(path: string, init: RequestInit & { json?: unknown } = {}): Promise<T> {
+  const res = await request(path, init)
   return (res.status === 204 ? undefined : await res.json()) as T
+}
+
+/**
+ * Unduh file (PDF) lewat jalur yang sama. `target` = tab yang sudah dibuka saat klik (agar tidak diblokir
+ * popup blocker) untuk pratinjau; tanpa itu file disimpan dengan nama dari `Content-Disposition`.
+ */
+export async function downloadFile(path: string, target?: Window | null) {
+  const res = await request(path, {})
+  const name = /filename="?([^";]+)"?/.exec(res.headers.get('Content-Disposition') ?? '')?.[1] ?? 'dokumen.pdf'
+  const url = URL.createObjectURL(await res.blob())
+  if (target) target.location.href = url
+  else Object.assign(document.createElement('a'), { href: url, download: name }).click()
+  setTimeout(() => URL.revokeObjectURL(url), 60_000)
 }

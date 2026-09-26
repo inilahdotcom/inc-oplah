@@ -32,6 +32,18 @@ export async function putObject(key: string, body: Buffer, contentType: string) 
   }
 }
 
+/** Isi objek; null bila storage belum dikonfigurasi atau objek tidak bisa dibaca (pemanggil jatuh ke render ulang / tanpa gambar). */
+export async function getObject(key: string): Promise<Buffer | null> {
+  try {
+    const { client, bucket } = s3();
+    const res = await client.send(new GetObjectCommand({ Bucket: bucket, Key: key }));
+    return res.Body ? Buffer.from(await res.Body.transformToByteArray()) : null;
+  } catch (err) {
+    if (!(err instanceof AppError)) logger.warn({ err, key }, 'baca storage gagal');
+    return null;
+  }
+}
+
 /** Signed URL untuk key yang ada; null bila key kosong atau storage belum dikonfigurasi. */
 export async function signedUrl(key: string | null | undefined): Promise<string | null> {
   if (!key) return null;

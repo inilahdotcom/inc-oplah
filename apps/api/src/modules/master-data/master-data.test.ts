@@ -21,7 +21,7 @@ describe('Sales', () => {
 
     const list = await (await as('FINANCE')).get('/sales');
     expect(list.status).toBe(200);
-    expect(list.body.data.find((s: { code: string }) => s.code === 'BMO')).toMatchObject({ name: 'Bimo', moCount: 0 });
+    expect(list.body.data.find((s: { code: string }) => s.code === 'BMO')).toMatchObject({ name: 'Bimo', moCount: expect.any(Number) });
   });
 });
 
@@ -45,6 +45,16 @@ describe('Opsi formulir', () => {
     expect(ok.body.code).toBe('SKIN_ADS');
     const bad = await sa.post('/form-options').send({ group: 'AD_TYPE', label: 'Anak Yatim', parentCode: 'SPOT_WEB' });
     expect(bad.status).toBe(400);
+  });
+
+  it('hierarki satu tingkat: bukan induk diri sendiri, induk yang punya anak tidak jadi anak', async () => {
+    const sa = await as('SUPER_ADMIN');
+    const opts = (await sa.get('/form-options')).body.data as { id: string; group: string; code: string; label: string; parentCode: string | null }[];
+    const spot = opts.find((o) => o.code === 'SPOT_WEB')!; // punya anak SKIN_ADS dari test sebelumnya
+    const other = opts.find((o) => o.group === spot.group && !o.parentCode && o.code !== spot.code)!;
+    const patch = (parentCode: string) => sa.patch(`/form-options/${spot.id}`).send({ group: spot.group, label: spot.label, parentCode });
+    expect((await patch('SPOT_WEB')).status).toBe(400);
+    expect((await patch(other.code)).status).toBe(400);
   });
 });
 
@@ -83,7 +93,7 @@ describe('Pengaturan', () => {
     const sa = await as('SUPER_ADMIN');
     const cur = await sa.get('/settings');
     expect(cur.status).toBe(200);
-    expect(cur.body).toMatchObject({ tax: { ppnRate: '12', dppNum: 11, dppDen: 12 }, nextSeq: { seq: 1 } });
+    expect(cur.body).toMatchObject({ tax: { ppnRate: '12', dppNum: 11, dppDen: 12 }, nextSeq: { year: expect.any(Number), seq: expect.any(Number) } });
 
     const body = { ...cur.body, company: { ...cur.body.company, bankName: 'Bank Mandiri (KCP Cipete)' } };
     delete body.nextSeq;

@@ -2,10 +2,10 @@ import { useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { ChevronRight } from 'lucide-react'
 import { toast } from 'sonner'
-import { billingStatusLabel, formatRupiah, formatTanggal, maskNik, moStatusLabel, type BillingStatus, type MoStatus } from '@inc/shared'
+import { formatBulan, formatRupiah, formatTanggal, maskNik } from '@inc/shared'
+import { MoStatusTags } from '@/components/mo-status'
 import { QueryState } from '@/components/query-state'
 import { RoleGate } from '@/components/role-gate'
-import { Tag } from '@/components/tag'
 import { Button, buttonVariants } from '@/components/ui/button'
 import {
   AlertDialog,
@@ -19,21 +19,6 @@ import {
 } from '@/components/ui/alert-dialog'
 import { useClient, useDeleteClient } from '../api'
 import { ClientFormDialog } from '../components/ClientFormDialog'
-
-const moTone: Record<MoStatus, 'neutral' | 'soft' | 'success' | 'danger'> = {
-  DRAFT: 'neutral',
-  SUBMITTED: 'soft',
-  ACTIVE: 'soft',
-  COMPLETED: 'success',
-  CANCELLED: 'danger',
-}
-const billingTone: Record<BillingStatus, 'neutral' | 'warning' | 'soft' | 'success'> = {
-  NOT_READY: 'neutral',
-  READY_TO_BILL: 'warning',
-  BILLED: 'soft',
-  PAID: 'success',
-}
-const bulanTahun = (d: string) => formatTanggal(d).split(' ').slice(1).join(' ')
 
 export function ClientDetailPage() {
   const id = useParams().id!
@@ -116,13 +101,12 @@ export function ClientDetailPage() {
                       <div className="flex flex-col gap-0.5">
                         <span className="tnum text-sm font-normal">{m.moNumber ?? 'Draft'}</span>
                         <span className="text-[13px] text-ink-mute">
-                          {formatTanggal(m.moDate)} · {bulanTahun(m.periodStart)} – {bulanTahun(m.periodEnd)}
+                          {formatTanggal(m.moDate)} · {formatBulan(m.periodStart)} – {formatBulan(m.periodEnd)}
                         </span>
                       </div>
                       <div className="flex items-center gap-2">
                         <span className="tnum text-sm">Rp {formatRupiah(m.totalAmount)}</span>
-                        <Tag tone={moTone[m.status]}>{moStatusLabel[m.status]}</Tag>
-                        <Tag tone={billingTone[m.billingStatus]}>{billingStatusLabel[m.billingStatus]}</Tag>
+                        <MoStatusTags status={m.status} billingStatus={m.billingStatus} />
                       </div>
                     </Link>
                   ))

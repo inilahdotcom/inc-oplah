@@ -8,6 +8,3 @@ export function ListCard({ className, children }: { className?: string; children
 export function ListRow({ className, children }: { className?: string; children: React.ReactNode }) {
   return <div className={cn('grid items-center gap-3 border-b border-hairline px-4 py-3 text-sm last:border-b-0', className)}>{children}</div>
 }
-
-
-export const checkboxClass = 'size-4 accent-primary'

@@ -10,6 +10,7 @@ export const permissions = {
   submitMo: ['SUPER_ADMIN', 'ADMIN_SALES'],
   cancelMo: ['SUPER_ADMIN', 'ADMIN_SALES'],
   downloadMoPdf: ['SUPER_ADMIN', 'ADMIN_SALES', 'FINANCE', 'VIEWER'],
+  regenerateMoPdf: ['SUPER_ADMIN'],
   managePublications: ['SUPER_ADMIN', 'ADMIN_SALES'],
   viewMo: ['SUPER_ADMIN', 'ADMIN_SALES', 'FINANCE', 'VIEWER'],
   manageBilling: ['SUPER_ADMIN', 'FINANCE'],

@@ -4,11 +4,11 @@ import { Link, Navigate, useLocation, useNavigate } from 'react-router-dom'
 import { ChevronRight } from 'lucide-react'
 import { toast } from 'sonner'
 import { loginSchema, type LoginInput } from '@inc/shared'
+import { Field } from '@/components/field'
 import { GradientMesh } from '@/components/gradient-mesh'
 import { LogoMark } from '@/components/logo-mark'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
 import { ApiError } from '@/lib/api-client'
 import { useAuth } from '@/lib/auth-store'
 
@@ -67,32 +67,20 @@ export function LoginPage() {
           <p className="text-sm text-ink-mute">Gunakan email kantor yang terdaftar.</p>
         </div>
 
-        <div className="flex flex-col gap-1.5">
-          <Label htmlFor="email" className="text-sm font-normal text-ink-secondary">
-            Email
-          </Label>
+        <Field id="email" label="Email" error={errors.email?.message}>
           <Input id="email" type="email" autoComplete="email" autoFocus aria-invalid={!!errors.email} {...register('email')} />
-          {errors.email && <span className="text-[13px] tracking-[-0.39px] text-ruby">{errors.email.message}</span>}
-        </div>
+        </Field>
 
-        <div className="flex flex-col gap-1.5">
-          <Label htmlFor="password" className="text-sm font-normal text-ink-secondary">
-            Password
-          </Label>
+        <Field id="password" label="Password" error={passwordError}>
           <Input
             id="password"
             type="password"
             autoComplete="current-password"
             aria-invalid={!!passwordError}
-            aria-describedby={passwordError ? 'password-error' : undefined}
+            aria-describedby={passwordError ? 'password-message' : undefined}
             {...register('password')}
           />
-          {passwordError && (
-            <span id="password-error" role="alert" className="text-[13px] tracking-[-0.39px] text-ruby">
-              {passwordError}
-            </span>
-          )}
-        </div>
+        </Field>
 
         <div className="flex flex-wrap items-center justify-between gap-3">
           <Link to="/lupa-password" className="text-sm">

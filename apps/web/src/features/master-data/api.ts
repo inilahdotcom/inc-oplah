@@ -9,11 +9,11 @@ export function useMasterList<T>(key: QueryKey, path: string) {
 }
 
 /** POST (tanpa id) / PATCH (dengan id) ke `path`, lalu invalidasi list. */
-export function useMasterSave<TBody, TRes = unknown>(key: QueryKey, path: string) {
+export function useMasterSave<TBody>(key: QueryKey, path: string) {
   const qc = useQueryClient()
   return useMutation({
     mutationFn: ({ id, body }: { id?: string; body: TBody }) =>
-      api<TRes>(id ? `${path}/${id}` : path, { method: id ? 'PATCH' : 'POST', json: body }),
+      api(id ? `${path}/${id}` : path, { method: id ? 'PATCH' : 'POST', json: body }),
     onSuccess: () => qc.invalidateQueries({ queryKey: key }),
   })
 }
@@ -42,11 +42,3 @@ export function useSaveSettings() {
     onSuccess: (data) => qc.setQueryData(queryKeys.settings, data),
   })
 }
-
-/** Bagian pengaturan yang bisa diubah (tanpa `nextSeq` yang hanya-baca). */
-export const settingsBody = (d: SettingsDto): SettingsInput => ({
-  company: d.company,
-  tax: d.tax,
-  numbering: d.numbering,
-  termsTemplates: d.termsTemplates,
-})

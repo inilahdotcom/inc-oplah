@@ -6,6 +6,8 @@ import { ForgotPasswordPage } from '@/features/auth/pages/ForgotPasswordPage'
 import { ClientDetailPage } from '@/features/clients/pages/ClientDetailPage'
 import { ClientListPage } from '@/features/clients/pages/ClientListPage'
 import { MasterDataPage } from '@/features/master-data/MasterDataPage'
+import { MoDetailPage } from '@/features/media-orders/pages/MoDetailPage'
+import { MoFormPage } from '@/features/media-orders/pages/MoFormPage'
 import { AppLayout } from './layouts/AppLayout'
 import { ComingSoonPage, ForbiddenPage, FullPageLoader, NotFoundPage } from './pages'
 
@@ -13,7 +15,7 @@ function RequireAuth() {
   const { state } = useAuth()
   const location = useLocation()
   if (state.status === 'loading') return <FullPageLoader />
-  if (state.status === 'anonymous') return <Navigate to="/login" replace state={{ from: location.pathname }} />
+  if (state.status === 'anonymous') return <Navigate to="/login" replace state={{ from: location.pathname + location.search }} />
   return <AppLayout />
 }
 
@@ -39,7 +41,9 @@ export function AppRoutes() {
       <Route element={<RequireAuth />}>
         <Route index element={<Home />} />
         <Route path="mo" element={<Guard permission="viewMo"><ComingSoonPage title="Daftar Media Order" milestone="M5" /></Guard>} />
-        <Route path="mo/baru" element={<Guard permission="editMo"><ComingSoonPage title="Buat Media Order" milestone="M3" /></Guard>} />
+        <Route path="mo/baru" element={<Guard permission="editMo"><MoFormPage /></Guard>} />
+        <Route path="mo/:id" element={<Guard permission="viewMo"><MoDetailPage /></Guard>} />
+        <Route path="mo/:id/edit" element={<Guard permission="editMo"><MoFormPage /></Guard>} />
         <Route path="klien" element={<Guard permission="viewClients"><ClientListPage /></Guard>} />
         <Route path="klien/:id" element={<Guard permission="viewClients"><ClientDetailPage /></Guard>} />
         <Route path="pengaturan/:tab?" element={<Guard permission="manageMasterData"><MasterDataPage /></Guard>} />

@@ -13,12 +13,13 @@ import { authRouter } from './modules/auth/auth.routes';
 import { usersRouter } from './modules/users/users.routes';
 import { clientsRouter } from './modules/clients/clients.routes';
 import { masterDataRouter } from './modules/master-data/master-data.routes';
+import { mediaOrdersRouter } from './modules/media-orders/media-orders.routes';
 
 export const app = express();
 
 app.set('trust proxy', 1);
 app.use(helmet());
-app.use(cors({ origin: env.CORS_ORIGINS.split(','), credentials: true }));
+app.use(cors({ origin: env.CORS_ORIGINS.split(',').map((o) => o.trim()), credentials: true, exposedHeaders: ['Content-Disposition'] }));
 app.use(pinoHttp({ logger, serializers: { req: (r) => ({ method: r.method, url: r.url }), res: (r) => ({ statusCode: r.statusCode }) } }));
 app.use(express.json({ limit: '1mb' }));
 app.use(cookieParser());
@@ -32,6 +33,7 @@ api.get('/health', async (_req, res) => {
 api.use('/auth', authRouter);
 api.use('/users', usersRouter);
 api.use('/clients', clientsRouter);
+api.use('/media-orders', mediaOrdersRouter);
 api.use(masterDataRouter); // /sales, /signatories, /benefit-types, /form-options, /settings
 api.use((_req, _res, next) => next(new AppError('NOT_FOUND', 'Endpoint tidak ditemukan', 404)));
 

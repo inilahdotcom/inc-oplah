@@ -13,7 +13,7 @@ import { Input } from '@/components/ui/input'
 import { applyServerErrors } from '@/lib/form-errors'
 import { queryKeys } from '@/lib/query-keys'
 import { useMasterList, useMasterSave } from '../api'
-import { checkboxClass, ListCard, ListRow } from '../components/list-card'
+import { ListCard, ListRow } from '../components/list-card'
 
 type In = z.input<typeof benefitTypeSchema>
 type Out = z.output<typeof benefitTypeSchema>
@@ -116,7 +116,7 @@ function BenefitTypeDialog({ item, onClose }: { item: BenefitTypeDto; onClose: (
               <Input id="bt-sort" type="number" min={0} {...register('sortOrder')} />
             </Field>
             <label className="flex items-center gap-2 text-sm">
-              <input type="checkbox" className={checkboxClass} {...register('isActive')} /> Aktif (bisa dipilih di form MO)
+              <input type="checkbox" {...register('isActive')} /> Aktif (bisa dipilih di form MO)
             </label>
           </DialogBody>
           <DialogFooter showCloseButton>

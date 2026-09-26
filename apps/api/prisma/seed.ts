@@ -1,6 +1,7 @@
 /** Seed idempoten (DATABASE.md §8): aman dijalankan berulang. */
 import { PrismaClient, type FormOptionGroup, type Role } from '@prisma/client';
 import bcrypt from 'bcrypt';
+import { calculateTax } from '../src/modules/tax/tax.service';
 
 const prisma = new PrismaClient();
 const ORG_ID = '00000000-0000-4000-8000-000000000001';
@@ -119,9 +120,38 @@ async function main() {
       where: { organizationId_email: { organizationId: ORG_ID, email: 'superadmin@inilah.local' } },
     });
     const companyName = 'PT Bukit Asam Tbk (PTBA)';
-    if (!(await prisma.client.findFirst({ where: { organizationId: ORG_ID, companyName } }))) {
-      await prisma.client.create({
-        data: { organizationId: ORG_ID, companyName, picName: '(isi PIC)', email: 'pic@example.com', phone: '0800000000', createdBy: superadmin.id },
+    const snapshot = { companyName, picName: '(isi PIC)', email: 'pic@example.com', phone: '0800000000' };
+    const ptba =
+      (await prisma.client.findFirst({ where: { organizationId: ORG_ID, companyName } })) ??
+      (await prisma.client.create({ data: { organizationId: ORG_ID, ...snapshot, createdBy: superadmin.id } }));
+
+    // MO contoh PRD §14 sebagai Draft (tidak memakai nomor urut).
+    if (!(await prisma.mediaOrder.findFirst({ where: { organizationId: ORG_ID, clientId: ptba.id } }))) {
+      const artikel = await prisma.benefitType.findUniqueOrThrow({ where: { organizationId_code: { organizationId: ORG_ID, code: 'ARTIKEL_RILIS' } } });
+      const tax = calculateTax('20000000', true, settings.tax);
+      await prisma.mediaOrder.create({
+        data: {
+          organizationId: ORG_ID,
+          moDate: new Date('2026-05-22'),
+          clientId: ptba.id,
+          clientSnapshot: { ...snapshot, nik: null, address: null, city: null, postalCode: null },
+          salesId: bimo.id,
+          periodStart: new Date('2026-06-01'),
+          periodEnd: new Date('2027-05-31'),
+          description: 'Publikasi Rilis Artikel',
+          selectedOptions: { AD_TYPE: ['ARTIKEL'], COOP_TYPE: [], PLACEMENT: [], AD_LOCATION: [] },
+          cooperationDetail: 'Artikel Release (Materi Ready To Post) 12x',
+          termsConditions:
+            'Kerjasama ini tidak mencakup penjagaan narasi pemberitaan di Inilah.com, PTBA hanya membeli inventori rilis artikel.\nPembayaran pada bulan September 2026 setelah PKS selesai ditandatangan kedua pihak.\nWaktu operasional produksi konten pukul 09:00 - 21:00',
+          subtotal: tax.subtotal,
+          dppAmount: tax.dpp,
+          ppnAmount: tax.ppn,
+          totalAmount: tax.total,
+          acknowledgedById: SIG_ACK_ID,
+          approvedById: SIG_APPROVE_ID,
+          createdBy: superadmin.id,
+          benefits: { create: [{ benefitTypeId: artikel.id, targetQty: 12, notes: 'Materi Ready To Post' }] },
+        },
       });
     }
   }
