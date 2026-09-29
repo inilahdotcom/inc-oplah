@@ -1,16 +1,31 @@
+# Menjalankan aplikasi saja (api + web). Database PostgreSQL eksternal di 12.105.0.1.
+# Siapkan .env di root (lihat .env.example) dengan
+#   DATABASE_URL=postgresql://USER:PASS@12.105.0.1:5432/inc_mo
+# lalu: docker compose up -d --build
 services:
-  db:
-    image: postgres:16
+  api:
+    build:
+      context: .
+      dockerfile: docker/api.Dockerfile
+    env_file: .env
     environment:
-      POSTGRES_USER: inc
-      POSTGRES_PASSWORD: inc
-      POSTGRES_DB: inc_mo
-    ports: ["5432:5432"]
-    volumes: [db-data:/var/lib/postgresql/data]
+      NODE_ENV: production
+      PORT: 4000
+      PUPPETEER_EXECUTABLE_PATH: /usr/bin/chromium
+    restart: unless-stopped
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U inc -d inc_mo"]
-      interval: 5s
-      retries: 10
+      test: ["CMD", "node", "-e", "fetch('http://localhost:4000/api/v1/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
 
-volumes:
-  db-data:
+  web:
+    build:
+      context: .
+      dockerfile: docker/web.Dockerfile
+    ports: ["${WEB_PORT:-4001}:80"]
+    depends_on:
+      api:
+        condition: service_healthy
+    restart: unless-stopped

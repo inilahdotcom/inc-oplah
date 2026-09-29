@@ -91,7 +91,6 @@ TypeScript `strict: true`. Tidak boleh ada `any` kecuali di boundary library, da
 
 ```bash
 bun install
-docker compose up -d                 # postgres + minio
 cd apps/api && bun run prisma migrate dev   # dari apps/api
 bun run db:seed                      # dari apps/api
 bun run dev                          # web + api paralel (dari root)
