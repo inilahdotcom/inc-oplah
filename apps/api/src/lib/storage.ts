@@ -6,6 +6,7 @@ import { logger } from './logger';
 
 // Bucket privat di DigitalOcean Spaces; file diakses lewat signed URL berumur pendek (ARCHITECTURE §4.6).
 const SIGNED_URL_TTL_SECONDS = 300;
+const ROOT_PREFIX = 'inc_oplah/';
 
 let client: S3Client | null = null;
 
@@ -25,7 +26,7 @@ function s3() {
 export async function putObject(key: string, body: Buffer, contentType: string) {
   const { client, bucket } = s3();
   try {
-    await client.send(new PutObjectCommand({ Bucket: bucket, Key: key, Body: body, ContentType: contentType, ACL: 'private' }));
+    await client.send(new PutObjectCommand({ Bucket: bucket, Key: ROOT_PREFIX + key, Body: body, ContentType: contentType, ACL: 'private' }));
   } catch (err) {
     logger.error({ err, key }, 'upload ke storage gagal');
     throw new AppError('STORAGE_ERROR', 'Gagal mengunggah ke storage. Periksa kredensial & bucket Spaces', 502);
@@ -36,7 +37,7 @@ export async function putObject(key: string, body: Buffer, contentType: string) 
 export async function getObject(key: string): Promise<Buffer | null> {
   try {
     const { client, bucket } = s3();
-    const res = await client.send(new GetObjectCommand({ Bucket: bucket, Key: key }));
+    const res = await client.send(new GetObjectCommand({ Bucket: bucket, Key: ROOT_PREFIX + key }));
     return res.Body ? Buffer.from(await res.Body.transformToByteArray()) : null;
   } catch (err) {
     if (!(err instanceof AppError)) logger.warn({ err, key }, 'baca storage gagal');
@@ -49,7 +50,7 @@ export async function signedUrl(key: string | null | undefined): Promise<string 
   if (!key) return null;
   try {
     const { client, bucket } = s3();
-    return await getSignedUrl(client, new GetObjectCommand({ Bucket: bucket, Key: key }), { expiresIn: SIGNED_URL_TTL_SECONDS });
+    return await getSignedUrl(client, new GetObjectCommand({ Bucket: bucket, Key: ROOT_PREFIX + key }), { expiresIn: SIGNED_URL_TTL_SECONDS });
   } catch (e) {
     if (e instanceof AppError) return null;
     throw e;

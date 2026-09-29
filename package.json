@@ -26,6 +26,7 @@
     "e2e": "playwright test"
   },
   "devDependencies": {
-    "@playwright/test": "^1.63.0"
+    "@playwright/test": "^1.63.0",
+    "prisma": "^8.0.0-rc.17"
   }
 }
