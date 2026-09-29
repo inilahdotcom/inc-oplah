@@ -16,9 +16,18 @@ RUN --mount=type=cache,target=/root/.bun/install/cache \
 FROM node:22-bookworm-slim
 
 # Chromium sistem untuk render PDF (puppeteer tidak mengunduh browser sendiri).
-RUN apt-get update \
-  && apt-get install -y --no-install-recommends chromium fonts-liberation fonts-noto-core openssl ca-certificates \
+# Dipecah per kelompok paket supaya tiap layer < 100 MB: registry hb.inilahtv.com
+# berada di belakang Cloudflare yang menolak upload > 100 MB per request (413).
+# Paket chromium sendiri tetap ~120 MB gzip, jadi Jenkinsfile mem-push image ini
+# dengan kompresi zstd (~96 MB, dicek 2026-09-29).
+RUN apt-get update && apt-get install -y --no-install-recommends fonts-liberation fonts-noto-core openssl ca-certificates \
   && rm -rf /var/lib/apt/lists/*
+RUN apt-get update && apt-get install -y --no-install-recommends libgl1-mesa-dri && rm -rf /var/lib/apt/lists/*
+RUN apt-get update && apt-get install -y --no-install-recommends libgtk-3-0 && rm -rf /var/lib/apt/lists/*
+RUN apt-get update && apt-get install -y --no-install-recommends chromium-common \
+     $(apt-cache depends chromium | awk '/Depends:/{print $2}' | grep -v -E '^<|^chromium$') \
+  && rm -rf /var/lib/apt/lists/*
+RUN apt-get update && apt-get install -y --no-install-recommends chromium && rm -rf /var/lib/apt/lists/*
 
 ENV PUPPETEER_SKIP_DOWNLOAD=true \
     PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium

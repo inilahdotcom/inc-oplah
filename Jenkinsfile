@@ -100,10 +100,18 @@ pipeline {
                     sh '''
                         set -eu
                         echo "$HP" | docker login ${REGISTRY} -u "$HU" --password-stdin
-                        for I in ${IMAGE_API} ${IMAGE_WEB}; do
-                            docker push $I:${TAG}
-                            docker push $I:${BRANCH}
-                        done
+
+                        docker push ${IMAGE_WEB}:${TAG}
+                        docker push ${IMAGE_WEB}:${BRANCH}
+
+                        # hb.inilahtv.com di belakang Cloudflare: upload > 100 MB per request
+                        # ditolak 413. Layer chromium ~120 MB gzip, ~96 MB zstd, jadi image api
+                        # di-push dengan zstd. Build-nya diambil dari cache tahap sebelumnya.
+                        # Butuh Docker >= 23 di VM untuk pull (VM: 28.3.3).
+                        docker buildx build -f docker/api.Dockerfile \
+                            -t ${IMAGE_API}:${TAG} -t ${IMAGE_API}:${BRANCH} \
+                            --output type=image,push=true,compression=zstd,compression-level=19,force-compression=true,oci-mediatypes=true \
+                            .
                     '''
                 }
             }
