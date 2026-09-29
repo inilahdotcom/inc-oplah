@@ -22,6 +22,8 @@
 //                                                  Nilai TANPA tanda petik: `docker run --env-file` tidak
 //                                                  membuangnya seperti compose, jadi "abc" terbaca "abc"
 //                                                  lengkap dengan petiknya.
+//                                                  NODE_ENV, PORT, PUPPETEER_EXECUTABLE_PATH dipaksa oleh
+//                                                  `-e` di bawah (nilai kosong di .env akan menimpa ENV image).
 //
 // Image web tidak butuh .env: VITE_API_BASE_URL=/api/v1 sudah ditanam di docker/web.Dockerfile.
 
@@ -175,6 +177,7 @@ docker rm -f '$APP_API' >/dev/null 2>&1 || true
 docker create --name '$APP_API' --restart unless-stopped \
     --network '$APP_NETWORK' --network-alias api \
     --env-file '$ENV_VM' -e NODE_ENV=production -e PORT=4000 \
+    -e PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium \
     --log-driver json-file --log-opt max-size=3m --log-opt max-file=3 \
     '$IMAGE_API:$TAG' >/dev/null
 docker network connect '$DB_NETWORK' '$APP_API'

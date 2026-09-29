@@ -5,10 +5,12 @@ COPY package.json ./
 COPY apps/api/package.json apps/api/
 COPY apps/web/package.json apps/web/
 COPY packages/shared/package.json packages/shared/
-# Script install tetap jalan (bcrypt mengunduh binding native); puppeteer memakai Chromium sistem.
-ENV PUPPETEER_SKIP_DOWNLOAD=true
+# --ignore-scripts: runtime JS Bun crash (SIGILL, "CPU lacks AVX support") di agent Jenkins
+# saat menjalankan postinstall. Bun hanya mengunduh paket; script yang dibutuhkan
+# (binding native bcrypt) dijalankan dengan Node di tahap berikut. Puppeteer memakai
+# Chromium sistem, jadi postinstall-nya memang tidak perlu.
 RUN --mount=type=cache,target=/root/.bun/install/cache \
-    bun install --filter api
+    bun install --filter api --ignore-scripts
 
 # ---- Runtime Node ----
 FROM node:22-bookworm-slim
@@ -26,6 +28,9 @@ COPY --from=install /app ./
 COPY packages/shared packages/shared
 COPY apps/api apps/api
 WORKDIR /app/apps/api
+# Pengganti postinstall bcrypt yang dilewati --ignore-scripts.
+RUN cd "$(readlink -f node_modules/bcrypt)" \
+    && node ../@mapbox/node-pre-gyp/bin/node-pre-gyp install --fallback-to-build
 RUN node_modules/.bin/prisma generate
 
 EXPOSE 4000
