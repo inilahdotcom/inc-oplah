@@ -1,6 +1,6 @@
 import { Router, type Response } from 'express';
 import rateLimit from 'express-rate-limit';
-import { loginSchema } from '@inc/shared';
+import { forgotPasswordSchema, loginSchema, resetPasswordSchema } from '@inc/shared';
 import { env } from '../../config/env';
 import { authenticate, currentUser } from '../../middleware/authenticate';
 import { validate } from '../../middleware/validate';
@@ -16,13 +16,15 @@ const cookieOpts = {
 
 const setRefreshCookie = (res: Response, token: string) => res.cookie(COOKIE, token, { ...cookieOpts, maxAge: auth.REFRESH_TTL_MS });
 
-const loginLimiter = rateLimit({
-  windowMs: 60_000,
-  limit: 5,
-  skip: () => env.NODE_ENV === 'test',
-  handler: (_req, res) =>
-    res.status(429).json({ error: { code: 'TOO_MANY_REQUESTS', message: 'Terlalu banyak percobaan login, coba lagi dalam 1 menit', details: [] } }),
-});
+const limiter = (message: string) =>
+  rateLimit({
+    windowMs: 60_000,
+    limit: 5,
+    skip: () => env.NODE_ENV === 'test',
+    handler: (_req, res) => res.status(429).json({ error: { code: 'TOO_MANY_REQUESTS', message, details: [] } }),
+  });
+const loginLimiter = limiter('Terlalu banyak percobaan login, coba lagi dalam 1 menit');
+const resetLimiter = limiter('Terlalu banyak permintaan, coba lagi dalam 1 menit');
 
 export const authRouter = Router();
 
@@ -44,4 +46,14 @@ authRouter.post('/logout', async (req, res) => {
 authRouter.get('/me', authenticate, async (req, res) => {
   const u = currentUser(req);
   res.json(await auth.me(u.sub, u.orgId));
+});
+
+authRouter.post('/forgot-password', resetLimiter, validate(forgotPasswordSchema), async (req, res) => {
+  await auth.forgotPassword(req.body.email);
+  res.status(204).end();
+});
+
+authRouter.post('/reset-password', resetLimiter, validate(resetPasswordSchema), async (req, res) => {
+  await auth.resetPassword(req.body, req.ip);
+  res.status(204).end();
 });

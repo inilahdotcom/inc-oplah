@@ -62,7 +62,7 @@ describe('Draft & submit', () => {
     const s = await as('ADMIN_SALES');
     const ids = await Promise.all(Array.from({ length: 20 }, async () => (await s.post('/media-orders').send(sample)).body.id as string));
     const done = await Promise.all(ids.map((id) => s.post(`/media-orders/${id}/submit`)));
-    expect(done.every((r) => r.status === 200)).toBe(true);
+    expect(done.filter((r) => r.status !== 200).map((r) => r.body)).toEqual([]);
     const seqs = done.map((r) => Number(r.body.moNumber.split('/')[0])).sort((a, b) => a - b);
     expect(new Set(seqs).size).toBe(20);
     expect(seqs.at(-1)! - seqs[0]).toBe(19);
@@ -98,6 +98,24 @@ describe('Batal, revisi, duplikat', () => {
     const old = (await s.get(`/media-orders/${mo.id}`)).body;
     expect(old).toMatchObject({ status: 'CANCELLED', cancelReason: 'Direvisi', revisedInto: { id: rev.body.id } });
     expect((await s.post(`/media-orders/${mo.id}/revise`)).status).toBe(409);
+  });
+
+  it('SEQ manual → nomor berformat template; SEQ ganda ditolak; otomatis melompati SEQ manual', async () => {
+    const s = await as('ADMIN_SALES');
+    const draft = await s.post('/media-orders').send({ ...sample, moSeq: 900 });
+    expect(draft.body).toMatchObject({ moSeq: 900, moNumber: null });
+    expect((await s.post(`/media-orders/${draft.body.id}/submit`)).body.moNumber).toBe('900/MO-BMO/INC/V/2026');
+    const dup = await s.post('/media-orders').send({ ...sample, moSeq: 900 });
+    expect(dup.status).toBe(400);
+    expect(dup.body.error.details[0].field).toBe('moSeq');
+
+    // Counter tidak bergeser; SEQ otomatis berikutnya dipakai manual → otomatis melompat.
+    const auto1 = await createSubmitted();
+    const taken = Number(auto1.moNumber.split('/')[0]) + 1;
+    const manual = (await s.post('/media-orders').send({ ...sample, moSeq: taken })).body;
+    expect((await s.post(`/media-orders/${manual.id}/submit`)).status).toBe(200);
+    const auto2 = await createSubmitted();
+    expect(Number(auto2.moNumber.split('/')[0])).toBe(taken + 1);
   });
 
   it('duplikat membuat draft baru tanpa nomor', async () => {

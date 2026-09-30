@@ -50,6 +50,7 @@ const locked = () => new AppError('MO_LOCKED', 'MO yang sudah disubmit tidak bis
 // ─────────────── Mapping ───────────────
 
 const toDraft = (mo: MoRow): MoDraft => ({
+  moSeq: mo.moSeq,
   moDate: day(mo.moDate),
   clientId: mo.clientId,
   salesId: mo.salesId,
@@ -151,8 +152,15 @@ function toData({ benefits: _b, moDate, periodStart, periodEnd, ...rest }: MoDra
 const benefitRows = (d: MoDraft) => d.benefits.map((b, i) => ({ ...b, sortOrder: i }));
 
 /** Semua referensi harus milik organisasi user (FK saja tidak mencegah lintas organisasi). */
+const invalid = (field: string, message: string) => new AppError('VALIDATION_ERROR', message, 400, [{ field, message }]);
+
+/** SEQ unik per organisasi per tahun di antara MO yang sudah bernomor (manual maupun otomatis). */
+const seqTaken = async (tx: Tx, orgId: string, year: number, seq: number) =>
+  (await tx.mediaOrder.count({ where: { organizationId: orgId, moYear: year, moSeq: seq, moNumber: { not: null } } })) > 0;
+const seqTakenError = () => invalid('moSeq', 'No. urut sudah dipakai tahun ini');
+
 async function assertRefs(tx: Tx, orgId: string, d: MoDraft) {
-  const invalid = (field: string, message: string) => new AppError('VALIDATION_ERROR', message, 400, [{ field, message }]);
+  if (d.moSeq && (await seqTaken(tx, orgId, Number(d.moDate.slice(0, 4)), d.moSeq))) throw seqTakenError();
   if (!(await tx.client.count({ where: { id: d.clientId, organizationId: orgId, deletedAt: null } }))) throw invalid('clientId', 'Klien tidak ditemukan');
   if (!(await tx.sales.count({ where: { id: d.salesId, organizationId: orgId } }))) throw invalid('salesId', 'Sales tidak ditemukan');
   const typeIds = [...new Set(d.benefits.map((b) => b.benefitTypeId))];
@@ -237,11 +245,26 @@ export async function submit(req: Request, id: string) {
     const d = moSubmitSchema.parse(toDraft(before)); // ZodError → 400 per field
     await assertRefs(tx, orgId, d);
     const { tax, numbering } = await orgSettings(tx, orgId);
+    // Baris urutan tahun itu selalu dikunci agar submit manual & otomatis antre.
+    // SEQ manual tidak menggeser counter; SEQ otomatis melompati yang sudah dipakai manual.
     const year = Number(d.moDate.slice(0, 4));
-    const [{ seq }] = await tx.$queryRaw<{ seq: number }[]>(Prisma.sql`
-      INSERT INTO mo_sequences (organization_id, year, last_seq) VALUES (${orgId}::uuid, ${year}, 1)
-      ON CONFLICT (organization_id, year) DO UPDATE SET last_seq = mo_sequences.last_seq + 1
-      RETURNING last_seq AS seq`);
+    const next = async (step: number) =>
+      (
+        await tx.$queryRaw<{ seq: number }[]>(Prisma.sql`
+      INSERT INTO mo_sequences (organization_id, year, last_seq) VALUES (${orgId}::uuid, ${year}, ${step})
+      ON CONFLICT (organization_id, year) DO UPDATE SET last_seq = mo_sequences.last_seq + ${step}
+      RETURNING last_seq AS seq`)
+      )[0].seq;
+    let seq: number;
+    if (d.moSeq) {
+      await next(0);
+      if (await seqTaken(tx, orgId, year, d.moSeq)) throw seqTakenError();
+      seq = d.moSeq;
+    } else {
+      // ponytail: satu query per SEQ terpakai; cukup selama SEQ manual jarang.
+      do seq = await next(1);
+      while (await seqTaken(tx, orgId, year, seq));
+    }
     assertTransition(before.status, 'SUBMITTED');
     const after = await tx.mediaOrder.update({
       where: { id },
@@ -289,7 +312,7 @@ export async function revise(req: Request, id: string) {
       throw new AppError('MO_BILLED', 'MO yang sudah ditagih tidak bisa direvisi', 409);
     }
     await tx.mediaOrder.update({ where: { id }, data: { status: 'CANCELLED', cancelReason: 'Direvisi', cancelledAt: new Date() } });
-    const draft = await createDraft(tx, req, { ...toDraft(old), moDate: today() }, id);
+    const draft = await createDraft(tx, req, { ...toDraft(old), moSeq: null, moDate: today() }, id);
     for (const b of old.benefits) {
       const nb = draft.benefits.find((x) => x.benefitTypeId === b.benefitTypeId)!;
       await tx.publication.updateMany({ where: { moBenefitId: b.id }, data: { mediaOrderId: draft.id, moBenefitId: nb.id } });
@@ -306,7 +329,7 @@ export async function duplicate(req: Request, id: string) {
   const mo = await prisma.$transaction(async (tx) => {
     const src = await findMo(tx, org(req), id);
     if (!src) throw notFound();
-    return createDraft(tx, req, { ...toDraft(src), moDate: today() });
+    return createDraft(tx, req, { ...toDraft(src), moSeq: null, moDate: today() });
   });
   return toDto(mo);
 }
