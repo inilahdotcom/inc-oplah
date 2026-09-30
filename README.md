@@ -16,12 +16,22 @@ Dokumen acuan: [AGENT.md](AGENT.md) → [PRD](docs/design/PRD.md) → [DATABASE.
 cp .env.example apps/api/.env           # hapus bagian "web" di bawahnya
 echo "VITE_API_BASE_URL=http://localhost:4000/api/v1" > apps/web/.env
 bun install
-docker compose up -d                    # postgres
 cd apps/api && bun run prisma migrate deploy && bun run db:seed && cd ../..
 bun run dev                             # web :5173 + api :4000
 ```
 
 Akun development (password `password123`): `superadmin@`, `sales@`, `finance@`, `viewer@inilah.local`.
+
+## Menjalankan dengan Docker
+
+Compose hanya menjalankan aplikasi (`api` + `web`/nginx); database memakai PostgreSQL eksternal di `12.105.0.1`.
+
+```bash
+# .env di root berisi variabel api, termasuk DATABASE_URL=postgresql://USER:PASS@12.105.0.1:5432/inc_mo
+docker compose up -d --build            # web di :4001 (ubah dengan WEB_PORT), /api/* diproksikan ke api
+```
+
+Container `api` menjalankan `prisma migrate deploy` ke DB tersebut setiap start. Seed tidak dijalankan otomatis.
 
 ## Setup DigitalOcean Spaces (upload tanda tangan, stempel, PDF, lampiran)
 
