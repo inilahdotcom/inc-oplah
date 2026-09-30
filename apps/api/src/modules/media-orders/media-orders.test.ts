@@ -37,7 +37,8 @@ describe('Draft & submit', () => {
     const res = await s.post(`/media-orders/${draft.body.id}/submit`);
     expect(res.status).toBe(400);
     const fields = res.body.error.details.map((d: { field: string }) => d.field);
-    expect(fields).toEqual(expect.arrayContaining(['benefits', 'cooperationDetail', 'subtotal']));
+    expect(fields).toEqual(expect.arrayContaining(['benefits', 'cooperationDetail']));
+    expect(fields).not.toContain('subtotal');
 
     expect((await (await as('FINANCE')).post('/media-orders').send(sample)).status).toBe(403);
     expect((await s.post('/media-orders').send({ ...sample, clientId: undefined })).status).toBe(400);
@@ -66,6 +67,19 @@ describe('Draft & submit', () => {
     const seqs = done.map((r) => Number(r.body.moNumber.split('/')[0])).sort((a, b) => a - b);
     expect(new Set(seqs).size).toBe(20);
     expect(seqs.at(-1)! - seqs[0]).toBe(19);
+  });
+
+  it('periode akhir, pembayaran & subtotal opsional; Dibuat oleh bisa penandatangan mana pun', async () => {
+    const s = await as('ADMIN_SALES');
+    const sigs = (await s.get('/signatories')).body.data as { id: string; name: string; docRole: string }[];
+    const other = sigs.find((x) => x.docRole === 'APPROVED_BY')!;
+    const { periodEnd: _p, paymentMethod: _m, subtotal: _s, ...rest } = sample;
+    const draft = (await s.post('/media-orders').send({ ...rest, createdBySignatoryId: other.id, acknowledgedById: other.id })).body;
+    const res = await s.post(`/media-orders/${draft.id}/submit`);
+    expect(res.status).toBe(200);
+    expect(res.body).toMatchObject({ periodEnd: null, paymentMethod: null, subtotal: '0', totalAmount: '0' });
+    expect(res.body.signatories.createdBy.name).toBe(other.name);
+    expect(res.body.signatories.acknowledgedBy.name).toBe(other.name);
   });
 
   it('draft bisa diubah & dihapus', async () => {

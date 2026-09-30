@@ -29,6 +29,7 @@ type Tx = Prisma.TransactionClient;
 
 const include = {
   sales: true,
+  createdBySignatory: true,
   acknowledgedBy: true,
   approvedBy: true,
   benefits: { orderBy: { sortOrder: 'asc' } },
@@ -56,7 +57,7 @@ const toDraft = (mo: MoRow): MoDraft => ({
   salesId: mo.salesId,
   clientSnapshot: mo.clientSnapshot as MoDraft['clientSnapshot'],
   periodStart: day(mo.periodStart),
-  periodEnd: day(mo.periodEnd),
+  periodEnd: mo.periodEnd && day(mo.periodEnd),
   description: mo.description,
   airingDateText: mo.airingDateText,
   selectedOptions: { AD_TYPE: [], COOP_TYPE: [], PLACEMENT: [], AD_LOCATION: [], ...(mo.selectedOptions as object) },
@@ -70,6 +71,7 @@ const toDraft = (mo: MoRow): MoDraft => ({
   adProduct: mo.adProduct,
   subtotal: mo.subtotal.toFixed(0),
   isTaxable: mo.isTaxable,
+  createdBySignatoryId: mo.createdBySignatoryId,
   acknowledgedById: mo.acknowledgedById,
   approvedById: mo.approvedById,
 });
@@ -77,7 +79,8 @@ const toDraft = (mo: MoRow): MoDraft => ({
 /** Penandatangan: snapshot bila sudah submit, selain itu data master terkini. */
 const signersOf = (mo: MoRow): Signers =>
   (mo.signatorySnapshot as Signers | null) ?? {
-    createdBy: { name: mo.sales.name, title: mo.sales.title, signatureKey: mo.sales.signatureKey },
+    // "Dibuat oleh" default sales; bisa diganti penandatangan mana pun.
+    createdBy: (({ name, title, signatureKey }) => ({ name, title, signatureKey }))(mo.createdBySignatory ?? mo.sales),
     acknowledgedBy: mo.acknowledgedBy && { name: mo.acknowledgedBy.name, title: mo.acknowledgedBy.title, signatureKey: mo.acknowledgedBy.signatureKey },
     approvedBy: mo.approvedBy && {
       name: mo.approvedBy.name,
@@ -139,7 +142,7 @@ function toData({ benefits: _b, moDate, periodStart, periodEnd, ...rest }: MoDra
     ...rest,
     moDate: new Date(moDate),
     periodStart: new Date(periodStart),
-    periodEnd: new Date(periodEnd),
+    periodEnd: periodEnd ? new Date(periodEnd) : null,
     dppAmount: tax.dpp,
     ppnAmount: tax.ppn,
     totalAmount: tax.total,
@@ -167,7 +170,7 @@ async function assertRefs(tx: Tx, orgId: string, d: MoDraft) {
   if ((await tx.benefitType.count({ where: { id: { in: typeIds }, organizationId: orgId } })) !== typeIds.length) {
     throw invalid('benefits', 'Jenis benefit tidak ditemukan');
   }
-  const sigIds = [d.acknowledgedById, d.approvedById].filter((x): x is string => !!x);
+  const sigIds = [d.createdBySignatoryId, d.acknowledgedById, d.approvedById].filter((x): x is string => !!x);
   if ((await tx.signatory.count({ where: { id: { in: sigIds }, organizationId: orgId } })) !== new Set(sigIds).size) {
     throw invalid('acknowledgedById', 'Penandatangan tidak ditemukan');
   }
@@ -402,7 +405,7 @@ export async function pdf(req: Request, id: string) {
   const snap = mo.clientSnapshot as MoDraft['clientSnapshot'];
   return {
     body: stored ?? (await renderMo(mo)),
-    fileName: moPdfFileName({ moNumber: mo.moNumber, companyName: snap.companyName ?? 'KLIEN', periodStart: day(mo.periodStart), periodEnd: day(mo.periodEnd) }),
+    fileName: moPdfFileName({ moNumber: mo.moNumber, companyName: snap.companyName ?? 'KLIEN', periodStart: day(mo.periodStart), periodEnd: mo.periodEnd && day(mo.periodEnd) }),
   };
 }
 

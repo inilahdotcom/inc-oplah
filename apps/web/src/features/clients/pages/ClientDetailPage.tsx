@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { ChevronRight } from 'lucide-react'
 import { toast } from 'sonner'
-import { formatBulan, formatRupiah, formatTanggal, maskNik } from '@inc/shared'
+import { formatPeriode, formatRupiah, formatTanggal, maskNik } from '@inc/shared'
 import { MoStatusTags } from '@/components/mo-status'
 import { QueryState } from '@/components/query-state'
 import { RoleGate } from '@/components/role-gate'
@@ -101,7 +101,7 @@ export function ClientDetailPage() {
                       <div className="flex flex-col gap-0.5">
                         <span className="tnum text-sm font-normal">{m.moNumber ?? 'Draft'}</span>
                         <span className="text-[13px] text-ink-mute">
-                          {formatTanggal(m.moDate)} · {formatBulan(m.periodStart)} – {formatBulan(m.periodEnd)}
+                          {formatTanggal(m.moDate)} · {formatPeriode(m.periodStart, m.periodEnd)}
                         </span>
                       </div>
                       <div className="flex items-center gap-2">

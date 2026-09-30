@@ -26,7 +26,8 @@ const ROMAN = ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX', 'X', 'XI'
 export const formatBulan = (date: string) => bulan.format(new Date(date.slice(0, 10)));
 
 /** Masa periode MO: "Juni 2026 - Mei 2027". */
-export const formatPeriode = (start: string, end: string) => `${formatBulan(start)} - ${formatBulan(end)}`;
+/** Periode akhir opsional: tanpa akhir hanya bulan awal. */
+export const formatPeriode = (start: string, end?: string | null) => (end ? `${formatBulan(start)} - ${formatBulan(end)}` : formatBulan(start));
 
 /** "2026-06" → ["2026-06-01", "2026-06-30"] (periode disimpan awal & akhir bulan). */
 export const monthRange = (month: string): [string, string] => {
@@ -45,13 +46,15 @@ export const formatMoNumber = (template: string, v: { seq: number; pad?: number;
 };
 
 /** PRD §8: `MO_{nomor-strip}_{PERUSAHAAN}_{Periode}.pdf`. Isi kurung dibuang dari nama perusahaan. */
-export const moPdfFileName = (mo: { moNumber: string | null; companyName: string; periodStart: string; periodEnd: string }) => {
+export const moPdfFileName = (mo: { moNumber: string | null; companyName: string; periodStart: string; periodEnd: string | null }) => {
   const slug = (s: string) => s.replace(/\(.*?\)/g, '').trim().replace(/[^A-Za-z0-9]+/g, '_').replace(/^_|_$/g, '');
-  const period = `${formatBulan(mo.periodStart)}-${formatBulan(mo.periodEnd)}`.replaceAll(' ', '_');
+  const period = formatPeriode(mo.periodStart, mo.periodEnd).replaceAll(' - ', '-').replaceAll(' ', '_');
   return `MO_${(mo.moNumber ?? 'DRAFT').replaceAll('/', '-')}_${slug(mo.companyName).toUpperCase()}_${period}.pdf`;
 };
 
 const bulanPendek = new Intl.DateTimeFormat('id-ID', { month: 'short', year: 'numeric', timeZone: 'UTC' });
 /** Kolom Periode Tayang daftar MO (PRD §5.8): "Jun 2026 – Mei 2027". */
-export const formatPeriodeSingkat = (start: string, end: string) =>
-  `${bulanPendek.format(new Date(start.slice(0, 10)))} – ${bulanPendek.format(new Date(end.slice(0, 10)))}`;
+export const formatPeriodeSingkat = (start: string, end?: string | null) => {
+  const f = (d: string) => bulanPendek.format(new Date(d.slice(0, 10)));
+  return end ? `${f(start)} – ${f(end)}` : f(start);
+};

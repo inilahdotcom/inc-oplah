@@ -25,15 +25,15 @@ model Organization {
   createdAt       DateTime @default(now()) @map("created_at") @db.Timestamptz
   updatedAt       DateTime @updatedAt @map("updated_at") @db.Timestamptz
 
-  users         User[]
-  sales         Sales[]
-  clients       Client[]
-  signatories   Signatory[]
-  benefitTypes  BenefitType[]
-  formOptions   FormOption[]
-  moSequences   MoSequence[]
-  mediaOrders   MediaOrder[]
-  auditLogs     AuditLog[]
+  users        User[]
+  sales        Sales[]
+  clients      Client[]
+  signatories  Signatory[]
+  benefitTypes BenefitType[]
+  formOptions  FormOption[]
+  moSequences  MoSequence[]
+  mediaOrders  MediaOrder[]
+  auditLogs    AuditLog[]
 
   @@map("organizations")
 }
@@ -62,13 +62,13 @@ model User {
 }
 
 model RefreshToken {
-  id         String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  userId     String    @map("user_id") @db.Uuid
-  tokenHash  String    @unique @map("token_hash")
-  expiresAt  DateTime  @map("expires_at") @db.Timestamptz
-  revokedAt  DateTime? @map("revoked_at") @db.Timestamptz
-  userAgent  String?   @map("user_agent")
-  createdAt  DateTime  @default(now()) @map("created_at") @db.Timestamptz
+  id        String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId    String    @map("user_id") @db.Uuid
+  tokenHash String    @unique @map("token_hash")
+  expiresAt DateTime  @map("expires_at") @db.Timestamptz
+  revokedAt DateTime? @map("revoked_at") @db.Timestamptz
+  userAgent String?   @map("user_agent")
+  createdAt DateTime  @default(now()) @map("created_at") @db.Timestamptz
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
@@ -82,7 +82,7 @@ model Sales {
   id             String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   organizationId String   @map("organization_id") @db.Uuid
   name           String
-  code           String   /// dipakai di nomor MO, mis. "BMO"
+  code           String /// dipakai di nomor MO, mis. "BMO"
   email          String?
   title          String   @default("Sales")
   signatureKey   String?  @map("signature_key")
@@ -111,9 +111,10 @@ model Signatory {
   createdAt      DateTime      @default(now()) @map("created_at") @db.Timestamptz
   updatedAt      DateTime      @updatedAt @map("updated_at") @db.Timestamptz
 
-  organization     Organization @relation(fields: [organizationId], references: [id])
-  acknowledgedMos  MediaOrder[] @relation("AcknowledgedBy")
-  approvedMos      MediaOrder[] @relation("ApprovedBy")
+  organization    Organization @relation(fields: [organizationId], references: [id])
+  createdMos      MediaOrder[] @relation("CreatedBy")
+  acknowledgedMos MediaOrder[] @relation("AcknowledgedBy")
+  approvedMos     MediaOrder[] @relation("ApprovedBy")
 
   @@index([organizationId, docRole])
   @@map("signatories")
@@ -122,7 +123,7 @@ model Signatory {
 model BenefitType {
   id             String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   organizationId String   @map("organization_id") @db.Uuid
-  code           String   /// ARTIKEL_RILIS, INSTAGRAM, ...
+  code           String /// ARTIKEL_RILIS, INSTAGRAM, ...
   name           String
   pdfLabel       String?  @map("pdf_label") /// teks untuk auto-generate Detail Kerjasama
   sortOrder      Int      @default(0) @map("sort_order")
@@ -194,72 +195,74 @@ model MoSequence {
 }
 
 model MediaOrder {
-  id             String        @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  organizationId String        @map("organization_id") @db.Uuid
-  moNumber       String?       @map("mo_number")
-  moSeq          Int?          @map("mo_seq")
-  moYear         Int?          @map("mo_year")
-  moDate         DateTime      @map("mo_date") @db.Date
+  id             String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  organizationId String   @map("organization_id") @db.Uuid
+  moNumber       String?  @map("mo_number")
+  moSeq          Int?     @map("mo_seq")
+  moYear         Int?     @map("mo_year")
+  moDate         DateTime @map("mo_date") @db.Date
 
-  clientId       String        @map("client_id") @db.Uuid
-  clientSnapshot Json?         @map("client_snapshot")
-  salesId        String        @map("sales_id") @db.Uuid
+  clientId       String @map("client_id") @db.Uuid
+  clientSnapshot Json?  @map("client_snapshot")
+  salesId        String @map("sales_id") @db.Uuid
 
-  periodStart    DateTime      @map("period_start") @db.Date
-  periodEnd      DateTime      @map("period_end") @db.Date
-  description    String?       /// "Keterangan"
-  airingDateText String?       @map("airing_date_text")
+  periodStart       DateTime  @map("period_start") @db.Date
+  periodEnd         DateTime? @map("period_end") @db.Date
+  description       String? /// "Keterangan"
+  airingDateText    String?   @map("airing_date_text")
   /// { AD_TYPE: string[], COOP_TYPE: string[], PLACEMENT: string[], AD_LOCATION: string[] }
-  selectedOptions Json         @default("{}") @map("selected_options")
-  cooperationDetail String?    @map("cooperation_detail")
-  termsConditions   String?    @map("terms_conditions")
+  selectedOptions   Json      @default("{}") @map("selected_options")
+  cooperationDetail String?   @map("cooperation_detail")
+  termsConditions   String?   @map("terms_conditions")
 
-  paymentMethod  PaymentMethod @default(TRANSFER) @map("payment_method")
-  chequeNo       String?       @map("cheque_no")
-  receiptNo      String?       @map("receipt_no")
-  dueDateText    String?       @map("due_date_text")
-  adProduct      String?       @map("ad_product")
+  paymentMethod PaymentMethod? @map("payment_method")
+  chequeNo      String?        @map("cheque_no")
+  receiptNo     String?        @map("receipt_no")
+  dueDateText   String?        @map("due_date_text")
+  adProduct     String?        @map("ad_product")
 
-  isTaxable      Boolean       @default(true) @map("is_taxable")
-  subtotal       Decimal       @default(0) @db.Decimal(18, 2)
-  dppAmount      Decimal       @default(0) @map("dpp_amount") @db.Decimal(18, 2)
-  ppnAmount      Decimal       @default(0) @map("ppn_amount") @db.Decimal(18, 2)
-  totalAmount    Decimal       @default(0) @map("total_amount") @db.Decimal(18, 2)
-  ppnRate        Decimal       @default(12) @map("ppn_rate") @db.Decimal(5, 2)
-  dppFactorNum   Int           @default(11) @map("dpp_factor_num")
-  dppFactorDen   Int           @default(12) @map("dpp_factor_den")
+  isTaxable    Boolean @default(true) @map("is_taxable")
+  subtotal     Decimal @default(0) @db.Decimal(18, 2)
+  dppAmount    Decimal @default(0) @map("dpp_amount") @db.Decimal(18, 2)
+  ppnAmount    Decimal @default(0) @map("ppn_amount") @db.Decimal(18, 2)
+  totalAmount  Decimal @default(0) @map("total_amount") @db.Decimal(18, 2)
+  ppnRate      Decimal @default(12) @map("ppn_rate") @db.Decimal(5, 2)
+  dppFactorNum Int     @default(11) @map("dpp_factor_num")
+  dppFactorDen Int     @default(12) @map("dpp_factor_den")
 
-  acknowledgedById String?     @map("acknowledged_by_id") @db.Uuid
-  approvedById     String?     @map("approved_by_id") @db.Uuid
+  createdBySignatoryId String? @map("created_by_signatory_id") @db.Uuid /// "Dibuat oleh" selain sales; null = sales
+  acknowledgedById     String? @map("acknowledged_by_id") @db.Uuid
+  approvedById         String? @map("approved_by_id") @db.Uuid
   /// { createdBy: {name,title,signatureKey}, acknowledgedBy: {...}, approvedBy: {..., stampKey} }
-  signatorySnapshot Json?      @map("signatory_snapshot")
+  signatorySnapshot    Json?   @map("signatory_snapshot")
 
-  status          MoStatus      @default(DRAFT)
-  billingStatus   BillingStatus @default(NOT_READY) @map("billing_status")
-  fulfillmentPct  Decimal       @default(0) @map("fulfillment_pct") @db.Decimal(5, 2)
-  cancelReason    String?       @map("cancel_reason")
-  revisionOfMoId  String?       @unique @map("revision_of_mo_id") @db.Uuid
-  pdfKey          String?       @map("pdf_key")
-  periodEndingNotifiedAt DateTime? @map("period_ending_notified_at") @db.Timestamptz
+  status                 MoStatus      @default(DRAFT)
+  billingStatus          BillingStatus @default(NOT_READY) @map("billing_status")
+  fulfillmentPct         Decimal       @default(0) @map("fulfillment_pct") @db.Decimal(5, 2)
+  cancelReason           String?       @map("cancel_reason")
+  revisionOfMoId         String?       @unique @map("revision_of_mo_id") @db.Uuid
+  pdfKey                 String?       @map("pdf_key")
+  periodEndingNotifiedAt DateTime?     @map("period_ending_notified_at") @db.Timestamptz
 
-  submittedAt    DateTime?     @map("submitted_at") @db.Timestamptz
-  submittedBy    String?       @map("submitted_by") @db.Uuid
-  cancelledAt    DateTime?     @map("cancelled_at") @db.Timestamptz
-  createdBy      String        @map("created_by") @db.Uuid
-  createdAt      DateTime      @default(now()) @map("created_at") @db.Timestamptz
-  updatedAt      DateTime      @updatedAt @map("updated_at") @db.Timestamptz
+  submittedAt DateTime? @map("submitted_at") @db.Timestamptz
+  submittedBy String?   @map("submitted_by") @db.Uuid
+  cancelledAt DateTime? @map("cancelled_at") @db.Timestamptz
+  createdBy   String    @map("created_by") @db.Uuid
+  createdAt   DateTime  @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt   DateTime  @updatedAt @map("updated_at") @db.Timestamptz
 
-  organization   Organization  @relation(fields: [organizationId], references: [id])
-  client         Client        @relation(fields: [clientId], references: [id])
-  sales          Sales         @relation(fields: [salesId], references: [id])
-  acknowledgedBy Signatory?    @relation("AcknowledgedBy", fields: [acknowledgedById], references: [id])
-  approvedBy     Signatory?    @relation("ApprovedBy", fields: [approvedById], references: [id])
-  revisionOf     MediaOrder?   @relation("Revision", fields: [revisionOfMoId], references: [id])
-  revisedInto    MediaOrder?   @relation("Revision")
-  benefits       MoBenefit[]
-  publications   Publication[]
-  attachments    MoAttachment[]
-  billings       Billing[]
+  organization       Organization   @relation(fields: [organizationId], references: [id])
+  client             Client         @relation(fields: [clientId], references: [id])
+  sales              Sales          @relation(fields: [salesId], references: [id])
+  createdBySignatory Signatory?     @relation("CreatedBy", fields: [createdBySignatoryId], references: [id])
+  acknowledgedBy     Signatory?     @relation("AcknowledgedBy", fields: [acknowledgedById], references: [id])
+  approvedBy         Signatory?     @relation("ApprovedBy", fields: [approvedById], references: [id])
+  revisionOf         MediaOrder?    @relation("Revision", fields: [revisionOfMoId], references: [id])
+  revisedInto        MediaOrder?    @relation("Revision")
+  benefits           MoBenefit[]
+  publications       Publication[]
+  attachments        MoAttachment[]
+  billings           Billing[]
 
   @@unique([organizationId, moNumber])
   @@unique([organizationId, moYear, moSeq])
@@ -273,14 +276,14 @@ model MediaOrder {
 }
 
 model MoBenefit {
-  id            String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  mediaOrderId  String   @map("media_order_id") @db.Uuid
-  benefitTypeId String   @map("benefit_type_id") @db.Uuid
-  targetQty     Int      @map("target_qty")
-  realizedQty   Int      @default(0) @map("realized_qty") /// non-bonus, di-cap di aplikasi
-  bonusQty      Int      @default(0) @map("bonus_qty")
+  id            String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  mediaOrderId  String  @map("media_order_id") @db.Uuid
+  benefitTypeId String  @map("benefit_type_id") @db.Uuid
+  targetQty     Int     @map("target_qty")
+  realizedQty   Int     @default(0) @map("realized_qty") /// non-bonus, di-cap di aplikasi
+  bonusQty      Int     @default(0) @map("bonus_qty")
   notes         String?
-  sortOrder     Int      @default(0) @map("sort_order")
+  sortOrder     Int     @default(0) @map("sort_order")
 
   mediaOrder   MediaOrder    @relation(fields: [mediaOrderId], references: [id], onDelete: Cascade)
   benefitType  BenefitType   @relation(fields: [benefitTypeId], references: [id])
@@ -358,7 +361,7 @@ model Notification {
   id        String           @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   userId    String           @map("user_id") @db.Uuid
   type      NotificationType
-  payload   Json             /// { moId, moNumber, companyName, ... }
+  payload   Json /// { moId, moNumber, companyName, ... }
   readAt    DateTime?        @map("read_at") @db.Timestamptz
   createdAt DateTime         @default(now()) @map("created_at") @db.Timestamptz
 
@@ -372,7 +375,7 @@ model AuditLog {
   id             String      @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   organizationId String      @map("organization_id") @db.Uuid
   userId         String?     @map("user_id") @db.Uuid
-  entity         String      /// "media_order", "publication", "billing", ...
+  entity         String /// "media_order", "publication", "billing", ...
   entityId       String      @map("entity_id") @db.Uuid
   action         AuditAction
   before         Json?

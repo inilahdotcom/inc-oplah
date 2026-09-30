@@ -32,7 +32,7 @@ export const moDraftSchema = z
     salesId: z.string({ required_error: 'Pilih sales' }).uuid('Pilih sales'),
     clientSnapshot: clientSnapshotDraft,
     periodStart: date,
-    periodEnd: date,
+    periodEnd: date.nullish(),
     description: optionalText(200),
     airingDateText: optionalText(200),
     selectedOptions: z.object({ AD_TYPE: codes, COOP_TYPE: codes, PLACEMENT: codes, AD_LOCATION: codes }),
@@ -48,18 +48,19 @@ export const moDraftSchema = z
       .default([]),
     cooperationDetail: optionalText(1000),
     termsConditions: optionalText(3000),
-    paymentMethod: z.enum(paymentMethod).default('TRANSFER'),
+    paymentMethod: z.enum(paymentMethod).nullish(),
     chequeNo: optionalText(100),
     receiptNo: optionalText(100),
     dueDateText: optionalText(100),
     adProduct: optionalText(200),
     subtotal: rupiahString.default('0'),
     isTaxable: z.boolean().default(true),
+    createdBySignatoryId: z.string().uuid().nullish(),
     acknowledgedById: z.string().uuid().nullish(),
     approvedById: z.string().uuid().nullish(),
   })
   .superRefine((v, ctx) => {
-    if (v.periodEnd < v.periodStart) ctx.addIssue({ code: 'custom', path: ['periodEnd'], message: 'Akhir periode sebelum awal periode' });
+    if (v.periodEnd && v.periodEnd < v.periodStart) ctx.addIssue({ code: 'custom', path: ['periodEnd'], message: 'Akhir periode sebelum awal periode' });
     // Unik per MO di DB (mo_benefits), jadi dicek sejak draft.
     const types = v.benefits.map((b) => b.benefitTypeId);
     types.forEach((t, i) => {
@@ -80,7 +81,6 @@ export const moSubmitSchema = moDraftSchema.superRefine((v, ctx) => {
   if (lines(v.cooperationDetail) > 4) issue(['cooperationDetail'], 'Detail kerjasama maksimal 4 baris');
   if (lines(v.termsConditions) > 10) issue(['termsConditions'], 'Term and Conditions maksimal 10 baris');
   if (v.paymentMethod === 'CHEQUE_BG' && !v.chequeNo) issue(['chequeNo'], 'No. Cek/BG wajib diisi');
-  if (BigInt(v.subtotal) <= 0n) issue(['subtotal'], 'Subtotal harus lebih dari 0');
 });
 
 export const calculateSchema = z.object({ subtotal: rupiahString, isTaxable: z.boolean().default(true) });
