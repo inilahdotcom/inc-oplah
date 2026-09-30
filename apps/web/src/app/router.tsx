@@ -3,6 +3,7 @@ import { can, type Permission } from '@inc/shared'
 import { useAuth, useCurrentUser } from '@/lib/auth-store'
 import { LoginPage } from '@/features/auth/pages/LoginPage'
 import { ForgotPasswordPage } from '@/features/auth/pages/ForgotPasswordPage'
+import { ResetPasswordPage } from '@/features/auth/pages/ResetPasswordPage'
 import { ClientDetailPage } from '@/features/clients/pages/ClientDetailPage'
 import { ClientListPage } from '@/features/clients/pages/ClientListPage'
 import { DashboardPage } from '@/features/finance/DashboardPage'
@@ -40,6 +41,7 @@ export function AppRoutes() {
     <Routes>
       <Route path="/login" element={<LoginPage />} />
       <Route path="/lupa-password" element={<ForgotPasswordPage />} />
+      <Route path="/reset-password" element={<ResetPasswordPage />} />
       <Route element={<RequireAuth />}>
         <Route index element={<Home />} />
         <Route path="mo" element={<Guard permission="viewMo"><MoListPage /></Guard>} />

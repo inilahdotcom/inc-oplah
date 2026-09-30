@@ -7,7 +7,7 @@ const mo = {
   moNumber: '007/MO-BMO/INC/V/2026',
   status: 'SUBMITTED',
   moDate: '2026-05-22',
-  clientSnapshot: { picName: 'Budi', companyName: 'PT Bukit Asam <Tbk>', nik: null, address: null, city: null, postalCode: null, email: 'a@b.co', phone: '08' },
+  clientSnapshot: { picName: 'Budi', companyName: 'PT Bukit Asam <Tbk>', npwp: null, address: null, city: null, postalCode: null, email: 'a@b.co', phone: '08' },
   periodStart: '2026-06-01',
   periodEnd: '2027-05-31',
   description: 'Publikasi Rilis Artikel',

@@ -191,13 +191,19 @@ export async function getSettings(req: Request) {
   const o = await prisma.organization.findUniqueOrThrow({ where: { id: org(req) } });
   const year = currentYear();
   const seq = await prisma.moSequence.findUnique({ where: { organizationId_year: { organizationId: o.id, year } } });
+  // SEQ otomatis melompati yang sudah dipakai manual (lihat submit MO).
+  const used = new Set(
+    (await prisma.mediaOrder.findMany({ where: { organizationId: o.id, moYear: year, moNumber: { not: null } }, select: { moSeq: true } })).map((m) => m.moSeq),
+  );
+  let nextSeq = (seq?.lastSeq ?? 0) + 1;
+  while (used.has(nextSeq)) nextSeq++;
   const s = o.settings as Record<string, unknown>;
   return {
     company: { name: o.name, address: o.address, bankName: o.bankName, bankAccountNo: o.bankAccountNo, bankAccountName: o.bankAccountName },
     tax: s.tax,
     numbering: s.numbering,
     termsTemplates: s.termsTemplates ?? [],
-    nextSeq: { year, seq: (seq?.lastSeq ?? 0) + 1 },
+    nextSeq: { year, seq: nextSeq },
   };
 }
 

@@ -1,8 +1,11 @@
 import { describe, expect, it } from 'vitest';
 import request from 'supertest';
 import { createHash } from 'node:crypto';
+import bcrypt from 'bcrypt';
+import jwt from 'jsonwebtoken';
 import { app } from '../../app';
 import { prisma } from '../../lib/prisma';
+import { resetSecret } from './auth.service';
 
 const PASSWORD = process.env.SEED_PASSWORD || 'password123';
 const accounts = {
@@ -90,5 +93,40 @@ describe('refresh & logout', () => {
     const res = await request(app).get('/api/v1/auth/me').auth(body.accessToken, { type: 'bearer' });
     expect(res.status).toBe(200);
     expect(res.body).toMatchObject({ role: 'VIEWER', organizationName: 'PT. Indonesia News Center' });
+  });
+});
+
+describe('reset password (FR-AUTH-02)', () => {
+  const forgot = (email: string) => request(app).post('/api/v1/auth/forgot-password').send({ email });
+  const reset = (token: string, password: string) => request(app).post('/api/v1/auth/reset-password').send({ token, password });
+
+  it('email tidak terdaftar tetap 204 (tidak bocor)', async () => {
+    expect((await forgot('tidak-ada@inilah.local')).status).toBe(204);
+    expect((await forgot(accounts.VIEWER)).status).toBe(204);
+  });
+
+  it('token valid mengganti password, mencabut sesi, dan hanya sekali pakai', async () => {
+    const user = await prisma.user.findFirstOrThrow({ where: { email: accounts.VIEWER } });
+    const token = jwt.sign({ sub: user.id, purpose: 'reset' }, resetSecret(user.passwordHash), { expiresIn: '30m' });
+    const oldCookie = refreshCookie(await login(accounts.VIEWER));
+    try {
+      expect((await reset(token, 'password-baru-123')).status).toBe(204);
+      expect((await login(accounts.VIEWER, 'password-baru-123')).status).toBe(200);
+      expect((await login(accounts.VIEWER)).status).toBe(401);
+      expect((await request(app).post('/api/v1/auth/refresh').set('Cookie', oldCookie)).status).toBe(401);
+
+      const again = await reset(token, 'password-lain-123');
+      expect(again.status).toBe(400);
+      expect(again.body.error.code).toBe('INVALID_RESET_TOKEN');
+    } finally {
+      await prisma.user.update({ where: { id: user.id }, data: { passwordHash: await bcrypt.hash(PASSWORD, 12) } });
+    }
+  });
+
+  it('token palsu / kedaluwarsa → 400', async () => {
+    const user = await prisma.user.findFirstOrThrow({ where: { email: accounts.VIEWER } });
+    const expired = jwt.sign({ sub: user.id, purpose: 'reset', exp: Math.floor(Date.now() / 1000) - 10 }, resetSecret(user.passwordHash));
+    const forged = jwt.sign({ sub: user.id, purpose: 'reset' }, 'secret-lain');
+    for (const t of [expired, forged, 'bukan-jwt']) expect((await reset(t, 'password-baru-123')).status).toBe(400);
   });
 });

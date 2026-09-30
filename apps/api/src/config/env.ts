@@ -15,6 +15,10 @@ const schema = z.object({
   S3_BUCKET: optional,
   S3_ACCESS_KEY: optional,
   S3_SECRET_KEY: optional,
+  // Reset password (FR-AUTH-02). Tanpa SMTP_URL email hanya ditulis ke log (development).
+  SMTP_URL: optional,
+  MAIL_FROM: optional.transform((v) => v ?? 'Oplah <no-reply@inilah.com>'),
+  APP_URL: z.string().url().default('http://localhost:5173'),
 });
 
 // Gagal jalan saat startup bila konfigurasi tidak valid (ARCHITECTURE §7).

@@ -134,7 +134,7 @@ async function main() {
           organizationId: ORG_ID,
           moDate: new Date('2026-05-22'),
           clientId: ptba.id,
-          clientSnapshot: { ...snapshot, nik: null, address: null, city: null, postalCode: null },
+          clientSnapshot: { ...snapshot, npwp: null, address: null, city: null, postalCode: null },
           salesId: bimo.id,
           periodStart: new Date('2026-06-01'),
           periodEnd: new Date('2027-05-31'),

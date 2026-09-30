@@ -38,9 +38,10 @@ import { ClientFormDialog } from '@/features/clients/components/ClientFormDialog
 import { useMasterList, useSettings } from '@/features/master-data/api'
 import { useCalculate, useMediaOrder, useMoAction, useSaveMo } from '../api'
 
-const SNAPSHOT = ['picName', 'companyName', 'nik', 'address', 'city', 'postalCode', 'email', 'phone'] as const
+const SNAPSHOT = ['picName', 'companyName', 'npwp', 'address', 'city', 'postalCode', 'email', 'phone'] as const
 type Snapshot = Record<(typeof SNAPSHOT)[number], string>
 interface Values {
+  moSeq: string
   moDate: string
   clientId: string
   salesId: string
@@ -75,6 +76,7 @@ const s = (v: string | null | undefined) => v ?? ''
 const lineCount = (v: string) => (v ? v.split('\n').length : 0)
 
 const fromMo = (mo: MediaOrderDto): Values => ({
+  moSeq: mo.moSeq ? String(mo.moSeq) : '',
   moDate: mo.moDate,
   clientId: mo.clientId,
   salesId: mo.salesId,
@@ -106,6 +108,7 @@ const toBody = ({ startMonth, endMonth, ...v }: Values): MoDraftInput => ({
   chequeNo: v.paymentMethod === 'CHEQUE_BG' ? v.chequeNo : '',
   acknowledgedById: v.acknowledgedById || null,
   approvedById: v.approvedById || null,
+  moSeq: v.moSeq ? Number(v.moSeq) : null,
 })
 
 /** "Artikel Release (Materi Ready To Post) 12x" per benefit (FR-MO-05). */
@@ -178,6 +181,7 @@ function MoForm({ mo, master }: { mo?: MediaOrderDto; master: Master }) {
     defaultValues: mo
       ? fromMo(mo)
       : {
+          moSeq: '',
           moDate: today(),
           clientId: '',
           salesId: me.salesId ?? sales.find((x) => x.isActive)?.id ?? '',
@@ -279,9 +283,10 @@ function MoForm({ mo, master }: { mo?: MediaOrderDto; master: Master }) {
   const tax = useCalculate(watch('subtotal'), watch('isTaxable'))
   const moDate = watch('moDate')
   const salesCode = sales.find((x) => x.id === watch('salesId'))?.code
+  const manualSeq = Number(watch('moSeq')) || null
   const nextNo =
-    salesCode && moDate?.startsWith(String(settings.nextSeq.year))
-      ? formatMoNumber(settings.numbering.template, { seq: settings.nextSeq.seq, pad: settings.numbering.seqPad, salesCode, moDate })
+    salesCode && moDate && (manualSeq || moDate.startsWith(String(settings.nextSeq.year)))
+      ? formatMoNumber(settings.numbering.template, { seq: manualSeq ?? settings.nextSeq.seq, pad: settings.numbering.seqPad, salesCode, moDate })
       : '—'
   const [tnc, setTnc] = useState(0)
   const paymentMethod = watch('paymentMethod')
@@ -334,8 +339,8 @@ function MoForm({ mo, master }: { mo?: MediaOrderDto; master: Master }) {
     })()
   }
 
-  const text = (name: Path<Values>, label: string, opts: { required?: boolean; placeholder?: string; type?: string; inputMode?: 'numeric' | 'email' | 'tel' } = {}) => (
-    <Field id={`mo-${name}`} label={label} required={opts.required} error={err(name)}>
+  const text = (name: Path<Values>, label: string, opts: { required?: boolean; placeholder?: string; type?: string; inputMode?: 'numeric' | 'email' | 'tel'; helper?: string } = {}) => (
+    <Field id={`mo-${name}`} label={label} required={opts.required} error={err(name)} helper={opts.helper}>
       <Input
         id={`mo-${name}`}
         type={opts.type ?? 'text'}
@@ -372,10 +377,7 @@ function MoForm({ mo, master }: { mo?: MediaOrderDto; master: Master }) {
         <div className="flex min-w-0 flex-col gap-5">
           <Section letter="A" title="Header">
             <div className="grid grid-cols-[repeat(auto-fit,minmax(220px,1fr))] gap-3.5">
-              <div className="flex flex-col gap-1.5">
-                <span className="text-sm text-ink-secondary">No. Media Order</span>
-                <div className="flex min-h-10 items-center rounded-sm border border-dashed border-hairline-input px-3 text-[15px] text-ink-mute">(otomatis)</div>
-              </div>
+              {text('moSeq', 'No. urut MO (SEQ)', { inputMode: 'numeric', placeholder: 'Kosongkan untuk otomatis', helper: `Nomor: ${nextNo}` })}
               {text('moDate', 'Tanggal MO', { required: true, type: 'date' })}
             </div>
           </Section>
@@ -410,7 +412,7 @@ function MoForm({ mo, master }: { mo?: MediaOrderDto; master: Master }) {
             <div className="grid grid-cols-[repeat(auto-fit,minmax(240px,1fr))] gap-3.5">
               {text('clientSnapshot.picName', 'Nama (PIC)', { required: true })}
               {text('clientSnapshot.companyName', 'Perusahaan / Biro Iklan', { required: true })}
-              {text('clientSnapshot.nik', 'Nomor NIK', { inputMode: 'numeric', placeholder: '16 digit' })}
+              {text('clientSnapshot.npwp', 'Nomor NPWP')}
               {text('clientSnapshot.address', 'Alamat')}
               {text('clientSnapshot.city', 'Kota')}
               {text('clientSnapshot.postalCode', 'Kode Pos', { inputMode: 'numeric' })}
