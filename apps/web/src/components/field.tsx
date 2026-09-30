@@ -36,7 +36,7 @@ export function Field({
 
 /** Kelas untuk <select> native agar sama dengan Input. */
 export const selectClass =
-  'min-h-10 w-full rounded-sm border border-input bg-background px-3 py-2 text-[15px] font-light text-ink outline-none focus-visible:border-primary focus-visible:shadow-focus aria-invalid:border-ruby disabled:bg-canvas-soft'
+  'min-h-10 w-full rounded-sm border border-input bg-background py-2 pl-3 pr-9 text-[15px] font-light text-ink outline-none focus-visible:border-primary focus-visible:shadow-focus aria-invalid:border-ruby disabled:bg-canvas-soft'
 
 /** Kotak pesan (peringatan/galat) seperti di modal desain. */
 export function Notice({ tone, children }: { tone: 'warning' | 'danger'; children: React.ReactNode }) {
