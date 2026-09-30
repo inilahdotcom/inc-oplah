@@ -2,7 +2,7 @@ import { z } from 'zod';
 import { roles } from '../enums';
 import { requiredText } from './common';
 
-const password = z.string().min(8, 'Password minimal 8 karakter').max(100);
+export const password = z.string().min(8, 'Password minimal 8 karakter').max(100);
 
 export const createUserSchema = z.object({
   name: requiredText('Nama'),

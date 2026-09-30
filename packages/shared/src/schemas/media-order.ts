@@ -14,18 +14,19 @@ export const rupiahString = z.string().trim().regex(/^\d{1,15}$/, 'Nominal berup
 const clientSnapshotDraft = z.object({
   picName: optionalText(200),
   companyName: optionalText(200),
-  nik: optionalText(50),
+  npwp: optionalText(30),
   address: optionalText(),
   city: optionalText(100),
   postalCode: optionalText(50),
   email: optionalText(200),
   phone: optionalText(30),
 });
-const clientSnapshotSubmit = clientSchema.pick({ picName: true, companyName: true, nik: true, address: true, city: true, postalCode: true, email: true, phone: true });
+const clientSnapshotSubmit = clientSchema.pick({ picName: true, companyName: true, npwp: true, address: true, city: true, postalCode: true, email: true, phone: true });
 
 /** Draft: wajib hanya kolom NOT NULL di DB; validasi lengkap saat submit (FR-MO-07). */
 export const moDraftSchema = z
   .object({
+    moSeq: z.number().int('No. urut bilangan bulat').min(1, 'Minimal 1').max(99999).nullish(),
     moDate: date,
     clientId: z.string({ required_error: 'Pilih klien' }).uuid('Pilih klien'),
     salesId: z.string({ required_error: 'Pilih sales' }).uuid('Pilih sales'),

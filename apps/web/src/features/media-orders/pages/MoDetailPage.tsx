@@ -321,7 +321,7 @@ function Summary({ mo }: { mo: MediaOrderDto }) {
         rows={[
           ['Nama (PIC)', c.picName],
           ['Perusahaan', c.companyName],
-          ['NIK', c.nik],
+          ['NPWP', c.npwp],
           ['Alamat', c.address],
           ['Kota', c.city],
           ['Kode Pos', c.postalCode],
