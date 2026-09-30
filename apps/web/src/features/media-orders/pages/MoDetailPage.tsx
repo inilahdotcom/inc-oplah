@@ -344,7 +344,7 @@ function Summary({ mo }: { mo: MediaOrderDto }) {
       <Card
         title="Pembayaran"
         rows={[
-          ['Cara pembayaran', mo.paymentMethod === 'TRANSFER' ? 'Transfer' : `Cek/BG ${mo.chequeNo ?? ''}`],
+          ['Cara pembayaran', !mo.paymentMethod ? null : mo.paymentMethod === 'TRANSFER' ? 'Transfer' : `Cek/BG ${mo.chequeNo ?? ''}`],
           ['Kwitansi No', mo.receiptNo],
           ['Jatuh tempo', mo.dueDateText],
           ['Produk iklan', mo.adProduct],

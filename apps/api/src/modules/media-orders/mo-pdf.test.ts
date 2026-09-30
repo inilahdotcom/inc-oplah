@@ -55,4 +55,11 @@ describe('moHtml (PRD §8)', () => {
     expect(moHtml({ ...mo, status: 'DRAFT' }, org, options, {})).toContain('<span>DRAFT</span>');
     expect(moHtml({ ...mo, isTaxable: false }, org, options, {})).not.toContain('DPP 11/12');
   });
+
+  it('periode akhir, pembayaran & subtotal kosong tidak dicetak', () => {
+    const html = moHtml({ ...mo, periodEnd: null, paymentMethod: null, subtotal: '0', adProduct: null }, org, options, {});
+    expect(html).toContain('Juni 2026</span>');
+    for (const s of ['Cara Pembayaran', 'Biaya Pemasangan', 'Total Payment', 'Pembayaran dapat ditransfer']) expect(html).not.toContain(s);
+    expect(moHtml(mo, org, options, {})).toContain('Cara Pembayaran');
+  });
 });

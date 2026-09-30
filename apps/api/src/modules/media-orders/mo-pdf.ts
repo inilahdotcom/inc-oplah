@@ -57,6 +57,9 @@ export function moHtml(mo: MediaOrderDto, org: PdfOrg, options: PdfOption[], ima
     </div>`;
   const money = (label: string, value: string, suffix = '') =>
     `<div class="money"><span class="ml">${label}</span><span class="mv">${value}</span><span class="ms">${suffix}</span></div>`;
+  // Pembayaran & subtotal opsional: yang tidak diisi tidak dicetak.
+  const hasSubtotal = mo.subtotal !== '0';
+  const hasCost = hasSubtotal || !!mo.adProduct;
   const watermark = mo.status === 'DRAFT' ? 'DRAFT' : mo.status === 'CANCELLED' ? 'DIBATALKAN' : '';
 
   return `<!doctype html><html lang="id"><head><meta charset="utf-8"><style>
@@ -130,20 +133,30 @@ section.box { border: 0.3mm solid #000; padding: 1.5mm 1mm; }
   </section>
   <section class="box" data-section="pembayaran">
     <div class="pay">
-      <div class="stack">
-        <div class="row"><span class="k">Cara Pembayaran</span><span>${box(mo.paymentMethod === 'TRANSFER')} Transfer</span></div>
-        <div class="row"><span class="k"></span><span>${box(mo.paymentMethod === 'CHEQUE_BG')} Cek/BG No</span><span class="v">${esc(mo.chequeNo)}</span></div>
-      </div>
-      <div class="stack">${row('Kwitansi No', esc(mo.receiptNo))}${row('Jatuh Tempo', esc(mo.dueDateText))}</div>
-      <div class="row" style="align-items:flex-start"><span class="k">Biaya Pemasangan</span><div style="flex:1">
-        ${money('Produk Iklan', esc(mo.adProduct))}
-        ${money('Subtotal', `Rp ${formatRupiah(mo.subtotal)}`)}
+      <div class="stack">${
+        mo.paymentMethod
+          ? `<div class="row"><span class="k">Cara Pembayaran</span><span>${box(mo.paymentMethod === 'TRANSFER')} Transfer</span></div>
+        <div class="row"><span class="k"></span><span>${box(mo.paymentMethod === 'CHEQUE_BG')} Cek/BG No</span><span class="v">${esc(mo.chequeNo)}</span></div>`
+          : ''
+      }</div>
+      <div class="stack">${mo.receiptNo ? row('Kwitansi No', esc(mo.receiptNo)) : ''}${mo.dueDateText ? row('Jatuh Tempo', esc(mo.dueDateText)) : ''}</div>
+      <div>${
+        hasCost
+          ? `<div class="row" style="align-items:flex-start"><span class="k">Biaya Pemasangan</span><div style="flex:1">
+        ${mo.adProduct ? money('Produk Iklan', esc(mo.adProduct)) : ''}
+        ${
+          hasSubtotal
+            ? `${money('Subtotal', `Rp ${formatRupiah(mo.subtotal)}`)}
         ${mo.isTaxable ? `${money(`DPP ${mo.dppFactorNum}/${mo.dppFactorDen}`, `Rp ${formatRupiah(mo.dppAmount)}`)}${money(`PPN ${esc(mo.ppnRate)}%`, `Rp ${formatRupiah(mo.ppnAmount)}`, '(+)')}` : ''}
-        <div class="total">${money('Total Payment', `Rp ${formatRupiah(mo.totalAmount)}`)}</div>
-      </div></div>
+        <div class="total">${money('Total Payment', `Rp ${formatRupiah(mo.totalAmount)}`)}</div>`
+            : ''
+        }
+      </div></div>`
+          : ''
+      }</div>
       <div class="approve"><span>Menyetujui,</span><span>Tanda Tangan / Stampel Pengiklan</span><div class="space"></div></div>
     </div>
-    <div class="bank"><u>Pembayaran dapat ditransfer ke :</u><br>${esc(org.bankName)}<br>No. Rekening ${esc(org.bankAccountNo)}<br>A/n ${esc(org.bankAccountName)}</div>
+    ${mo.paymentMethod || hasSubtotal ? `<div class="bank"><u>Pembayaran dapat ditransfer ke :</u><br>${esc(org.bankName)}<br>No. Rekening ${esc(org.bankAccountNo)}<br>A/n ${esc(org.bankAccountName)}</div>` : ''}
   </section>
   <section class="signs" data-section="tanda-tangan">
     ${signer('Dibuat oleh,', mo.signatories.createdBy, images.createdBy)}

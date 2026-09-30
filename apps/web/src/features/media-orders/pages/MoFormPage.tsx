@@ -54,13 +54,14 @@ interface Values {
   benefits: { benefitTypeId: string; targetQty: number; notes: string }[]
   cooperationDetail: string
   termsConditions: string
-  paymentMethod: PaymentMethod
+  paymentMethod: PaymentMethod | ''
   chequeNo: string
   receiptNo: string
   dueDateText: string
   adProduct: string
   subtotal: string
   isTaxable: boolean
+  createdBySignatoryId: string
   acknowledgedById: string
   approvedById: string
 }
@@ -82,20 +83,21 @@ const fromMo = (mo: MediaOrderDto): Values => ({
   salesId: mo.salesId,
   clientSnapshot: Object.fromEntries(SNAPSHOT.map((k) => [k, s(mo.clientSnapshot[k])])) as Snapshot,
   startMonth: mo.periodStart.slice(0, 7),
-  endMonth: mo.periodEnd.slice(0, 7),
+  endMonth: mo.periodEnd?.slice(0, 7) ?? '',
   description: s(mo.description),
   airingDateText: s(mo.airingDateText),
   selectedOptions: mo.selectedOptions,
   benefits: mo.benefits.map((b) => ({ benefitTypeId: b.benefitTypeId, targetQty: b.targetQty, notes: s(b.notes) })),
   cooperationDetail: s(mo.cooperationDetail),
   termsConditions: s(mo.termsConditions),
-  paymentMethod: mo.paymentMethod,
+  paymentMethod: mo.paymentMethod ?? '',
   chequeNo: s(mo.chequeNo),
   receiptNo: s(mo.receiptNo),
   dueDateText: s(mo.dueDateText),
   adProduct: s(mo.adProduct),
   subtotal: mo.subtotal === '0' ? '' : mo.subtotal,
   isTaxable: mo.isTaxable,
+  createdBySignatoryId: s(mo.createdBySignatoryId),
   acknowledgedById: s(mo.acknowledgedById),
   approvedById: s(mo.approvedById),
 })
@@ -103,9 +105,11 @@ const fromMo = (mo: MediaOrderDto): Values => ({
 const toBody = ({ startMonth, endMonth, ...v }: Values): MoDraftInput => ({
   ...v,
   periodStart: startMonth && monthRange(startMonth)[0],
-  periodEnd: endMonth && monthRange(endMonth)[1],
+  periodEnd: endMonth ? monthRange(endMonth)[1] : null,
+  paymentMethod: v.paymentMethod || null,
   subtotal: v.subtotal || '0',
   chequeNo: v.paymentMethod === 'CHEQUE_BG' ? v.chequeNo : '',
+  createdBySignatoryId: v.createdBySignatoryId || null,
   acknowledgedById: v.acknowledgedById || null,
   approvedById: v.approvedById || null,
   moSeq: v.moSeq ? Number(v.moSeq) : null,
@@ -166,6 +170,15 @@ function MoForm({ mo, master }: { mo?: MediaOrderDto; master: Master }) {
   const { settings, sales, signatories, benefitTypes, options } = master
   const activeTypes = benefitTypes.filter((b) => b.isActive)
   const defaultSigner = (role: SignatoryDto['docRole']) => signatories.find((x) => x.docRole === role && x.isDefault && x.isActive)?.id ?? ''
+  // Slot tanda tangan bebas diisi penandatangan mana pun (tidak dibatasi peran).
+  const signerOptions = (name: 'createdBySignatoryId' | 'acknowledgedById' | 'approvedById') =>
+    signatories
+      .filter((x) => x.isActive || x.id === mo?.[name])
+      .map((x) => (
+        <option key={x.id} value={x.id}>
+          {x.name} · {x.title}
+        </option>
+      ))
 
   const {
     register,
@@ -194,13 +207,14 @@ function MoForm({ mo, master }: { mo?: MediaOrderDto; master: Master }) {
           benefits: activeTypes[0] ? [{ benefitTypeId: activeTypes[0].id, targetQty: 1, notes: '' }] : [],
           cooperationDetail: '',
           termsConditions: '',
-          paymentMethod: 'TRANSFER',
+          paymentMethod: '',
           chequeNo: '',
           receiptNo: '',
           dueDateText: '',
           adProduct: '',
           subtotal: '',
           isTaxable: true,
+          createdBySignatoryId: '',
           acknowledgedById: defaultSigner('ACKNOWLEDGED_BY'),
           approvedById: defaultSigner('APPROVED_BY'),
         },
@@ -377,6 +391,18 @@ function MoForm({ mo, master }: { mo?: MediaOrderDto; master: Master }) {
         <div className="flex min-w-0 flex-col gap-5">
           <Section letter="A" title="Header">
             <div className="grid grid-cols-[repeat(auto-fit,minmax(220px,1fr))] gap-3.5">
+              <Field id="mo-salesId" label="Sales" required error={err('salesId')}>
+                <select id="mo-salesId" className={selectClass} {...register('salesId')}>
+                  <option value="">— Pilih sales —</option>
+                  {sales
+                    .filter((x) => x.isActive || x.id === mo?.salesId)
+                    .map((x) => (
+                      <option key={x.id} value={x.id}>
+                        {x.name} ({x.title})
+                      </option>
+                    ))}
+                </select>
+              </Field>
               {text('moSeq', 'No. urut MO (SEQ)', { inputMode: 'numeric', placeholder: 'Kosongkan untuk otomatis', helper: `Nomor: ${nextNo}` })}
               {text('moDate', 'Tanggal MO', { required: true, type: 'date' })}
             </div>
@@ -424,7 +450,7 @@ function MoForm({ mo, master }: { mo?: MediaOrderDto; master: Master }) {
           <Section letter="C" title="Periode">
             <div className="grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))] gap-3.5">
               {text('startMonth', 'Masa periode, mulai', { required: true, type: 'month' })}
-              {text('endMonth', 'Sampai', { required: true, type: 'month' })}
+              {text('endMonth', 'Sampai', { type: 'month', helper: 'Opsional' })}
               {text('description', 'Keterangan', { required: true, placeholder: 'Publikasi Rilis Artikel' })}
             </div>
           </Section>
@@ -522,8 +548,9 @@ function MoForm({ mo, master }: { mo?: MediaOrderDto; master: Master }) {
 
           <Section letter="E" title="Pembayaran">
             <div className="grid grid-cols-[repeat(auto-fit,minmax(220px,1fr))] gap-3.5">
-              <Field id="mo-paymentMethod" label="Cara pembayaran" required>
+              <Field id="mo-paymentMethod" label="Cara pembayaran" helper="Opsional; kosong = tidak dicetak">
                 <select id="mo-paymentMethod" className={selectClass} {...register('paymentMethod')}>
+                  <option value="">— Tidak diisi —</option>
                   <option value="TRANSFER">Transfer</option>
                   <option value="CHEQUE_BG">Cek/BG</option>
                 </select>
@@ -532,7 +559,7 @@ function MoForm({ mo, master }: { mo?: MediaOrderDto; master: Master }) {
               {text('receiptNo', 'Kwitansi No')}
               {text('dueDateText', 'Jatuh tempo pembayaran', { placeholder: 'September 2026' })}
               {text('adProduct', 'Produk iklan')}
-              <Field id="mo-subtotal" label="Subtotal" required error={err('subtotal')}>
+              <Field id="mo-subtotal" label="Subtotal" error={err('subtotal')} helper={err('subtotal') ? undefined : 'Opsional; kosong = biaya tidak dicetak'}>
                 <Controller
                   control={control}
                   name="subtotal"
@@ -550,16 +577,10 @@ function MoForm({ mo, master }: { mo?: MediaOrderDto; master: Master }) {
 
           <Section letter="F" title="Penandatangan">
             <div className="grid grid-cols-[repeat(auto-fit,minmax(220px,1fr))] gap-3.5">
-              <Field id="mo-salesId" label="Dibuat oleh" required error={err('salesId')}>
-                <select id="mo-salesId" className={selectClass} {...register('salesId')}>
-                  <option value="">— Pilih sales —</option>
-                  {sales
-                    .filter((x) => x.isActive || x.id === mo?.salesId)
-                    .map((x) => (
-                      <option key={x.id} value={x.id}>
-                        {x.name} ({x.title})
-                      </option>
-                    ))}
+              <Field id="mo-createdBySignatoryId" label="Dibuat oleh" error={err('createdBySignatoryId')}>
+                <select id="mo-createdBySignatoryId" className={selectClass} {...register('createdBySignatoryId')}>
+                  <option value="">Sales: {sales.find((x) => x.id === watch('salesId'))?.name ?? '—'}</option>
+                  {signerOptions('createdBySignatoryId')}
                 </select>
               </Field>
               {(['ACKNOWLEDGED_BY', 'APPROVED_BY'] as const).map((role) => {
@@ -568,13 +589,7 @@ function MoForm({ mo, master }: { mo?: MediaOrderDto; master: Master }) {
                   <Field key={role} id={`mo-${name}`} label={role === 'ACKNOWLEDGED_BY' ? 'Diketahui oleh' : 'Disetujui oleh'} error={err(name)}>
                     <select id={`mo-${name}`} className={selectClass} {...register(name)}>
                       <option value="">— Kosong —</option>
-                      {signatories
-                        .filter((x) => x.docRole === role && (x.isActive || x.id === mo?.[name]))
-                        .map((x) => (
-                          <option key={x.id} value={x.id}>
-                            {x.name} · {x.title}
-                          </option>
-                        ))}
+                      {signerOptions(name)}
                     </select>
                   </Field>
                 )

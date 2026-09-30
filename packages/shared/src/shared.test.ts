@@ -75,6 +75,7 @@ describe('MO', () => {
   it('periode & nama file PDF (PRD §8)', () => {
     expect(monthRange('2027-02')).toEqual(['2027-02-01', '2027-02-28']);
     expect(formatPeriode('2026-06-01', '2027-05-31')).toBe('Juni 2026 - Mei 2027');
+    expect(formatPeriode('2026-06-01', null)).toBe('Juni 2026');
     const mo = { moNumber: '007/MO-BMO/INC/V/2026', companyName: 'PT Bukit Asam', periodStart: '2026-06-01', periodEnd: '2027-05-31' };
     expect(moPdfFileName(mo)).toBe('MO_007-MO-BMO-INC-V-2026_PT_BUKIT_ASAM_Juni_2026-Mei_2027.pdf');
   });
@@ -95,8 +96,9 @@ describe('MO', () => {
       subtotal: '20000000',
     };
     expect(moSubmitSchema.safeParse(draft).success).toBe(true);
+    expect(moSubmitSchema.safeParse({ ...draft, periodEnd: null, subtotal: '0' }).success).toBe(true);
     const bad = moSubmitSchema.safeParse({ ...draft, benefits: [], paymentMethod: 'CHEQUE_BG', subtotal: '0', periodEnd: '2026-01-31' });
-    expect(bad.error?.issues.map((i) => i.path.join('.')).sort()).toEqual(['benefits', 'chequeNo', 'periodEnd', 'subtotal']);
+    expect(bad.error?.issues.map((i) => i.path.join('.')).sort()).toEqual(['benefits', 'chequeNo', 'periodEnd']);
   });
 });
 
