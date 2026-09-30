@@ -58,7 +58,7 @@ export function PublicationsTab({ mo }: { mo: MediaOrderDto }) {
   const submitted = mo.status !== 'DRAFT' && mo.status !== 'CANCELLED'
   const canEdit = can(role, 'managePublications') && submitted && !billed
   const typeName = (benefitTypeId: string) => types.data?.find((t) => t.id === benefitTypeId)?.name ?? '…'
-  const outOfPeriod = (d: string) => d < mo.periodStart || d > mo.periodEnd
+  const outOfPeriod = (d: string) => d < mo.periodStart || (!!mo.periodEnd && d > mo.periodEnd)
 
   const onDelete = async () => {
     if (!deleting) return

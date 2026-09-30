@@ -51,7 +51,7 @@ export interface ClientMoHistoryItem {
   moNumber: string | null;
   moDate: string;
   periodStart: string;
-  periodEnd: string;
+  periodEnd: string | null;
   totalAmount: string;
   status: MoStatus;
   billingStatus: BillingStatus;
@@ -211,7 +211,7 @@ export interface MoListRow {
   moNumber: string | null;
   moDate: string;
   periodStart: string;
-  periodEnd: string;
+  periodEnd: string | null;
   companyName: string | null;
   salesName: string;
   subtotal: string;

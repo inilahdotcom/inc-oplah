@@ -39,7 +39,7 @@ function listWhere(orgId: string, f: Filter, { withBilling = true } = {}): Prism
   const and: Prisma.MediaOrderWhereInput[] = [{ organizationId: orgId }];
   if (f.dateField === 'period') {
     if (f.to) and.push({ periodStart: { lte: end(f.to) } });
-    if (f.from) and.push({ periodEnd: { gte: start(f.from) } });
+    if (f.from) and.push({ OR: [{ periodEnd: { gte: start(f.from) } }, { periodEnd: null }] }); // tanpa akhir = masih berjalan
   } else {
     if (f.from) and.push({ moDate: { gte: start(f.from) } });
     if (f.to) and.push({ moDate: { lte: end(f.to) } });
@@ -71,7 +71,7 @@ const toRow = (m: Row): MoListRow => ({
   moNumber: m.moNumber,
   moDate: day(m.moDate),
   periodStart: day(m.periodStart),
-  periodEnd: day(m.periodEnd),
+  periodEnd: m.periodEnd && day(m.periodEnd),
   companyName: (m.clientSnapshot as { companyName?: string } | null)?.companyName ?? null,
   salesName: m.sales.name,
   subtotal: m.subtotal.toFixed(0),
@@ -274,6 +274,6 @@ export async function dashboard(req: Request, yearParam?: number): Promise<Dashb
       return { month: i + 1, count: m?.count ?? 0, total: new D(m?.total ?? 0).toFixed(0) };
     }),
     ready: ready.map((m) => ({ id: m.id, moNumber: m.moNumber, companyName: snap(m), totalAmount: m.totalAmount.toFixed(0) })),
-    ending: ending.map((m) => ({ id: m.id, moNumber: m.moNumber, companyName: snap(m), periodEnd: day(m.periodEnd), fulfillmentPct: m.fulfillmentPct.toString() })),
+    ending: ending.map((m) => ({ id: m.id, moNumber: m.moNumber, companyName: snap(m), periodEnd: day(m.periodEnd!), fulfillmentPct: m.fulfillmentPct.toString() })),
   };
 }
